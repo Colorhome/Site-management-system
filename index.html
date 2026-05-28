@@ -25,20 +25,9 @@
             --warning-bg: #fef3c7;
         }
 
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        .app-shell {
-            display: grid;
-            grid-template-rows: auto 1fr;
-            min-height: 100vh;
-        }
-
-        /* TOP BAR */
+        /* TOPBAR */
         .topbar {
             background: var(--surface);
             border-bottom: 1px solid var(--border);
@@ -51,173 +40,57 @@
             top: 0;
             z-index: 100;
         }
-
-        .topbar-brand {
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .brand-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-        }
-
-        .topbar-nav {
-            display: flex;
-            gap: 2px;
-        }
-
+        .topbar-brand { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+        .brand-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+        .topbar-nav { display: flex; gap: 2px; }
         .nav-btn {
-            padding: 6px 14px;
-            border-radius: 6px;
-            border: none;
-            background: transparent;
-            color: var(--muted);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s;
-            font-family: inherit;
+            padding: 6px 14px; border-radius: 6px; border: none;
+            background: transparent; color: var(--muted);
+            font-size: 13px; font-weight: 500; cursor: pointer;
+            transition: all 0.15s; font-family: inherit;
         }
-
         .nav-btn:hover { background: var(--surface2); color: var(--text); }
         .nav-btn.active { background: var(--text); color: white; }
+        .topbar-right { display: flex; align-items: center; gap: 10px; }
+        .sync-status { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); }
 
-        .topbar-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .sync-status {
-            font-size: 12px;
-            color: var(--muted);
-            font-family: 'DM Mono', monospace;
-        }
-
-        /* MAIN CONTENT */
-        .main {
-            padding: 1.5rem;
-            max-width: 1100px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
+        /* MAIN */
+        .main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; width: 100%; }
         .view { display: none; }
         .view.active { display: block; }
 
-        /* KPI STRIP */
-        .kpi-strip {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 1.5rem;
-        }
+        /* KPI */
+        .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+        .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+        .kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+        .kpi-val { font-size: 22px; font-weight: 600; letter-spacing: -0.03em; }
+        .kpi-val.green { color: #059669; }
+        .kpi-val.red { color: #dc2626; }
 
-        .kpi {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 1rem 1.25rem;
-        }
-
-        .kpi-label {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--muted);
-            margin-bottom: 6px;
-        }
-
-        .kpi-val {
-            font-size: 22px;
-            font-weight: 600;
-            letter-spacing: -0.03em;
-            color: var(--text);
-        }
-
-        .kpi-val.green { color: var(--success); }
-        .kpi-val.red { color: var(--danger); }
-
-        /* SECTION CARD */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .card-title {
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-        }
-
+        /* CARD */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        .card-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-size: 13px; font-weight: 600; }
         .card-body { padding: 1.25rem; }
 
-        /* ACTIONS */
-        .actions {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 1.25rem;
-            flex-wrap: wrap;
-        }
-
+        /* BUTTONS */
+        .actions { display: flex; gap: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; }
         .btn {
-            padding: 7px 14px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--text);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border);
+            background: var(--surface); color: var(--text); font-size: 13px; font-weight: 500;
+            cursor: pointer; transition: all 0.15s; font-family: inherit;
+            display: flex; align-items: center; gap: 6px;
         }
-
         .btn:hover { background: var(--surface2); }
-
-        .btn-primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
-        }
-
+        .btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
         .btn-primary:hover { opacity: 0.88; background: var(--accent); }
-        .btn-danger { color: var(--danger); }
-        .btn-danger:hover { background: var(--danger-bg); border-color: #fca5a5; }
+        .btn-danger:hover { background: var(--danger-bg); border-color: #fca5a5; color: var(--danger); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* TABLE */
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         thead tr { border-bottom: 2px solid var(--border); }
-        th {
-            text-align: left;
-            padding: 8px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--muted);
-        }
+        th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
         td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background: var(--surface2); }
@@ -226,216 +99,76 @@
 
         /* SITE CARDS */
         .sites-list { display: grid; gap: 10px; }
-
-        .site-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 1.25rem;
-            transition: border-color 0.15s;
-        }
-
+        .site-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; transition: border-color 0.15s; }
         .site-card:hover { border-color: #c4b5a5; }
-
-        .site-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
+        .site-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
         .site-name { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
-        .site-client { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
+        .site-client { font-size: 12px; color: var(--muted); margin-top: 3px; }
         .site-btns { display: flex; gap: 4px; }
-
-        .icon-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            transition: all 0.15s;
-        }
-
+        .icon-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s; }
         .icon-btn:hover { background: var(--surface2); }
         .icon-btn.del:hover { background: var(--danger-bg); border-color: #fca5a5; }
-
-        .site-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 8px;
-        }
-
+        .site-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; }
         .stat { display: flex; flex-direction: column; gap: 2px; }
         .stat-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
         .stat-val { font-size: 14px; font-weight: 600; letter-spacing: -0.02em; }
 
         /* BADGES */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-        }
-
+        .badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
         .badge-ongoing { background: #dbeafe; color: #1e40af; }
         .badge-completed { background: var(--success-bg); color: var(--success); }
         .badge-planning { background: var(--warning-bg); color: var(--warning); }
 
-        /* MODAL */
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 999;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
+        /* MODAL / OVERLAY */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; align-items: center; justify-content: center; padding: 1rem; }
         .overlay.open { display: flex; }
-
-        .modal {
-            background: var(--surface);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 480px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        }
-
-        .modal-head {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
+        .modal { background: var(--surface); border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .modal-head { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
         .modal-title { font-size: 15px; font-weight: 600; }
-
-        .close-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            color: var(--muted);
-        }
-
+        .close-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--muted); }
         .close-btn:hover { background: var(--surface2); }
-
         .modal-body { padding: 1.5rem; }
+        .modal-foot { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+        .modal-foot .btn { flex: 1; justify-content: center; }
 
+        /* FORM */
         .form-grid { display: grid; gap: 12px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .form-group { display: grid; gap: 5px; }
-
-        label {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--muted);
-        }
-
-        input, select {
-            padding: 8px 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 13px;
-            background: var(--surface);
-            color: var(--text);
-            font-family: inherit;
-            transition: border-color 0.15s;
-            width: 100%;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(28,78,216,0.08);
-        }
-
-        .modal-foot {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            gap: 8px;
-        }
-
-        .modal-foot .btn { flex: 1; justify-content: center; }
+        label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+        input, select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: var(--surface); color: var(--text); font-family: inherit; transition: border-color 0.15s; width: 100%; }
+        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(28,78,216,0.08); }
 
         /* SYNC MODAL */
-        .sync-form { display: grid; gap: 12px; }
-        .url-input-wrap { position: relative; }
-        .url-input-wrap input { padding-right: 70px; font-family: 'DM Mono', monospace; font-size: 12px; }
-        .url-status {
-            font-size: 12px;
-            padding: 8px 12px;
-            border-radius: 6px;
-            display: none;
-        }
-        .url-status.ok { display: block; background: var(--success-bg); color: var(--success); }
-        .url-status.err { display: block; background: var(--danger-bg); color: var(--danger); }
-        .url-status.loading { display: block; background: #dbeafe; color: #1e40af; }
+        .sync-log { font-family: 'DM Mono', monospace; font-size: 12px; background: #1c1917; color: #d6d3d1; padding: 12px; border-radius: 6px; min-height: 60px; white-space: pre-wrap; display: none; margin-top: 8px; }
+        .sync-log.show { display: block; }
+        .log-ok { color: #6ee7b7; }
+        .log-err { color: #fca5a5; }
+        .log-info { color: #93c5fd; }
 
-        /* COST BREAKDOWN */
-        .breakdown-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 10px;
-        }
-
-        .breakdown-item {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-        }
-
+        /* BREAKDOWN */
+        .breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        .breakdown-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
         .breakdown-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
         .breakdown-val { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
 
         .green { color: #059669; }
         .red { color: #dc2626; }
 
-        /* EMPTY STATE */
-        .empty {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--muted);
-        }
-
+        /* EMPTY */
+        .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
         .empty-icon { font-size: 36px; margin-bottom: 12px; }
-        .empty-text { font-size: 14px; }
 
         @media (max-width: 640px) {
             .kpi-strip { grid-template-columns: 1fr 1fr; }
             .form-row { grid-template-columns: 1fr; }
-            .topbar-brand span { display: none; }
             .main { padding: 1rem; }
+            .topbar-brand span { display: none; }
         }
     </style>
 </head>
 <body>
-<div class="app-shell">
+<div>
 
     <header class="topbar">
         <div class="topbar-brand">
@@ -447,27 +180,24 @@
             <button class="nav-btn" data-view="sites">Sites</button>
             <button class="nav-btn" data-view="analysis">Analysis</button>
         </nav>
-        <div class="topbar-actions">
-            <span class="sync-status" id="syncStatus">local</span>
-            <button class="btn" onclick="openSyncModal()">☁ Sync Sheets</button>
+        <div class="topbar-right">
+            <span class="sync-status" id="syncStatus">● local</span>
+            <button class="btn" onclick="openSyncModal()">☁ Sync</button>
         </div>
     </header>
 
     <main class="main">
 
-        <!-- DASHBOARD VIEW -->
+        <!-- DASHBOARD -->
         <div id="v-dashboard" class="view active">
             <div class="kpi-strip" id="dashKpis"></div>
             <div class="card">
-                <div class="card-header">
-                    <span class="card-title">All Projects</span>
-                </div>
+                <div class="card-header"><span class="card-title">All Projects</span></div>
                 <div style="overflow-x:auto;">
                     <table>
                         <thead>
                             <tr>
-                                <th>Site</th>
-                                <th>Client</th>
+                                <th>Site</th><th>Client</th>
                                 <th class="text-right">Contract</th>
                                 <th class="text-right">Cost</th>
                                 <th class="text-right">Profit</th>
@@ -480,7 +210,7 @@
             </div>
         </div>
 
-        <!-- SITES VIEW -->
+        <!-- SITES -->
         <div id="v-sites" class="view">
             <div class="actions">
                 <button class="btn btn-primary" onclick="openAdd()">+ Add Site</button>
@@ -489,21 +219,19 @@
             <div class="sites-list" id="sitesList"></div>
         </div>
 
-        <!-- ANALYSIS VIEW -->
+        <!-- ANALYSIS -->
         <div id="v-analysis" class="view">
             <div class="kpi-strip" id="analysisKpis"></div>
             <div class="card" style="margin-top:1.25rem;">
-                <div class="card-header"><span class="card-title">Cost Breakdown (All Sites)</span></div>
-                <div class="card-body">
-                    <div class="breakdown-grid" id="breakdownGrid"></div>
-                </div>
+                <div class="card-header"><span class="card-title">Cost Breakdown</span></div>
+                <div class="card-body"><div class="breakdown-grid" id="breakdownGrid"></div></div>
             </div>
         </div>
 
     </main>
 </div>
 
-<!-- ADD / EDIT SITE MODAL -->
+<!-- SITE MODAL -->
 <div class="overlay" id="siteOverlay">
     <div class="modal">
         <div class="modal-head">
@@ -513,65 +241,30 @@
         <div class="modal-body">
             <div class="form-grid">
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Site Name *</label>
-                        <input id="f-siteName" type="text" placeholder="e.g. Project Alpha">
-                    </div>
-                    <div class="form-group">
-                        <label>Client Name</label>
-                        <input id="f-clientName" type="text" placeholder="e.g. ABC Corp">
-                    </div>
+                    <div class="form-group"><label>Site Name *</label><input id="f-siteName" type="text" placeholder="e.g. Project Alpha"></div>
+                    <div class="form-group"><label>Client Name</label><input id="f-clientName" type="text" placeholder="e.g. ABC Corp"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select id="f-status">
-                            <option value="Planning">Planning</option>
-                            <option value="On Going">On Going</option>
-                            <option value="Completed">Completed</option>
-                        </select>
+                    <div class="form-group"><label>Status</label>
+                        <select id="f-status"><option value="Planning">Planning</option><option value="On Going">On Going</option><option value="Completed">Completed</option></select>
                     </div>
-                    <div class="form-group">
-                        <label>Contract Value (₹)</label>
-                        <input id="f-contractValue" type="number" placeholder="0">
-                    </div>
+                    <div class="form-group"><label>Contract Value (₹)</label><input id="f-contractValue" type="number" placeholder="0"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Material Cost</label>
-                        <input id="f-materialCost" type="number" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Labour Cost</label>
-                        <input id="f-labourCost" type="number" placeholder="0">
-                    </div>
+                    <div class="form-group"><label>Material Cost</label><input id="f-materialCost" type="number" placeholder="0"></div>
+                    <div class="form-group"><label>Labour Cost</label><input id="f-labourCost" type="number" placeholder="0"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Transport Cost</label>
-                        <input id="f-transportCost" type="number" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Equipment Cost</label>
-                        <input id="f-equipmentCost" type="number" placeholder="0">
-                    </div>
+                    <div class="form-group"><label>Transport Cost</label><input id="f-transportCost" type="number" placeholder="0"></div>
+                    <div class="form-group"><label>Equipment Cost</label><input id="f-equipmentCost" type="number" placeholder="0"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Misc Expenses</label>
-                        <input id="f-miscExpenses" type="number" placeholder="0">
-                    </div>
+                    <div class="form-group"><label>Misc Expenses</label><input id="f-miscExpenses" type="number" placeholder="0"></div>
                     <div></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Start Date</label>
-                        <input id="f-planStart" type="date">
-                    </div>
-                    <div class="form-group">
-                        <label>End Date</label>
-                        <input id="f-planEnd" type="date">
-                    </div>
+                    <div class="form-group"><label>Start Date</label><input id="f-planStart" type="date"></div>
+                    <div class="form-group"><label>End Date</label><input id="f-planEnd" type="date"></div>
                 </div>
             </div>
         </div>
@@ -590,106 +283,76 @@
             <button class="close-btn" onclick="closeSyncModal()">✕</button>
         </div>
         <div class="modal-body">
-            <div class="sync-form">
+            <div class="form-grid">
                 <div class="form-group">
-                    <label>Apps Script Web App URL</label>
-                    <input id="syncUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+                    <label>Apps Script Deployment URL</label>
+                    <input id="syncUrl" type="url" placeholder="https://script.google.com/macros/s/AKfy.../exec">
                 </div>
                 <div class="form-group">
                     <label>Action</label>
                     <select id="syncAction">
-                        <option value="push">Push — Send local data → Google Sheets</option>
-                        <option value="pull">Pull — Load data from Google Sheets → App</option>
+                        <option value="push">Push — App → Google Sheets (save data)</option>
+                        <option value="pull">Pull — Google Sheets → App (load data)</option>
                     </select>
                 </div>
-                <div id="syncStatusMsg" class="url-status"></div>
-                <div style="font-size:12px; color:var(--muted); line-height:1.6;">
-                    <strong>How to get the URL:</strong><br>
-                    1. Open your Google Sheet → Extensions → Apps Script<br>
-                    2. Deploy → New deployment → Web App<br>
-                    3. Execute as: Me | Access: Anyone<br>
-                    4. Copy the deployment URL (ends in /exec)
+                <div id="syncLog" class="sync-log"></div>
+                <div style="font-size:12px; color:var(--muted); line-height:1.7; background:var(--surface2); padding:10px; border-radius:6px; border:1px solid var(--border);">
+                    <strong>URL kaise milega:</strong><br>
+                    1. Google Sheet → Extensions → Apps Script<br>
+                    2. Deploy → New deployment → Type: Web App<br>
+                    3. Execute as: <strong>Me</strong> | Access: <strong>Anyone</strong><br>
+                    4. Deploy karo → URL copy karo (<code>/exec</code> pe end hoga)
                 </div>
             </div>
         </div>
         <div class="modal-foot">
-            <button class="btn btn-primary" onclick="runSync()">Sync Now</button>
-            <button class="btn" onclick="closeSyncModal()">Cancel</button>
+            <button class="btn btn-primary" id="syncBtn" onclick="runSync()">Sync Now</button>
+            <button class="btn" onclick="closeSyncModal()">Close</button>
         </div>
     </div>
 </div>
 
 <script>
-// ============================================================
-// STATE - In-memory store (no localStorage issues)
-// ============================================================
+// ================================================================
+// DATA STORE
+// ================================================================
 let sites = [
-    {
-        id: 1,
-        siteName: 'Project Alpha',
-        clientName: 'ABC Construction',
-        status: 'On Going',
-        planStart: '2024-01-15',
-        planEnd: '2024-06-30',
-        contractValue: 500000,
-        materialCost: 120000,
-        labourCost: 150000,
-        transportCost: 30000,
-        equipmentCost: 40000,
-        miscExpenses: 20000
-    },
-    {
-        id: 2,
-        siteName: 'Bridge Renovation',
-        clientName: 'City Council',
-        status: 'Completed',
-        planStart: '2023-03-01',
-        planEnd: '2023-11-30',
-        contractValue: 1200000,
-        materialCost: 300000,
-        labourCost: 400000,
-        transportCost: 80000,
-        equipmentCost: 120000,
-        miscExpenses: 50000
-    }
+    { id:1, siteName:'Project Alpha', clientName:'ABC Construction', status:'On Going',
+      planStart:'2024-01-15', planEnd:'2024-06-30', contractValue:500000,
+      materialCost:120000, labourCost:150000, transportCost:30000, equipmentCost:40000, miscExpenses:20000 },
+    { id:2, siteName:'Bridge Renovation', clientName:'City Council', status:'Completed',
+      planStart:'2023-03-01', planEnd:'2023-11-30', contractValue:1200000,
+      materialCost:300000, labourCost:400000, transportCost:80000, equipmentCost:120000, miscExpenses:50000 }
 ];
 
 let editingId = null;
 
-// ============================================================
+// ================================================================
 // CALCULATIONS
-// ============================================================
-const totalCost = s =>
-    (s.materialCost||0) + (s.labourCost||0) + (s.transportCost||0) +
-    (s.equipmentCost||0) + (s.miscExpenses||0);
-
+// ================================================================
+const totalCost = s => (s.materialCost||0)+(s.labourCost||0)+(s.transportCost||0)+(s.equipmentCost||0)+(s.miscExpenses||0);
 const profit = s => (s.contractValue||0) - totalCost(s);
-
-const profitPct = s => s.contractValue > 0
-    ? ((profit(s) / s.contractValue) * 100).toFixed(1)
-    : '0.0';
+const profitPct = s => s.contractValue > 0 ? ((profit(s)/s.contractValue)*100).toFixed(1) : '0.0';
 
 const fmt = n => {
-    if (Math.abs(n) >= 1e7) return '₹' + (n/1e7).toFixed(2) + 'Cr';
-    if (Math.abs(n) >= 1e5) return '₹' + (n/1e5).toFixed(1) + 'L';
-    return '₹' + n.toLocaleString('en-IN');
+    const abs = Math.abs(n);
+    const sign = n < 0 ? '-' : '';
+    if (abs >= 1e7) return sign + '₹' + (abs/1e7).toFixed(2) + 'Cr';
+    if (abs >= 1e5) return sign + '₹' + (abs/1e5).toFixed(1) + 'L';
+    return sign + '₹' + abs.toLocaleString('en-IN');
 };
 
 const totals = () => sites.reduce((a, s) => ({
     contract: a.contract + (s.contractValue||0),
     cost: a.cost + totalCost(s),
     profit: a.profit + profit(s)
-}), { contract: 0, cost: 0, profit: 0 });
+}), { contract:0, cost:0, profit:0 });
 
-const badgeClass = status => ({
-    'On Going': 'badge-ongoing',
-    'Completed': 'badge-completed',
-    'Planning': 'badge-planning'
-}[status] || 'badge-planning');
+const badgeClass = st => ({'On Going':'badge-ongoing','Completed':'badge-completed','Planning':'badge-planning'}[st]||'badge-planning');
 
-// ============================================================
+// ================================================================
 // RENDER
-// ============================================================
+// ================================================================
 function renderDashboard() {
     const T = totals();
     document.getElementById('dashKpis').innerHTML = `
@@ -698,106 +361,89 @@ function renderDashboard() {
         <div class="kpi"><div class="kpi-label">Total Expenses</div><div class="kpi-val">${fmt(T.cost)}</div></div>
         <div class="kpi"><div class="kpi-label">Net Profit</div><div class="kpi-val ${T.profit>=0?'green':'red'}">${fmt(T.profit)}</div></div>
     `;
-
-    document.getElementById('dashTable').innerHTML = sites.length ? sites.map(s => `
-        <tr>
-            <td><strong>${s.siteName}</strong></td>
-            <td style="color:var(--muted)">${s.clientName}</td>
-            <td class="text-right">${fmt(s.contractValue||0)}</td>
-            <td class="text-right">${fmt(totalCost(s))}</td>
-            <td class="text-right ${profit(s)>=0?'green':'red'}">${fmt(profit(s))}</td>
-            <td class="text-center"><span class="badge ${badgeClass(s.status)}">${s.status}</span></td>
-        </tr>
-    `).join('') : `<tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No projects yet. Add your first site!</div></div></td></tr>`;
+    document.getElementById('dashTable').innerHTML = sites.length
+        ? sites.map(s => `
+            <tr>
+                <td><strong>${s.siteName}</strong></td>
+                <td style="color:var(--muted)">${s.clientName}</td>
+                <td class="text-right">${fmt(s.contractValue||0)}</td>
+                <td class="text-right">${fmt(totalCost(s))}</td>
+                <td class="text-right ${profit(s)>=0?'green':'red'}">${fmt(profit(s))}</td>
+                <td class="text-center"><span class="badge ${badgeClass(s.status)}">${s.status}</span></td>
+            </tr>`).join('')
+        : `<tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div><div>No projects yet.</div></div></td></tr>`;
 }
 
 function renderSites() {
-    document.getElementById('sitesList').innerHTML = sites.length ? sites.map(s => {
-        const p = profit(s);
-        const tc = totalCost(s);
-        return `
-        <div class="site-card">
-            <div class="site-top">
-                <div>
-                    <div class="site-name">${s.siteName}</div>
-                    <div class="site-client">${s.clientName} &nbsp;•&nbsp; <span class="badge ${badgeClass(s.status)}">${s.status}</span></div>
+    document.getElementById('sitesList').innerHTML = sites.length
+        ? sites.map(s => {
+            const p = profit(s), tc = totalCost(s);
+            return `
+            <div class="site-card">
+                <div class="site-top">
+                    <div>
+                        <div class="site-name">${s.siteName}</div>
+                        <div class="site-client">${s.clientName} &nbsp;·&nbsp; <span class="badge ${badgeClass(s.status)}">${s.status}</span></div>
+                    </div>
+                    <div class="site-btns">
+                        <button class="icon-btn" onclick="openEdit(${s.id})" title="Edit">✏</button>
+                        <button class="icon-btn del" onclick="deleteSite(${s.id})" title="Delete">🗑</button>
+                    </div>
                 </div>
-                <div class="site-btns">
-                    <button class="icon-btn" onclick="openEdit(${s.id})" title="Edit">✏</button>
-                    <button class="icon-btn del" onclick="deleteSite(${s.id})" title="Delete">🗑</button>
+                <div class="site-stats">
+                    <div class="stat"><span class="stat-lbl">Contract</span><span class="stat-val">${fmt(s.contractValue||0)}</span></div>
+                    <div class="stat"><span class="stat-lbl">Total Cost</span><span class="stat-val">${fmt(tc)}</span></div>
+                    <div class="stat"><span class="stat-lbl">Profit</span><span class="stat-val ${p>=0?'green':'red'}">${fmt(p)}</span></div>
+                    <div class="stat"><span class="stat-lbl">Margin</span><span class="stat-val ${p>=0?'green':'red'}">${profitPct(s)}%</span></div>
+                    ${s.planStart?`<div class="stat"><span class="stat-lbl">Start</span><span class="stat-val" style="font-size:12px">${s.planStart}</span></div>`:''}
+                    ${s.planEnd?`<div class="stat"><span class="stat-lbl">End</span><span class="stat-val" style="font-size:12px">${s.planEnd}</span></div>`:''}
                 </div>
-            </div>
-            <div class="site-stats">
-                <div class="stat">
-                    <span class="stat-lbl">Contract</span>
-                    <span class="stat-val">${fmt(s.contractValue||0)}</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-lbl">Total Cost</span>
-                    <span class="stat-val">${fmt(tc)}</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-lbl">Net Profit</span>
-                    <span class="stat-val ${p>=0?'green':'red'}">${fmt(p)}</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-lbl">Margin</span>
-                    <span class="stat-val ${p>=0?'green':'red'}">${profitPct(s)}%</span>
-                </div>
-                ${s.planStart ? `<div class="stat"><span class="stat-lbl">Start</span><span class="stat-val" style="font-size:12px">${s.planStart}</span></div>` : ''}
-                ${s.planEnd ? `<div class="stat"><span class="stat-lbl">End</span><span class="stat-val" style="font-size:12px">${s.planEnd}</span></div>` : ''}
-            </div>
-        </div>
-        `;
-    }).join('') : `<div class="empty"><div class="empty-icon">🏗</div><div class="empty-text">No sites added yet. Click "+ Add Site" to get started.</div></div>`;
+            </div>`;}).join('')
+        : `<div class="empty"><div class="empty-icon">🏗</div><div>No sites added. "+ Add Site" se shuru karo.</div></div>`;
 }
 
 function renderAnalysis() {
     const T = totals();
-    const avgMargin = sites.length
-        ? (sites.reduce((a, s) => a + parseFloat(profitPct(s)), 0) / sites.length).toFixed(1)
-        : '0.0';
-    const utilization = T.contract > 0 ? ((T.cost / T.contract) * 100).toFixed(1) : '0.0';
+    const avgMargin = sites.length ? (sites.reduce((a,s)=>a+parseFloat(profitPct(s)),0)/sites.length).toFixed(1) : '0.0';
+    const util = T.contract > 0 ? ((T.cost/T.contract)*100).toFixed(1) : '0.0';
 
     document.getElementById('analysisKpis').innerHTML = `
         <div class="kpi"><div class="kpi-label">Avg Margin</div><div class="kpi-val ${parseFloat(avgMargin)>=0?'green':'red'}">${avgMargin}%</div></div>
-        <div class="kpi"><div class="kpi-label">Cost Utilization</div><div class="kpi-val">${utilization}%</div></div>
+        <div class="kpi"><div class="kpi-label">Cost Utilization</div><div class="kpi-val">${util}%</div></div>
         <div class="kpi"><div class="kpi-label">Ongoing</div><div class="kpi-val">${sites.filter(s=>s.status==='On Going').length}</div></div>
         <div class="kpi"><div class="kpi-label">Completed</div><div class="kpi-val">${sites.filter(s=>s.status==='Completed').length}</div></div>
     `;
 
-    const cats = ['materialCost','labourCost','transportCost','equipmentCost','miscExpenses'];
-    const labels = { materialCost:'Material', labourCost:'Labour', transportCost:'Transport', equipmentCost:'Equipment', miscExpenses:'Misc' };
-    document.getElementById('breakdownGrid').innerHTML = cats.map(k => {
-        const total = sites.reduce((a,s) => a + (s[k]||0), 0);
-        const pct = T.cost > 0 ? ((total/T.cost)*100).toFixed(0) : 0;
-        return `
-        <div class="breakdown-item">
-            <div class="breakdown-lbl">${labels[k]}</div>
-            <div class="breakdown-val">${fmt(total)}</div>
+    const cats = [
+        {key:'materialCost', lbl:'Material'},
+        {key:'labourCost', lbl:'Labour'},
+        {key:'transportCost', lbl:'Transport'},
+        {key:'equipmentCost', lbl:'Equipment'},
+        {key:'miscExpenses', lbl:'Misc'}
+    ];
+    document.getElementById('breakdownGrid').innerHTML = cats.map(c => {
+        const tot = sites.reduce((a,s)=>a+(s[c.key]||0),0);
+        const pct = T.cost > 0 ? ((tot/T.cost)*100).toFixed(0) : 0;
+        return `<div class="breakdown-item">
+            <div class="breakdown-lbl">${c.lbl}</div>
+            <div class="breakdown-val">${fmt(tot)}</div>
             <div style="font-size:11px;color:var(--muted);margin-top:4px">${pct}% of total</div>
         </div>`;
     }).join('');
 }
 
-function renderAll() {
-    renderDashboard();
-    renderSites();
-    renderAnalysis();
-}
+function renderAll() { renderDashboard(); renderSites(); renderAnalysis(); }
 
-// ============================================================
-// MODAL — ADD / EDIT
-// ============================================================
-const fields = ['siteName','clientName','status','contractValue','materialCost','labourCost','transportCost','equipmentCost','miscExpenses','planStart','planEnd'];
+// ================================================================
+// SITE MODAL
+// ================================================================
+const FIELDS = ['siteName','clientName','status','contractValue','materialCost','labourCost','transportCost','equipmentCost','miscExpenses','planStart','planEnd'];
+const NUM_FIELDS = ['contractValue','materialCost','labourCost','transportCost','equipmentCost','miscExpenses'];
 
 function openAdd() {
     editingId = null;
     document.getElementById('modalTitle').textContent = 'Add New Site';
-    fields.forEach(f => {
-        const el = document.getElementById('f-' + f);
-        if (el) el.value = f === 'status' ? 'Planning' : '';
-    });
+    FIELDS.forEach(f => { const el = document.getElementById('f-'+f); if (el) el.value = f==='status' ? 'Planning' : ''; });
     document.getElementById('siteOverlay').classList.add('open');
 }
 
@@ -806,29 +452,25 @@ function openEdit(id) {
     if (!s) return;
     editingId = id;
     document.getElementById('modalTitle').textContent = 'Edit Site';
-    fields.forEach(f => {
-        const el = document.getElementById('f-' + f);
-        if (el) el.value = s[f] !== undefined ? s[f] : '';
-    });
+    FIELDS.forEach(f => { const el = document.getElementById('f-'+f); if (el) el.value = s[f] !== undefined ? s[f] : ''; });
     document.getElementById('siteOverlay').classList.add('open');
 }
 
 function saveSite() {
     const name = document.getElementById('f-siteName').value.trim();
-    if (!name) { alert('Site name is required!'); return; }
+    if (!name) { alert('Site name zaruri hai!'); return; }
 
     const data = {};
-    fields.forEach(f => {
-        const el = document.getElementById('f-' + f);
+    FIELDS.forEach(f => {
+        const el = document.getElementById('f-'+f);
         if (!el) return;
-        const numFields = ['contractValue','materialCost','labourCost','transportCost','equipmentCost','miscExpenses'];
-        data[f] = numFields.includes(f) ? (parseFloat(el.value) || 0) : el.value;
+        data[f] = NUM_FIELDS.includes(f) ? (parseFloat(el.value)||0) : el.value;
     });
 
     if (editingId !== null) {
-        sites = sites.map(s => s.id === editingId ? { ...data, id: editingId } : s);
+        sites = sites.map(s => s.id === editingId ? {...data, id: editingId} : s);
     } else {
-        sites.push({ ...data, id: Date.now() });
+        sites.push({...data, id: Date.now()});
     }
 
     closeModal();
@@ -836,146 +478,163 @@ function saveSite() {
 }
 
 function deleteSite(id) {
-    if (confirm('Delete this site? This cannot be undone.')) {
+    if (confirm('Is site ko delete karna chahte ho?')) {
         sites = sites.filter(s => s.id !== id);
         renderAll();
     }
 }
 
-function closeModal() {
-    document.getElementById('siteOverlay').classList.remove('open');
-}
+function closeModal() { document.getElementById('siteOverlay').classList.remove('open'); }
 
-// ============================================================
-// GOOGLE SHEETS SYNC
-// ============================================================
+// ================================================================
+// SYNC — GOOGLE SHEETS
+// KEY FIX: Action URL parameter mein bhi bhejo (?action=...)
+// Isse doGet aur doPost dono mein action milta hai
+// ================================================================
+
 function openSyncModal() {
-    document.getElementById('syncStatusMsg').className = 'url-status';
-    document.getElementById('syncStatusMsg').textContent = '';
+    document.getElementById('syncLog').className = 'sync-log';
+    document.getElementById('syncLog').textContent = '';
     document.getElementById('syncOverlay').classList.add('open');
 }
 
-function closeSyncModal() {
-    document.getElementById('syncOverlay').classList.remove('open');
+function closeSyncModal() { document.getElementById('syncOverlay').classList.remove('open'); }
+
+function log(msg, type='info') {
+    const el = document.getElementById('syncLog');
+    el.classList.add('show');
+    el.innerHTML += `<span class="log-${type}">${msg}</span>\n`;
+    el.scrollTop = el.scrollHeight;
 }
 
 async function runSync() {
-    const url = document.getElementById('syncUrl').value.trim();
+    const rawUrl = document.getElementById('syncUrl').value.trim();
     const action = document.getElementById('syncAction').value;
-    const msgEl = document.getElementById('syncStatusMsg');
+    const btn = document.getElementById('syncBtn');
 
-    if (!url) {
-        msgEl.className = 'url-status err';
-        msgEl.textContent = '❌ URL is required.';
-        return;
-    }
+    // Clear log
+    const logEl = document.getElementById('syncLog');
+    logEl.className = 'sync-log show';
+    logEl.textContent = '';
 
-    if (!url.includes('script.google.com')) {
-        msgEl.className = 'url-status err';
-        msgEl.textContent = '❌ URL should be a Google Apps Script URL (script.google.com)';
-        return;
-    }
+    if (!rawUrl) { log('❌ URL daalna zaruri hai', 'err'); return; }
+    if (!rawUrl.includes('script.google.com')) { log('❌ Ye Google Apps Script URL nahi lagta', 'err'); return; }
 
-    msgEl.className = 'url-status loading';
-    msgEl.textContent = '⏳ Connecting to Google Sheets...';
+    // Make sure URL ends with /exec
+    const baseUrl = rawUrl.replace(/\/exec.*$/, '') + '/exec';
+
+    btn.disabled = true;
+    btn.textContent = 'Syncing...';
 
     try {
         if (action === 'push') {
-            await pushToSheets(url);
+            await pushToSheets(baseUrl);
         } else {
-            await pullFromSheets(url);
+            await pullFromSheets(baseUrl);
         }
     } catch (err) {
-        msgEl.className = 'url-status err';
-        msgEl.textContent = '❌ Error: ' + err.message + '. Check console for details.';
-        console.error('Sync error:', err);
+        log('❌ Error: ' + err.message, 'err');
+        console.error(err);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Sync Now';
+}
+
+// PUSH: App → Google Sheets
+// Action URL parameter mein bhi daal rahe hain taaki doPost/doGet dono pakad sakein
+async function pushToSheets(baseUrl) {
+    log('⏳ Google Sheets se connect ho raha hai...', 'info');
+
+    const payload = {
+        action: 'addMultipleSites',
+        sites: sites
+    };
+
+    // URL mein bhi action parameter daalo — yeh KEY FIX hai
+    const url = baseUrl + '?action=addMultipleSites';
+
+    log('→ Sending ' + sites.length + ' sites...', 'info');
+
+    const response = await fetch(url, {
+        method: 'POST',
+        // text/plain use karo — ye CORS preflight avoid karta hai
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+        throw new Error('HTTP ' + response.status + ' — ' + response.statusText);
+    }
+
+    const text = await response.text();
+    let json;
+    try { json = JSON.parse(text); } catch(e) { throw new Error('Invalid response from server: ' + text.slice(0, 100)); }
+
+    if (json.success) {
+        log('✅ ' + json.data, 'ok');
+        document.getElementById('syncStatus').textContent = '● synced';
+    } else {
+        throw new Error(json.error || 'Server error');
     }
 }
 
-async function pushToSheets(url) {
-    const msgEl = document.getElementById('syncStatusMsg');
+// PULL: Google Sheets → App
+async function pullFromSheets(baseUrl) {
+    log('⏳ Google Sheets se data load ho raha hai...', 'info');
 
-    // Google Apps Script requires a workaround for CORS:
-    // We POST with mode no-cors and assume success if no network error
-    const payload = JSON.stringify({ action: 'addMultipleSites', sites: sites });
+    // GET request — action URL mein
+    const url = baseUrl + '?action=getSites';
 
-    try {
-        await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' }, // text/plain avoids CORS preflight
-            body: payload
-        });
-        // no-cors means we can't read the response, but if no exception → request was sent
-        msgEl.className = 'url-status ok';
-        msgEl.textContent = '✅ Data sent! Check your Google Sheet to confirm ' + sites.length + ' sites were synced.';
-        document.getElementById('syncStatus').textContent = 'synced ✓';
-    } catch (err) {
-        throw new Error('Network error while pushing: ' + err.message);
+    log('→ Fetching sites...', 'info');
+
+    const response = await fetch(url, { method: 'GET' });
+
+    if (!response.ok) {
+        throw new Error('HTTP ' + response.status + '. Make sure script is deployed with Access: Anyone');
     }
+
+    const text = await response.text();
+    let json;
+    try { json = JSON.parse(text); } catch(e) { throw new Error('Invalid JSON: ' + text.slice(0, 100)); }
+
+    if (!json.success) throw new Error(json.error || 'Server returned error');
+
+    const fetched = json.data;
+    if (!Array.isArray(fetched)) throw new Error('Data array nahi mila');
+
+    sites = fetched.map((s, i) => {
+        const clean = { ...s, id: s.id || (Date.now() + i) };
+        NUM_FIELDS.forEach(f => { clean[f] = parseFloat(clean[f]) || 0; });
+        return clean;
+    });
+
+    log('✅ ' + sites.length + ' sites load ho gaye!', 'ok');
+    document.getElementById('syncStatus').textContent = '● synced';
+    renderAll();
 }
 
-async function pullFromSheets(url) {
-    const msgEl = document.getElementById('syncStatusMsg');
-
-    try {
-        // GET request to fetch sites — note: Apps Script must return CORS headers
-        // Works only if script is deployed with "Execute as: Me, Access: Anyone"
-        const res = await fetch(url + '?action=getSites', { method: 'GET' });
-        
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-
-        const json = await res.json();
-
-        if (!json.success) throw new Error(json.error || 'Unknown server error');
-
-        const fetched = json.data;
-        if (!Array.isArray(fetched)) throw new Error('Invalid data format from server');
-
-        // Map fetched data, ensure numeric fields are numbers
-        const numFields = ['contractValue','materialCost','labourCost','transportCost','equipmentCost','miscExpenses'];
-        sites = fetched.map((s, i) => {
-            const clean = { ...s, id: s.id || Date.now() + i };
-            numFields.forEach(f => { clean[f] = parseFloat(clean[f]) || 0; });
-            return clean;
-        });
-
-        msgEl.className = 'url-status ok';
-        msgEl.textContent = '✅ Loaded ' + sites.length + ' sites from Google Sheets!';
-        document.getElementById('syncStatus').textContent = 'synced ✓';
-        renderAll();
-
-    } catch (err) {
-        throw new Error('Could not read from Google Sheets: ' + err.message +
-            '. Make sure script is deployed with "Access: Anyone".');
-    }
-}
-
-// ============================================================
+// ================================================================
 // CSV EXPORT
-// ============================================================
+// ================================================================
 function exportCSV() {
-    if (!sites.length) { alert('No data to export.'); return; }
-
-    const headers = ['Site Name','Client Name','Status','Start','End','Contract','Material','Labour','Transport','Equipment','Misc','Total Cost','Profit','Margin %'];
+    if (!sites.length) { alert('Koi data nahi hai.'); return; }
+    const headers = ['Site Name','Client','Status','Start','End','Contract','Material','Labour','Transport','Equipment','Misc','Total Cost','Profit','Margin %'];
     const rows = sites.map(s => [
-        s.siteName, s.clientName, s.status, s.planStart, s.planEnd,
+        s.siteName, s.clientName, s.status, s.planStart||'', s.planEnd||'',
         s.contractValue, s.materialCost, s.labourCost, s.transportCost,
         s.equipmentCost, s.miscExpenses, totalCost(s), profit(s), profitPct(s)
     ].map(v => `"${v}"`));
-
-    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'site-management-' + new Date().toISOString().slice(0,10) + '.csv';
+    const csv = [headers.map(h=>`"${h}"`), ...rows].map(r=>r.join(',')).join('\n');
+    const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8;' });
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'sites-'+new Date().toISOString().slice(0,10)+'.csv' });
     a.click();
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(a.href);
 }
 
-// ============================================================
-// NAVIGATION
-// ============================================================
+// ================================================================
+// NAV
+// ================================================================
 document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -985,17 +644,10 @@ document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
     });
 });
 
-// Close modals on overlay click
-document.getElementById('siteOverlay').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeModal();
-});
-document.getElementById('syncOverlay').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeSyncModal();
-});
+document.getElementById('siteOverlay').addEventListener('click', e => { if (e.target===e.currentTarget) closeModal(); });
+document.getElementById('syncOverlay').addEventListener('click', e => { if (e.target===e.currentTarget) closeSyncModal(); });
 
-// ============================================================
 // INIT
-// ============================================================
 renderAll();
 </script>
 </body>
