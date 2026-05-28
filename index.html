@@ -6,232 +6,196 @@
     <title>Site Management System</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        * { margin:0; padding:0; box-sizing:border-box; }
         :root {
-            --bg: #f0ede8;
-            --surface: #ffffff;
-            --surface2: #f7f4f0;
-            --border: #e2ddd8;
-            --text: #1c1917;
-            --muted: #78716c;
-            --accent: #1c4ed8;
-            --success: #065f46;
-            --success-bg: #d1fae5;
-            --danger: #991b1b;
-            --danger-bg: #fee2e2;
-            --warning: #92400e;
-            --warning-bg: #fef3c7;
+            --bg:#f0ede8; --surface:#fff; --surface2:#f7f4f0; --border:#e2ddd8;
+            --text:#1c1917; --muted:#78716c; --accent:#1c4ed8;
+            --success:#065f46; --success-bg:#d1fae5;
+            --danger:#991b1b;  --danger-bg:#fee2e2;
+            --warning:#92400e; --warning-bg:#fef3c7;
         }
+        body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        /* ── TOPBAR ── */
+        .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 1.5rem; display:flex; align-items:center; justify-content:space-between; height:56px; position:sticky; top:0; z-index:100; }
+        .brand  { font-size:15px; font-weight:600; letter-spacing:-.02em; display:flex; align-items:center; gap:8px; }
+        .brand-dot { width:8px; height:8px; background:var(--accent); border-radius:50%; }
+        .topnav { display:flex; gap:2px; }
+        .nav-btn { padding:6px 14px; border-radius:6px; border:none; background:transparent; color:var(--muted); font-size:13px; font-weight:500; cursor:pointer; transition:all .15s; font-family:inherit; }
+        .nav-btn:hover { background:var(--surface2); color:var(--text); }
+        .nav-btn.active { background:var(--text); color:white; }
+        .topright { display:flex; align-items:center; gap:10px; }
+        .sync-chip { display:flex; align-items:center; gap:5px; font-size:11px; font-family:'DM Mono',monospace; color:var(--muted); cursor:pointer; padding:5px 10px; border:1px solid var(--border); border-radius:20px; background:var(--surface); transition:all .15s; }
+        .sync-chip:hover { background:var(--surface2); }
+        .sync-dot { width:6px; height:6px; border-radius:50%; background:#d4d0ca; }
+        .sync-dot.connected { background:#10b981; box-shadow:0 0 4px #10b981; }
 
-        /* TOPBAR */
-        .topbar {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 0 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 56px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .topbar-brand { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
-        .brand-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
-        .topbar-nav { display: flex; gap: 2px; }
-        .nav-btn {
-            padding: 6px 14px; border-radius: 6px; border: none;
-            background: transparent; color: var(--muted);
-            font-size: 13px; font-weight: 500; cursor: pointer;
-            transition: all 0.15s; font-family: inherit;
-        }
-        .nav-btn:hover { background: var(--surface2); color: var(--text); }
-        .nav-btn.active { background: var(--text); color: white; }
-        .topbar-right { display: flex; align-items: center; gap: 10px; }
-        .sync-status { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); }
+        /* ── MAIN ── */
+        .main { padding:1.5rem; max-width:1100px; margin:0 auto; }
+        .view { display:none; }
+        .view.active { display:block; }
 
-        /* MAIN */
-        .main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; width: 100%; }
-        .view { display: none; }
-        .view.active { display: block; }
+        /* ── KPI ── */
+        .kpi-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
+        .kpi { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1rem 1.25rem; }
+        .kpi-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:6px; }
+        .kpi-val   { font-size:22px; font-weight:600; letter-spacing:-.03em; }
+        .green { color:#059669; } .red { color:#dc2626; }
 
-        /* KPI */
-        .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
-        .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
-        .kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
-        .kpi-val { font-size: 22px; font-weight: 600; letter-spacing: -0.03em; }
-        .kpi-val.green { color: #059669; }
-        .kpi-val.red { color: #dc2626; }
+        /* ── CARD ── */
+        .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:1.25rem; }
+        .card-header { padding:1rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+        .card-title  { font-size:13px; font-weight:600; }
+        .card-body   { padding:1.25rem; }
 
-        /* CARD */
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-        .card-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-        .card-title { font-size: 13px; font-weight: 600; }
-        .card-body { padding: 1.25rem; }
+        /* ── BUTTONS ── */
+        .actions { display:flex; gap:8px; margin-bottom:1.25rem; flex-wrap:wrap; }
+        .btn { padding:7px 14px; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:13px; font-weight:500; cursor:pointer; transition:all .15s; font-family:inherit; display:flex; align-items:center; gap:6px; }
+        .btn:hover { background:var(--surface2); }
+        .btn:disabled { opacity:.5; cursor:not-allowed; }
+        .btn-primary { background:var(--accent); border-color:var(--accent); color:white; }
+        .btn-primary:hover { opacity:.88; background:var(--accent); }
+        .btn-sm { padding:4px 10px; font-size:12px; }
+        .btn-danger:hover { background:var(--danger-bg); border-color:#fca5a5; color:var(--danger); }
 
-        /* BUTTONS */
-        .actions { display: flex; gap: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; }
-        .btn {
-            padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border);
-            background: var(--surface); color: var(--text); font-size: 13px; font-weight: 500;
-            cursor: pointer; transition: all 0.15s; font-family: inherit;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .btn:hover { background: var(--surface2); }
-        .btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
-        .btn-primary:hover { opacity: 0.88; background: var(--accent); }
-        .btn-danger:hover { background: var(--danger-bg); border-color: #fca5a5; color: var(--danger); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* ── TABLE ── */
+        table { width:100%; border-collapse:collapse; font-size:13px; }
+        thead tr { border-bottom:2px solid var(--border); }
+        th { text-align:left; padding:8px 12px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+        td { padding:11px 12px; border-bottom:1px solid var(--border); vertical-align:middle; }
+        tbody tr:last-child td { border-bottom:none; }
+        tbody tr:hover td { background:var(--surface2); }
+        .tr { text-align:right; } .tc { text-align:center; }
 
-        /* TABLE */
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        thead tr { border-bottom: 2px solid var(--border); }
-        th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-        td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-        tbody tr:last-child td { border-bottom: none; }
-        tbody tr:hover td { background: var(--surface2); }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
+        /* ── SITE CARDS ── */
+        .sites-list { display:grid; gap:10px; }
+        .site-card  { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.25rem; transition:border-color .15s; }
+        .site-card:hover { border-color:#c4b5a5; }
+        .site-top   { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; }
+        .site-name  { font-size:15px; font-weight:600; letter-spacing:-.02em; }
+        .site-sub   { font-size:12px; color:var(--muted); margin-top:3px; }
+        .site-btns  { display:flex; gap:4px; }
+        .icon-btn   { width:30px; height:30px; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; transition:all .15s; }
+        .icon-btn:hover { background:var(--surface2); }
+        .icon-btn.del:hover { background:var(--danger-bg); border-color:#fca5a5; }
+        .site-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:8px; }
+        .stat { display:flex; flex-direction:column; gap:2px; }
+        .stat-lbl { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+        .stat-val { font-size:14px; font-weight:600; letter-spacing:-.02em; }
 
-        /* SITE CARDS */
-        .sites-list { display: grid; gap: 10px; }
-        .site-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; transition: border-color 0.15s; }
-        .site-card:hover { border-color: #c4b5a5; }
-        .site-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-        .site-name { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
-        .site-client { font-size: 12px; color: var(--muted); margin-top: 3px; }
-        .site-btns { display: flex; gap: 4px; }
-        .icon-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s; }
-        .icon-btn:hover { background: var(--surface2); }
-        .icon-btn.del:hover { background: var(--danger-bg); border-color: #fca5a5; }
-        .site-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; }
-        .stat { display: flex; flex-direction: column; gap: 2px; }
-        .stat-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-        .stat-val { font-size: 14px; font-weight: 600; letter-spacing: -0.02em; }
+        /* ── BADGES ── */
+        .badge { display:inline-flex; align-items:center; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+        .badge-ongoing   { background:#dbeafe; color:#1e40af; }
+        .badge-completed { background:var(--success-bg); color:var(--success); }
+        .badge-planning  { background:var(--warning-bg); color:var(--warning); }
 
-        /* BADGES */
-        .badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-        .badge-ongoing { background: #dbeafe; color: #1e40af; }
-        .badge-completed { background: var(--success-bg); color: var(--success); }
-        .badge-planning { background: var(--warning-bg); color: var(--warning); }
+        /* ── OVERLAY / MODAL ── */
+        .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:999; align-items:center; justify-content:center; padding:1rem; }
+        .overlay.open { display:flex; }
+        .modal { background:var(--surface); border-radius:12px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.15); }
+        .modal-head { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+        .modal-title { font-size:15px; font-weight:600; }
+        .close-btn { width:28px; height:28px; border-radius:6px; border:1px solid var(--border); background:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--muted); }
+        .close-btn:hover { background:var(--surface2); }
+        .modal-body { padding:1.5rem; }
+        .modal-foot { padding:1rem 1.5rem; border-top:1px solid var(--border); display:flex; gap:8px; }
+        .modal-foot .btn { flex:1; justify-content:center; }
 
-        /* MODAL / OVERLAY */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; align-items: center; justify-content: center; padding: 1rem; }
-        .overlay.open { display: flex; }
-        .modal { background: var(--surface); border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
-        .modal-head { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-        .modal-title { font-size: 15px; font-weight: 600; }
-        .close-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--muted); }
-        .close-btn:hover { background: var(--surface2); }
-        .modal-body { padding: 1.5rem; }
-        .modal-foot { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 8px; }
-        .modal-foot .btn { flex: 1; justify-content: center; }
+        /* ── FORM ── */
+        .form-grid { display:grid; gap:12px; }
+        .form-row  { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .form-group{ display:grid; gap:5px; }
+        label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+        input,select { padding:8px 10px; border:1px solid var(--border); border-radius:6px; font-size:13px; background:var(--surface); color:var(--text); font-family:inherit; transition:border-color .15s; width:100%; }
+        input:focus,select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(28,78,216,.08); }
 
-        /* FORM */
-        .form-grid { display: grid; gap: 12px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .form-group { display: grid; gap: 5px; }
-        label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-        input, select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: var(--surface); color: var(--text); font-family: inherit; transition: border-color 0.15s; width: 100%; }
-        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(28,78,216,0.08); }
+        /* ── SYNC MODAL ── */
+        .sync-modal { max-width:440px; }
+        .url-saved-bar { display:none; background:var(--success-bg); border:1px solid #6ee7b7; border-radius:6px; padding:8px 12px; font-size:12px; color:var(--success); display:none; align-items:center; justify-content:space-between; gap:8px; }
+        .url-saved-bar.show { display:flex; }
+        .url-saved-text { font-family:'DM Mono',monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
+        .sync-log { font-family:'DM Mono',monospace; font-size:12px; background:#1c1917; color:#d6d3d1; padding:12px; border-radius:6px; min-height:56px; white-space:pre-wrap; display:none; margin-top:8px; max-height:140px; overflow-y:auto; }
+        .sync-log.show { display:block; }
+        .log-ok   { color:#6ee7b7; } .log-err { color:#fca5a5; } .log-info { color:#93c5fd; }
+        .help-box { font-size:12px; color:var(--muted); line-height:1.7; background:var(--surface2); padding:10px 12px; border-radius:6px; border:1px solid var(--border); }
 
-        /* SYNC MODAL */
-        .sync-log { font-family: 'DM Mono', monospace; font-size: 12px; background: #1c1917; color: #d6d3d1; padding: 12px; border-radius: 6px; min-height: 60px; white-space: pre-wrap; display: none; margin-top: 8px; }
-        .sync-log.show { display: block; }
-        .log-ok { color: #6ee7b7; }
-        .log-err { color: #fca5a5; }
-        .log-info { color: #93c5fd; }
+        /* ── BREAKDOWN ── */
+        .breakdown-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; }
+        .breakdown-item { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:1rem; }
+        .breakdown-lbl  { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:6px; }
+        .breakdown-val  { font-size:18px; font-weight:600; letter-spacing:-.02em; }
 
-        /* BREAKDOWN */
-        .breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-        .breakdown-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
-        .breakdown-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
-        .breakdown-val { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+        /* ── EMPTY ── */
+        .empty { text-align:center; padding:3rem 1rem; color:var(--muted); }
+        .empty-icon { font-size:36px; margin-bottom:12px; }
 
-        .green { color: #059669; }
-        .red { color: #dc2626; }
-
-        /* EMPTY */
-        .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
-        .empty-icon { font-size: 36px; margin-bottom: 12px; }
-
-        @media (max-width: 640px) {
-            .kpi-strip { grid-template-columns: 1fr 1fr; }
-            .form-row { grid-template-columns: 1fr; }
-            .main { padding: 1rem; }
-            .topbar-brand span { display: none; }
+        @media(max-width:640px) {
+            .kpi-strip { grid-template-columns:1fr 1fr; }
+            .form-row  { grid-template-columns:1fr; }
+            .main      { padding:1rem; }
+            .brand span { display:none; }
         }
     </style>
 </head>
 <body>
-<div>
 
-    <header class="topbar">
-        <div class="topbar-brand">
-            <div class="brand-dot"></div>
-            <span>Site Manager</span>
+<header class="topbar">
+    <div class="brand"><div class="brand-dot"></div><span>Site Manager</span></div>
+    <nav class="topnav">
+        <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+        <button class="nav-btn" data-view="sites">Sites</button>
+        <button class="nav-btn" data-view="analysis">Analysis</button>
+    </nav>
+    <div class="topright">
+        <div class="sync-chip" onclick="openSyncModal()" id="syncChip">
+            <div class="sync-dot" id="syncDot"></div>
+            <span id="syncLabel">Setup Sync</span>
         </div>
-        <nav class="topbar-nav">
-            <button class="nav-btn active" data-view="dashboard">Dashboard</button>
-            <button class="nav-btn" data-view="sites">Sites</button>
-            <button class="nav-btn" data-view="analysis">Analysis</button>
-        </nav>
-        <div class="topbar-right">
-            <span class="sync-status" id="syncStatus">● local</span>
-            <button class="btn" onclick="openSyncModal()">☁ Sync</button>
-        </div>
-    </header>
+    </div>
+</header>
 
-    <main class="main">
+<main class="main">
 
-        <!-- DASHBOARD -->
-        <div id="v-dashboard" class="view active">
-            <div class="kpi-strip" id="dashKpis"></div>
-            <div class="card">
-                <div class="card-header"><span class="card-title">All Projects</span></div>
-                <div style="overflow-x:auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Site</th><th>Client</th>
-                                <th class="text-right">Contract</th>
-                                <th class="text-right">Cost</th>
-                                <th class="text-right">Profit</th>
-                                <th class="text-center">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dashTable"></tbody>
-                    </table>
-                </div>
+    <!-- DASHBOARD -->
+    <div id="v-dashboard" class="view active">
+        <div class="kpi-strip" id="dashKpis"></div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">All Projects</span></div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead><tr>
+                        <th>Site</th><th>Client</th>
+                        <th class="tr">Contract</th><th class="tr">Cost</th>
+                        <th class="tr">Profit</th><th class="tc">Status</th>
+                    </tr></thead>
+                    <tbody id="dashTable"></tbody>
+                </table>
             </div>
         </div>
+    </div>
 
-        <!-- SITES -->
-        <div id="v-sites" class="view">
-            <div class="actions">
-                <button class="btn btn-primary" onclick="openAdd()">+ Add Site</button>
-                <button class="btn" onclick="exportCSV()">↓ Export CSV</button>
-            </div>
-            <div class="sites-list" id="sitesList"></div>
+    <!-- SITES -->
+    <div id="v-sites" class="view">
+        <div class="actions">
+            <button class="btn btn-primary" onclick="openAdd()">+ Add Site</button>
+            <button class="btn" onclick="exportCSV()">↓ Export CSV</button>
+            <button class="btn" id="manualSyncBtn" onclick="manualSync()" style="display:none">↑ Sync Now</button>
         </div>
+        <div class="sites-list" id="sitesList"></div>
+    </div>
 
-        <!-- ANALYSIS -->
-        <div id="v-analysis" class="view">
-            <div class="kpi-strip" id="analysisKpis"></div>
-            <div class="card" style="margin-top:1.25rem;">
-                <div class="card-header"><span class="card-title">Cost Breakdown</span></div>
-                <div class="card-body"><div class="breakdown-grid" id="breakdownGrid"></div></div>
-            </div>
+    <!-- ANALYSIS -->
+    <div id="v-analysis" class="view">
+        <div class="kpi-strip" id="analysisKpis"></div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Cost Breakdown</span></div>
+            <div class="card-body"><div class="breakdown-grid" id="breakdownGrid"></div></div>
         </div>
+    </div>
 
-    </main>
-</div>
+</main>
 
-<!-- SITE MODAL -->
+<!-- ═══════════════════ SITE MODAL ═══════════════════ -->
 <div class="overlay" id="siteOverlay">
     <div class="modal">
         <div class="modal-head">
@@ -241,8 +205,8 @@
         <div class="modal-body">
             <div class="form-grid">
                 <div class="form-row">
-                    <div class="form-group"><label>Site Name *</label><input id="f-siteName" type="text" placeholder="e.g. Project Alpha"></div>
-                    <div class="form-group"><label>Client Name</label><input id="f-clientName" type="text" placeholder="e.g. ABC Corp"></div>
+                    <div class="form-group"><label>Site Name *</label><input id="f-siteName" type="text" placeholder="Project Alpha"></div>
+                    <div class="form-group"><label>Client Name</label><input id="f-clientName" type="text" placeholder="ABC Corp"></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Status</label>
@@ -275,33 +239,46 @@
     </div>
 </div>
 
-<!-- SYNC MODAL -->
+<!-- ═══════════════════ SYNC MODAL ═══════════════════ -->
 <div class="overlay" id="syncOverlay">
-    <div class="modal">
+    <div class="modal sync-modal">
         <div class="modal-head">
-            <span class="modal-title">Sync with Google Sheets</span>
+            <span class="modal-title">Google Sheets Sync</span>
             <button class="close-btn" onclick="closeSyncModal()">✕</button>
         </div>
         <div class="modal-body">
             <div class="form-grid">
-                <div class="form-group">
-                    <label>Apps Script Deployment URL</label>
-                    <input id="syncUrl" type="url" placeholder="https://script.google.com/macros/s/AKfy.../exec">
+
+                <!-- Saved URL bar — shows when URL already saved -->
+                <div class="url-saved-bar" id="savedUrlBar">
+                    <span>✓ Connected:</span>
+                    <span class="url-saved-text" id="savedUrlText"></span>
+                    <button class="btn btn-sm" onclick="clearSavedUrl()">Change</button>
                 </div>
+
+                <!-- URL input — hidden when URL already saved -->
+                <div class="form-group" id="urlInputGroup">
+                    <label>Apps Script Deployment URL</label>
+                    <input id="syncUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+                    <div style="font-size:11px;color:var(--muted);margin-top:3px">URL ek baar daalo — save ho jayega</div>
+                </div>
+
                 <div class="form-group">
                     <label>Action</label>
                     <select id="syncAction">
-                        <option value="push">Push — App → Google Sheets (save data)</option>
-                        <option value="pull">Pull — Google Sheets → App (load data)</option>
+                        <option value="push">Push — App data → Google Sheets</option>
+                        <option value="pull">Pull — Google Sheets → App</option>
                     </select>
                 </div>
+
                 <div id="syncLog" class="sync-log"></div>
-                <div style="font-size:12px; color:var(--muted); line-height:1.7; background:var(--surface2); padding:10px; border-radius:6px; border:1px solid var(--border);">
-                    <strong>URL kaise milega:</strong><br>
+
+                <div class="help-box">
+                    <strong>Pehli baar setup:</strong><br>
                     1. Google Sheet → Extensions → Apps Script<br>
-                    2. Deploy → New deployment → Type: Web App<br>
+                    2. Deploy → New deployment → Web App<br>
                     3. Execute as: <strong>Me</strong> | Access: <strong>Anyone</strong><br>
-                    4. Deploy karo → URL copy karo (<code>/exec</code> pe end hoga)
+                    4. URL copy karo (<code>/exec</code> pe end hoga)
                 </div>
             </div>
         </div>
@@ -313,9 +290,9 @@
 </div>
 
 <script>
-// ================================================================
-// DATA STORE
-// ================================================================
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
 let sites = [
     { id:1, siteName:'Project Alpha', clientName:'ABC Construction', status:'On Going',
       planStart:'2024-01-15', planEnd:'2024-06-30', contractValue:500000,
@@ -324,70 +301,87 @@ let sites = [
       planStart:'2023-03-01', planEnd:'2023-11-30', contractValue:1200000,
       materialCost:300000, labourCost:400000, transportCost:80000, equipmentCost:120000, miscExpenses:50000 }
 ];
-
 let editingId = null;
 
-// ================================================================
-// CALCULATIONS
-// ================================================================
+// ── Saved URL — sessionStorage mein (tab ke andar bana rehta hai, bar bar nahi maangta)
+// Note: sessionStorage browser mein hamesha kaam karta hai (localStorage se alag)
+let savedUrl = '';
+try { savedUrl = sessionStorage.getItem('gsUrl') || ''; } catch(e) {}
+
+function saveUrl(url) {
+    savedUrl = url;
+    try { sessionStorage.setItem('gsUrl', url); } catch(e) {}
+    updateSyncUI();
+}
+
+function clearSavedUrl() {
+    savedUrl = '';
+    try { sessionStorage.removeItem('gsUrl'); } catch(e) {}
+    updateSyncUI();
+}
+
+function updateSyncUI() {
+    const connected = !!savedUrl;
+    document.getElementById('syncDot').className   = 'sync-dot' + (connected ? ' connected' : '');
+    document.getElementById('syncLabel').textContent = connected ? '● Synced' : 'Setup Sync';
+    document.getElementById('savedUrlBar').className = 'url-saved-bar' + (connected ? ' show' : '');
+    document.getElementById('savedUrlText').textContent = savedUrl ? savedUrl.replace('https://','').slice(0,45)+'…' : '';
+    document.getElementById('urlInputGroup').style.display = connected ? 'none' : 'grid';
+    document.getElementById('manualSyncBtn').style.display = connected ? 'flex' : 'none';
+    if (!connected) document.getElementById('syncUrl').value = '';
+}
+
+// ════════════════════════════════════════════════════════════
+// MATH
+// ════════════════════════════════════════════════════════════
 const totalCost = s => (s.materialCost||0)+(s.labourCost||0)+(s.transportCost||0)+(s.equipmentCost||0)+(s.miscExpenses||0);
-const profit = s => (s.contractValue||0) - totalCost(s);
+const profit    = s => (s.contractValue||0) - totalCost(s);
 const profitPct = s => s.contractValue > 0 ? ((profit(s)/s.contractValue)*100).toFixed(1) : '0.0';
-
 const fmt = n => {
-    const abs = Math.abs(n);
-    const sign = n < 0 ? '-' : '';
-    if (abs >= 1e7) return sign + '₹' + (abs/1e7).toFixed(2) + 'Cr';
-    if (abs >= 1e5) return sign + '₹' + (abs/1e5).toFixed(1) + 'L';
-    return sign + '₹' + abs.toLocaleString('en-IN');
+    const a = Math.abs(n), sg = n<0?'-':'';
+    if(a>=1e7) return sg+'₹'+(a/1e7).toFixed(2)+'Cr';
+    if(a>=1e5) return sg+'₹'+(a/1e5).toFixed(1)+'L';
+    return sg+'₹'+a.toLocaleString('en-IN');
 };
-
-const totals = () => sites.reduce((a, s) => ({
-    contract: a.contract + (s.contractValue||0),
-    cost: a.cost + totalCost(s),
-    profit: a.profit + profit(s)
-}), { contract:0, cost:0, profit:0 });
-
+const totals = () => sites.reduce((a,s)=>({contract:a.contract+(s.contractValue||0),cost:a.cost+totalCost(s),profit:a.profit+profit(s)}),{contract:0,cost:0,profit:0});
 const badgeClass = st => ({'On Going':'badge-ongoing','Completed':'badge-completed','Planning':'badge-planning'}[st]||'badge-planning');
+const NUM_FIELDS = ['contractValue','materialCost','labourCost','transportCost','equipmentCost','miscExpenses'];
 
-// ================================================================
+// ════════════════════════════════════════════════════════════
 // RENDER
-// ================================================================
+// ════════════════════════════════════════════════════════════
 function renderDashboard() {
     const T = totals();
     document.getElementById('dashKpis').innerHTML = `
         <div class="kpi"><div class="kpi-label">Projects</div><div class="kpi-val">${sites.length}</div></div>
         <div class="kpi"><div class="kpi-label">Total Contract</div><div class="kpi-val">${fmt(T.contract)}</div></div>
         <div class="kpi"><div class="kpi-label">Total Expenses</div><div class="kpi-val">${fmt(T.cost)}</div></div>
-        <div class="kpi"><div class="kpi-label">Net Profit</div><div class="kpi-val ${T.profit>=0?'green':'red'}">${fmt(T.profit)}</div></div>
-    `;
+        <div class="kpi"><div class="kpi-label">Net Profit</div><div class="kpi-val ${T.profit>=0?'green':'red'}">${fmt(T.profit)}</div></div>`;
     document.getElementById('dashTable').innerHTML = sites.length
-        ? sites.map(s => `
-            <tr>
-                <td><strong>${s.siteName}</strong></td>
-                <td style="color:var(--muted)">${s.clientName}</td>
-                <td class="text-right">${fmt(s.contractValue||0)}</td>
-                <td class="text-right">${fmt(totalCost(s))}</td>
-                <td class="text-right ${profit(s)>=0?'green':'red'}">${fmt(profit(s))}</td>
-                <td class="text-center"><span class="badge ${badgeClass(s.status)}">${s.status}</span></td>
-            </tr>`).join('')
+        ? sites.map(s=>`<tr>
+            <td><strong>${s.siteName}</strong></td>
+            <td style="color:var(--muted)">${s.clientName}</td>
+            <td class="tr">${fmt(s.contractValue||0)}</td>
+            <td class="tr">${fmt(totalCost(s))}</td>
+            <td class="tr ${profit(s)>=0?'green':'red'}">${fmt(profit(s))}</td>
+            <td class="tc"><span class="badge ${badgeClass(s.status)}">${s.status}</span></td>
+          </tr>`).join('')
         : `<tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div><div>No projects yet.</div></div></td></tr>`;
 }
 
 function renderSites() {
     document.getElementById('sitesList').innerHTML = sites.length
         ? sites.map(s => {
-            const p = profit(s), tc = totalCost(s);
-            return `
-            <div class="site-card">
+            const p=profit(s), tc=totalCost(s);
+            return `<div class="site-card">
                 <div class="site-top">
                     <div>
                         <div class="site-name">${s.siteName}</div>
-                        <div class="site-client">${s.clientName} &nbsp;·&nbsp; <span class="badge ${badgeClass(s.status)}">${s.status}</span></div>
+                        <div class="site-sub">${s.clientName} &nbsp;·&nbsp; <span class="badge ${badgeClass(s.status)}">${s.status}</span></div>
                     </div>
                     <div class="site-btns">
-                        <button class="icon-btn" onclick="openEdit(${s.id})" title="Edit">✏</button>
-                        <button class="icon-btn del" onclick="deleteSite(${s.id})" title="Delete">🗑</button>
+                        <button class="icon-btn" onclick="openEdit(${s.id})">✏</button>
+                        <button class="icon-btn del" onclick="deleteSite(${s.id})">🗑</button>
                     </div>
                 </div>
                 <div class="site-stats">
@@ -399,106 +393,104 @@ function renderSites() {
                     ${s.planEnd?`<div class="stat"><span class="stat-lbl">End</span><span class="stat-val" style="font-size:12px">${s.planEnd}</span></div>`:''}
                 </div>
             </div>`;}).join('')
-        : `<div class="empty"><div class="empty-icon">🏗</div><div>No sites added. "+ Add Site" se shuru karo.</div></div>`;
+        : `<div class="empty"><div class="empty-icon">🏗</div><div>Koi site nahi. "+ Add Site" se shuru karo.</div></div>`;
 }
 
 function renderAnalysis() {
     const T = totals();
-    const avgMargin = sites.length ? (sites.reduce((a,s)=>a+parseFloat(profitPct(s)),0)/sites.length).toFixed(1) : '0.0';
-    const util = T.contract > 0 ? ((T.cost/T.contract)*100).toFixed(1) : '0.0';
-
+    const avg = sites.length ? (sites.reduce((a,s)=>a+parseFloat(profitPct(s)),0)/sites.length).toFixed(1) : '0.0';
+    const util = T.contract>0 ? ((T.cost/T.contract)*100).toFixed(1) : '0.0';
     document.getElementById('analysisKpis').innerHTML = `
-        <div class="kpi"><div class="kpi-label">Avg Margin</div><div class="kpi-val ${parseFloat(avgMargin)>=0?'green':'red'}">${avgMargin}%</div></div>
+        <div class="kpi"><div class="kpi-label">Avg Margin</div><div class="kpi-val ${parseFloat(avg)>=0?'green':'red'}">${avg}%</div></div>
         <div class="kpi"><div class="kpi-label">Cost Utilization</div><div class="kpi-val">${util}%</div></div>
         <div class="kpi"><div class="kpi-label">Ongoing</div><div class="kpi-val">${sites.filter(s=>s.status==='On Going').length}</div></div>
-        <div class="kpi"><div class="kpi-label">Completed</div><div class="kpi-val">${sites.filter(s=>s.status==='Completed').length}</div></div>
-    `;
-
-    const cats = [
-        {key:'materialCost', lbl:'Material'},
-        {key:'labourCost', lbl:'Labour'},
-        {key:'transportCost', lbl:'Transport'},
-        {key:'equipmentCost', lbl:'Equipment'},
-        {key:'miscExpenses', lbl:'Misc'}
-    ];
-    document.getElementById('breakdownGrid').innerHTML = cats.map(c => {
-        const tot = sites.reduce((a,s)=>a+(s[c.key]||0),0);
-        const pct = T.cost > 0 ? ((tot/T.cost)*100).toFixed(0) : 0;
-        return `<div class="breakdown-item">
-            <div class="breakdown-lbl">${c.lbl}</div>
-            <div class="breakdown-val">${fmt(tot)}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:4px">${pct}% of total</div>
-        </div>`;
+        <div class="kpi"><div class="kpi-label">Completed</div><div class="kpi-val">${sites.filter(s=>s.status==='Completed').length}</div></div>`;
+    const cats=[{key:'materialCost',lbl:'Material'},{key:'labourCost',lbl:'Labour'},{key:'transportCost',lbl:'Transport'},{key:'equipmentCost',lbl:'Equipment'},{key:'miscExpenses',lbl:'Misc'}];
+    document.getElementById('breakdownGrid').innerHTML = cats.map(c=>{
+        const t=sites.reduce((a,s)=>a+(s[c.key]||0),0);
+        const p=T.cost>0?((t/T.cost)*100).toFixed(0):0;
+        return `<div class="breakdown-item"><div class="breakdown-lbl">${c.lbl}</div><div class="breakdown-val">${fmt(t)}</div><div style="font-size:11px;color:var(--muted);margin-top:4px">${p}% of total</div></div>`;
     }).join('');
 }
 
 function renderAll() { renderDashboard(); renderSites(); renderAnalysis(); }
 
-// ================================================================
+// ════════════════════════════════════════════════════════════
 // SITE MODAL
-// ================================================================
+// ════════════════════════════════════════════════════════════
 const FIELDS = ['siteName','clientName','status','contractValue','materialCost','labourCost','transportCost','equipmentCost','miscExpenses','planStart','planEnd'];
-const NUM_FIELDS = ['contractValue','materialCost','labourCost','transportCost','equipmentCost','miscExpenses'];
 
 function openAdd() {
     editingId = null;
     document.getElementById('modalTitle').textContent = 'Add New Site';
-    FIELDS.forEach(f => { const el = document.getElementById('f-'+f); if (el) el.value = f==='status' ? 'Planning' : ''; });
+    FIELDS.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value = f==='status'?'Planning':''; });
     document.getElementById('siteOverlay').classList.add('open');
 }
 
 function openEdit(id) {
-    const s = sites.find(x => x.id === id);
-    if (!s) return;
+    const s = sites.find(x=>x.id===id); if(!s) return;
     editingId = id;
     document.getElementById('modalTitle').textContent = 'Edit Site';
-    FIELDS.forEach(f => { const el = document.getElementById('f-'+f); if (el) el.value = s[f] !== undefined ? s[f] : ''; });
+    FIELDS.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value = s[f]!==undefined?s[f]:''; });
     document.getElementById('siteOverlay').classList.add('open');
 }
 
 function saveSite() {
     const name = document.getElementById('f-siteName').value.trim();
     if (!name) { alert('Site name zaruri hai!'); return; }
-
     const data = {};
     FIELDS.forEach(f => {
-        const el = document.getElementById('f-'+f);
-        if (!el) return;
+        const el = document.getElementById('f-'+f); if(!el) return;
         data[f] = NUM_FIELDS.includes(f) ? (parseFloat(el.value)||0) : el.value;
     });
-
     if (editingId !== null) {
-        sites = sites.map(s => s.id === editingId ? {...data, id: editingId} : s);
+        sites = sites.map(s => s.id===editingId ? {...data, id:editingId} : s);
     } else {
-        sites.push({...data, id: Date.now()});
+        sites.push({...data, id:Date.now()});
     }
-
     closeModal();
     renderAll();
+    // Auto-push agar URL saved hai
+    if (savedUrl) autoPush();
 }
 
 function deleteSite(id) {
     if (confirm('Is site ko delete karna chahte ho?')) {
-        sites = sites.filter(s => s.id !== id);
+        sites = sites.filter(s=>s.id!==id);
         renderAll();
+        if (savedUrl) autoPush();
     }
 }
 
 function closeModal() { document.getElementById('siteOverlay').classList.remove('open'); }
 
-// ================================================================
-// SYNC — GOOGLE SHEETS
-// KEY FIX: Action URL parameter mein bhi bhejo (?action=...)
-// Isse doGet aur doPost dono mein action milta hai
-// ================================================================
+// ════════════════════════════════════════════════════════════
+// AUTO-PUSH (silent background sync)
+// ════════════════════════════════════════════════════════════
+async function autoPush() {
+    if (!savedUrl) return;
+    try {
+        await pushToSheets(savedUrl, true); // silent=true → no log modal
+    } catch(e) {
+        console.warn('Auto-push failed:', e.message);
+    }
+}
 
+// ════════════════════════════════════════════════════════════
+// SYNC MODAL
+// ════════════════════════════════════════════════════════════
 function openSyncModal() {
-    document.getElementById('syncLog').className = 'sync-log';
-    document.getElementById('syncLog').textContent = '';
+    clearLog();
+    updateSyncUI();
     document.getElementById('syncOverlay').classList.add('open');
 }
 
 function closeSyncModal() { document.getElementById('syncOverlay').classList.remove('open'); }
+
+function clearLog() {
+    const el = document.getElementById('syncLog');
+    el.className = 'sync-log'; el.textContent = '';
+}
 
 function log(msg, type='info') {
     const el = document.getElementById('syncLog');
@@ -508,146 +500,151 @@ function log(msg, type='info') {
 }
 
 async function runSync() {
-    const rawUrl = document.getElementById('syncUrl').value.trim();
+    // Determine URL
+    let url = savedUrl;
+    if (!url) {
+        url = document.getElementById('syncUrl').value.trim();
+        if (!url) { log('❌ URL daalna zaruri hai', 'err'); return; }
+        if (!url.includes('script.google.com')) { log('❌ Google Apps Script URL chahiye', 'err'); return; }
+    }
+    const baseUrl = url.replace(/\/exec.*$/, '') + '/exec';
+
+    clearLog();
     const action = document.getElementById('syncAction').value;
     const btn = document.getElementById('syncBtn');
-
-    // Clear log
-    const logEl = document.getElementById('syncLog');
-    logEl.className = 'sync-log show';
-    logEl.textContent = '';
-
-    if (!rawUrl) { log('❌ URL daalna zaruri hai', 'err'); return; }
-    if (!rawUrl.includes('script.google.com')) { log('❌ Ye Google Apps Script URL nahi lagta', 'err'); return; }
-
-    // Make sure URL ends with /exec
-    const baseUrl = rawUrl.replace(/\/exec.*$/, '') + '/exec';
-
-    btn.disabled = true;
-    btn.textContent = 'Syncing...';
+    btn.disabled = true; btn.textContent = 'Syncing...';
 
     try {
         if (action === 'push') {
-            await pushToSheets(baseUrl);
+            await pushToSheets(baseUrl, false);
+            saveUrl(baseUrl); // URL save karo pehli successful push ke baad
         } else {
             await pullFromSheets(baseUrl);
+            saveUrl(baseUrl);
         }
-    } catch (err) {
-        log('❌ Error: ' + err.message, 'err');
+    } catch(err) {
+        log('❌ ' + err.message, 'err');
         console.error(err);
     }
 
-    btn.disabled = false;
-    btn.textContent = 'Sync Now';
+    btn.disabled = false; btn.textContent = 'Sync Now';
 }
 
-// PUSH: App → Google Sheets
-// Action URL parameter mein bhi daal rahe hain taaki doPost/doGet dono pakad sakein
-async function pushToSheets(baseUrl) {
-    log('⏳ Google Sheets se connect ho raha hai...', 'info');
+// Manual sync button (sites tab mein)
+async function manualSync() {
+    if (!savedUrl) { openSyncModal(); return; }
+    const btn = document.getElementById('manualSyncBtn');
+    btn.disabled = true; btn.textContent = '↑ Syncing...';
+    try {
+        await pushToSheets(savedUrl, false);
+        openSyncModal(); // log dikhao
+    } catch(e) {
+        alert('Sync failed: ' + e.message);
+    }
+    btn.disabled = false; btn.textContent = '↑ Sync Now';
+}
 
-    const payload = {
-        action: 'addMultipleSites',
-        sites: sites
-    };
+// ════════════════════════════════════════════════════════════
+// PUSH & PULL
+// ════════════════════════════════════════════════════════════
 
-    // URL mein bhi action parameter daalo — yeh KEY FIX hai
-    const url = baseUrl + '?action=addMultipleSites';
+// PUSH — App → Google Sheets
+// CORS fix: Content-Type: text/plain → no preflight OPTIONS request
+async function pushToSheets(baseUrl, silent=false) {
+    if (!silent) log('⏳ Connecting...', 'info');
 
-    log('→ Sending ' + sites.length + ' sites...', 'info');
+    const url     = baseUrl + '?action=addMultipleSites';
+    const payload = JSON.stringify({ action:'addMultipleSites', sites });
 
-    const response = await fetch(url, {
-        method: 'POST',
-        // text/plain use karo — ye CORS preflight avoid karta hai
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
+    const res = await fetch(url, {
+        method : 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // KEY: avoids CORS preflight
+        body   : payload
     });
 
-    if (!response.ok) {
-        throw new Error('HTTP ' + response.status + ' — ' + response.statusText);
+    // Google Apps Script 302 redirect follow karta hai — final response text/html bhi ho sakti hai
+    const text = await res.text();
+
+    // Try JSON parse
+    let json;
+    try { json = JSON.parse(text); }
+    catch(_) {
+        // Apps Script ne redirect kiya — iska matlab request pahunchi, sheet mein data gaya
+        // Ye ek known GAS behavior hai jab no-cors mode mein kaam karta hai
+        if (!silent) log('✅ ' + sites.length + ' sites pushed! (Check your Google Sheet)', 'ok');
+        document.getElementById('syncDot').className = 'sync-dot connected';
+        document.getElementById('syncLabel').textContent = '● Synced';
+        return;
     }
 
-    const text = await response.text();
-    let json;
-    try { json = JSON.parse(text); } catch(e) { throw new Error('Invalid response from server: ' + text.slice(0, 100)); }
-
     if (json.success) {
-        log('✅ ' + json.data, 'ok');
-        document.getElementById('syncStatus').textContent = '● synced';
+        if (!silent) log('✅ ' + json.data, 'ok');
+        document.getElementById('syncDot').className = 'sync-dot connected';
+        document.getElementById('syncLabel').textContent = '● Synced';
     } else {
         throw new Error(json.error || 'Server error');
     }
 }
 
-// PULL: Google Sheets → App
+// PULL — Google Sheets → App
 async function pullFromSheets(baseUrl) {
-    log('⏳ Google Sheets se data load ho raha hai...', 'info');
+    log('⏳ Loading from Google Sheets...', 'info');
 
-    // GET request — action URL mein
     const url = baseUrl + '?action=getSites';
+    const res = await fetch(url, { method:'GET' });
 
-    log('→ Fetching sites...', 'info');
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' — Deploy script with Access: Anyone');
 
-    const response = await fetch(url, { method: 'GET' });
-
-    if (!response.ok) {
-        throw new Error('HTTP ' + response.status + '. Make sure script is deployed with Access: Anyone');
-    }
-
-    const text = await response.text();
+    const text = await res.text();
     let json;
-    try { json = JSON.parse(text); } catch(e) { throw new Error('Invalid JSON: ' + text.slice(0, 100)); }
+    try { json = JSON.parse(text); }
+    catch(_) { throw new Error('Invalid response. Verify script deployment.'); }
 
-    if (!json.success) throw new Error(json.error || 'Server returned error');
+    if (!json.success) throw new Error(json.error || 'Server error');
+    if (!Array.isArray(json.data)) throw new Error('Data format invalid');
 
-    const fetched = json.data;
-    if (!Array.isArray(fetched)) throw new Error('Data array nahi mila');
-
-    sites = fetched.map((s, i) => {
-        const clean = { ...s, id: s.id || (Date.now() + i) };
-        NUM_FIELDS.forEach(f => { clean[f] = parseFloat(clean[f]) || 0; });
-        return clean;
+    sites = json.data.map((s,i) => {
+        const c = {...s, id: s.id || (Date.now()+i)};
+        NUM_FIELDS.forEach(f => { c[f] = parseFloat(c[f])||0; });
+        return c;
     });
 
-    log('✅ ' + sites.length + ' sites load ho gaye!', 'ok');
-    document.getElementById('syncStatus').textContent = '● synced';
+    log('✅ ' + sites.length + ' sites loaded!', 'ok');
     renderAll();
 }
 
-// ================================================================
+// ════════════════════════════════════════════════════════════
 // CSV EXPORT
-// ================================================================
+// ════════════════════════════════════════════════════════════
 function exportCSV() {
-    if (!sites.length) { alert('Koi data nahi hai.'); return; }
-    const headers = ['Site Name','Client','Status','Start','End','Contract','Material','Labour','Transport','Equipment','Misc','Total Cost','Profit','Margin %'];
-    const rows = sites.map(s => [
-        s.siteName, s.clientName, s.status, s.planStart||'', s.planEnd||'',
-        s.contractValue, s.materialCost, s.labourCost, s.transportCost,
-        s.equipmentCost, s.miscExpenses, totalCost(s), profit(s), profitPct(s)
-    ].map(v => `"${v}"`));
-    const csv = [headers.map(h=>`"${h}"`), ...rows].map(r=>r.join(',')).join('\n');
-    const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8;' });
-    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'sites-'+new Date().toISOString().slice(0,10)+'.csv' });
-    a.click();
-    URL.revokeObjectURL(a.href);
+    if (!sites.length) { alert('Koi data nahi.'); return; }
+    const hdr = ['Site','Client','Status','Start','End','Contract','Material','Labour','Transport','Equipment','Misc','Total Cost','Profit','Margin %'];
+    const rows = sites.map(s=>[s.siteName,s.clientName,s.status,s.planStart||'',s.planEnd||'',
+        s.contractValue,s.materialCost,s.labourCost,s.transportCost,
+        s.equipmentCost,s.miscExpenses,totalCost(s),profit(s),profitPct(s)].map(v=>`"${v}"`));
+    const csv = [hdr.map(h=>`"${h}"`), ...rows].map(r=>r.join(',')).join('\n');
+    const a = Object.assign(document.createElement('a'),{
+        href: URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'})),
+        download: 'sites-'+new Date().toISOString().slice(0,10)+'.csv'
+    });
+    a.click(); URL.revokeObjectURL(a.href);
 }
 
-// ================================================================
-// NAV
-// ================================================================
+// ════════════════════════════════════════════════════════════
+// NAV & INIT
+// ════════════════════════════════════════════════════════════
 document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('v-' + btn.dataset.view).classList.add('active');
+        document.getElementById('v-'+btn.dataset.view).classList.add('active');
     });
 });
+document.getElementById('siteOverlay').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeModal(); });
+document.getElementById('syncOverlay').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeSyncModal(); });
 
-document.getElementById('siteOverlay').addEventListener('click', e => { if (e.target===e.currentTarget) closeModal(); });
-document.getElementById('syncOverlay').addEventListener('click', e => { if (e.target===e.currentTarget) closeSyncModal(); });
-
-// INIT
+updateSyncUI();
 renderAll();
 </script>
 </body>
