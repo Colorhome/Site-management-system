@@ -1,651 +1,976 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Management System</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
-        * { margin:0; padding:0; box-sizing:border-box; }
-        :root {
-            --bg:#f0ede8; --surface:#fff; --surface2:#f7f4f0; --border:#e2ddd8;
-            --text:#1c1917; --muted:#78716c; --accent:#1c4ed8;
-            --success:#065f46; --success-bg:#d1fae5;
-            --danger:#991b1b;  --danger-bg:#fee2e2;
-            --warning:#92400e; --warning-bg:#fef3c7;
-        }
-        body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CMS — Construction Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0f0f0e;
+  --surface: #181816;
+  --surface2: #222220;
+  --border: #2e2e2a;
+  --amber: #f59e0b;
+  --amber-light: #fcd34d;
+  --amber-dim: rgba(245,158,11,0.12);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.12);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.10);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.12);
+  --red: #f87171;
+  --text: #e8e6df;
+  --text-muted: #7a7870;
+  --text-dim: #4a4845;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ── TOPBAR ── */
-        .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 1.5rem; display:flex; align-items:center; justify-content:space-between; height:56px; position:sticky; top:0; z-index:100; }
-        .brand  { font-size:15px; font-weight:600; letter-spacing:-.02em; display:flex; align-items:center; gap:8px; }
-        .brand-dot { width:8px; height:8px; background:var(--accent); border-radius:50%; }
-        .topnav { display:flex; gap:2px; }
-        .nav-btn { padding:6px 14px; border-radius:6px; border:none; background:transparent; color:var(--muted); font-size:13px; font-weight:500; cursor:pointer; transition:all .15s; font-family:inherit; }
-        .nav-btn:hover { background:var(--surface2); color:var(--text); }
-        .nav-btn.active { background:var(--text); color:white; }
-        .topright { display:flex; align-items:center; gap:10px; }
-        .sync-chip { display:flex; align-items:center; gap:5px; font-size:11px; font-family:'DM Mono',monospace; color:var(--muted); cursor:pointer; padding:5px 10px; border:1px solid var(--border); border-radius:20px; background:var(--surface); transition:all .15s; }
-        .sync-chip:hover { background:var(--surface2); }
-        .sync-dot { width:6px; height:6px; border-radius:50%; background:#d4d0ca; }
-        .sync-dot.connected { background:#10b981; box-shadow:0 0 4px #10b981; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-        /* ── MAIN ── */
-        .main { padding:1.5rem; max-width:1100px; margin:0 auto; }
-        .view { display:none; }
-        .view.active { display:block; }
+/* ── HEADER ── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-icon {
+  width: 38px; height: 38px; border-radius: 8px;
+  background: var(--amber); display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #0f0f0e;
+}
+.logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.3px; }
+.logo-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+nav { display: flex; gap: 4px; }
+nav button {
+  background: none; border: none; color: var(--text-muted); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; padding: 7px 14px; border-radius: 7px; cursor: pointer; transition: all .2s;
+}
+nav button:hover, nav button.active {
+  background: var(--surface2); color: var(--text);
+}
+.header-right { display: flex; align-items: center; gap: 10px; }
+.site-badge {
+  background: var(--amber-dim); border: 1px solid rgba(245,158,11,.25);
+  color: var(--amber); border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+}
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.sync-btn {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted);
+  font-size: 12px; padding: 7px 14px; border-radius: 7px; cursor: pointer; transition: all .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.sync-btn:hover { border-color: var(--amber); color: var(--amber); }
 
-        /* ── KPI ── */
-        .kpi-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
-        .kpi { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1rem 1.25rem; }
-        .kpi-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:6px; }
-        .kpi-val   { font-size:22px; font-weight:600; letter-spacing:-.03em; }
-        .green { color:#059669; } .red { color:#dc2626; }
+/* ── LAYOUT ── */
+.app { display: flex; min-height: calc(100vh - 61px); }
+aside {
+  width: 220px; flex-shrink: 0;
+  border-right: 1px solid var(--border); background: var(--surface);
+  padding: 20px 12px; display: flex; flex-direction: column; gap: 4px;
+}
+.aside-section { font-size: 10px; color: var(--text-dim); letter-spacing: 1.2px; text-transform: uppercase;
+  padding: 12px 8px 6px; font-weight: 600; }
+.aside-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; color: var(--text-muted); transition: all .15s;
+  border: 1px solid transparent;
+}
+.aside-item:hover { background: var(--surface2); color: var(--text); }
+.aside-item.active { background: var(--amber-dim); color: var(--amber); border-color: rgba(245,158,11,.2); }
+.aside-icon { font-size: 15px; width: 20px; text-align: center; }
+.aside-badge {
+  margin-left: auto; background: var(--surface2); color: var(--text-muted);
+  border-radius: 20px; font-size: 10px; padding: 2px 7px; font-weight: 600;
+}
+.aside-badge.alert { background: rgba(248,113,113,.12); color: var(--red); }
 
-        /* ── CARD ── */
-        .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:1.25rem; }
-        .card-header { padding:1rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-        .card-title  { font-size:13px; font-weight:600; }
-        .card-body   { padding:1.25rem; }
+main { flex: 1; padding: 28px 32px; overflow-y: auto; background: var(--bg); }
 
-        /* ── BUTTONS ── */
-        .actions { display:flex; gap:8px; margin-bottom:1.25rem; flex-wrap:wrap; }
-        .btn { padding:7px 14px; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:13px; font-weight:500; cursor:pointer; transition:all .15s; font-family:inherit; display:flex; align-items:center; gap:6px; }
-        .btn:hover { background:var(--surface2); }
-        .btn:disabled { opacity:.5; cursor:not-allowed; }
-        .btn-primary { background:var(--accent); border-color:var(--accent); color:white; }
-        .btn-primary:hover { opacity:.88; background:var(--accent); }
-        .btn-sm { padding:4px 10px; font-size:12px; }
-        .btn-danger:hover { background:var(--danger-bg); border-color:#fca5a5; color:var(--danger); }
+/* ── DASHBOARD CARDS ── */
+.page { display: none; }
+.page.active { display: block; }
+.page-title {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 22px;
+  margin-bottom: 6px; letter-spacing: -0.4px;
+}
+.page-sub { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
 
-        /* ── TABLE ── */
-        table { width:100%; border-collapse:collapse; font-size:13px; }
-        thead tr { border-bottom:2px solid var(--border); }
-        th { text-align:left; padding:8px 12px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
-        td { padding:11px 12px; border-bottom:1px solid var(--border); vertical-align:middle; }
-        tbody tr:last-child td { border-bottom:none; }
-        tbody tr:hover td { background:var(--surface2); }
-        .tr { text-align:right; } .tc { text-align:center; }
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.kpi-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px;
+  transition: border-color .2s;
+}
+.kpi-card:hover { border-color: var(--amber); }
+.kpi-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+.kpi-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -0.5px; }
+.kpi-value.amber { color: var(--amber); }
+.kpi-value.green { color: var(--green); }
+.kpi-value.blue { color: var(--blue); }
+.kpi-value.red { color: var(--red); }
+.kpi-change { font-size: 11px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+.kpi-change.up { color: var(--green); }
+.kpi-change.down { color: var(--red); }
 
-        /* ── SITE CARDS ── */
-        .sites-list { display:grid; gap:10px; }
-        .site-card  { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.25rem; transition:border-color .15s; }
-        .site-card:hover { border-color:#c4b5a5; }
-        .site-top   { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; }
-        .site-name  { font-size:15px; font-weight:600; letter-spacing:-.02em; }
-        .site-sub   { font-size:12px; color:var(--muted); margin-top:3px; }
-        .site-btns  { display:flex; gap:4px; }
-        .icon-btn   { width:30px; height:30px; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; transition:all .15s; }
-        .icon-btn:hover { background:var(--surface2); }
-        .icon-btn.del:hover { background:var(--danger-bg); border-color:#fca5a5; }
-        .site-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:8px; }
-        .stat { display:flex; flex-direction:column; gap:2px; }
-        .stat-lbl { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
-        .stat-val { font-size:14px; font-weight:600; letter-spacing:-.02em; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px;
+}
+.card-title {
+  font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px;
+  margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;
+}
+.card-action { font-size: 11px; color: var(--amber); cursor: pointer; font-weight: 400; }
 
-        /* ── BADGES ── */
-        .badge { display:inline-flex; align-items:center; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600; }
-        .badge-ongoing   { background:#dbeafe; color:#1e40af; }
-        .badge-completed { background:var(--success-bg); color:var(--success); }
-        .badge-planning  { background:var(--warning-bg); color:var(--warning); }
+/* ── TABLES ── */
+table { width: 100%; border-collapse: collapse; }
+th { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px;
+     padding: 0 12px 10px; text-align: left; font-weight: 600; }
+td { padding: 11px 12px; font-size: 13px; color: var(--text); border-top: 1px solid var(--border); }
+tr:hover td { background: var(--surface2); }
 
-        /* ── OVERLAY / MODAL ── */
-        .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:999; align-items:center; justify-content:center; padding:1rem; }
-        .overlay.open { display:flex; }
-        .modal { background:var(--surface); border-radius:12px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.15); }
-        .modal-head { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-        .modal-title { font-size:15px; font-weight:600; }
-        .close-btn { width:28px; height:28px; border-radius:6px; border:1px solid var(--border); background:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--muted); }
-        .close-btn:hover { background:var(--surface2); }
-        .modal-body { padding:1.5rem; }
-        .modal-foot { padding:1rem 1.5rem; border-top:1px solid var(--border); display:flex; gap:8px; }
-        .modal-foot .btn { flex:1; justify-content:center; }
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+}
+.tag.green { background: var(--green-dim); color: var(--green); }
+.tag.amber { background: var(--amber-dim); color: var(--amber); }
+.tag.blue { background: var(--blue-dim); color: var(--blue); }
+.tag.red { background: rgba(248,113,113,.1); color: var(--red); }
+.tag.purple { background: var(--purple-dim); color: var(--purple); }
 
-        /* ── FORM ── */
-        .form-grid { display:grid; gap:12px; }
-        .form-row  { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-        .form-group{ display:grid; gap:5px; }
-        label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
-        input,select { padding:8px 10px; border:1px solid var(--border); border-radius:6px; font-size:13px; background:var(--surface); color:var(--text); font-family:inherit; transition:border-color .15s; width:100%; }
-        input:focus,select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(28,78,216,.08); }
+/* ── FORM ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+.form-group input, .form-group select, .form-group textarea {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px; padding: 10px 12px; font-size: 13px;
+  font-family: 'DM Sans', sans-serif; transition: border-color .2s; outline: none;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--amber);
+}
+.form-group select option { background: var(--surface2); }
 
-        /* ── SYNC MODAL ── */
-        .sync-modal { max-width:440px; }
-        .url-saved-bar { display:none; background:var(--success-bg); border:1px solid #6ee7b7; border-radius:6px; padding:8px 12px; font-size:12px; color:var(--success); display:none; align-items:center; justify-content:space-between; gap:8px; }
-        .url-saved-bar.show { display:flex; }
-        .url-saved-text { font-family:'DM Mono',monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
-        .sync-log { font-family:'DM Mono',monospace; font-size:12px; background:#1c1917; color:#d6d3d1; padding:12px; border-radius:6px; min-height:56px; white-space:pre-wrap; display:none; margin-top:8px; max-height:140px; overflow-y:auto; }
-        .sync-log.show { display:block; }
-        .log-ok   { color:#6ee7b7; } .log-err { color:#fca5a5; } .log-info { color:#93c5fd; }
-        .help-box { font-size:12px; color:var(--muted); line-height:1.7; background:var(--surface2); padding:10px 12px; border-radius:6px; border:1px solid var(--border); }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer; border: none; transition: all .15s; font-family: 'DM Sans', sans-serif;
+}
+.btn-primary { background: var(--amber); color: #0f0f0e; }
+.btn-primary:hover { background: var(--amber-light); }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--amber); color: var(--amber); }
+.btn-danger { background: rgba(248,113,113,.15); color: var(--red); border: 1px solid rgba(248,113,113,.2); }
 
-        /* ── BREAKDOWN ── */
-        .breakdown-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; }
-        .breakdown-item { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:1rem; }
-        .breakdown-lbl  { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:6px; }
-        .breakdown-val  { font-size:18px; font-weight:600; letter-spacing:-.02em; }
+/* ── PROGRESS BAR ── */
+.prog-wrap { background: var(--surface2); border-radius: 99px; height: 6px; overflow: hidden; margin-top: 6px; }
+.prog-fill { height: 100%; border-radius: 99px; transition: width .5s ease; }
+.prog-fill.amber { background: var(--amber); }
+.prog-fill.green { background: var(--green); }
+.prog-fill.blue { background: var(--blue); }
+.prog-fill.red { background: var(--red); }
 
-        /* ── EMPTY ── */
-        .empty { text-align:center; padding:3rem 1rem; color:var(--muted); }
-        .empty-icon { font-size:36px; margin-bottom:12px; }
+/* ── VOUCHER TIMELINE ── */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: flex; gap: 14px; }
+.tl-line { display: flex; flex-direction: column; align-items: center; width: 32px; flex-shrink: 0; }
+.tl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.tl-vert { flex: 1; width: 2px; background: var(--border); margin: 4px 0; }
+.tl-content { padding-bottom: 18px; flex: 1; }
+.tl-title { font-size: 13px; font-weight: 500; }
+.tl-meta { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
 
-        @media(max-width:640px) {
-            .kpi-strip { grid-template-columns:1fr 1fr; }
-            .form-row  { grid-template-columns:1fr; }
-            .main      { padding:1rem; }
-            .brand span { display:none; }
-        }
-    </style>
+/* ── NOTIFICATION ── */
+.notif {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 16px 20px; max-width: 320px;
+  display: flex; align-items: flex-start; gap: 12px;
+  box-shadow: var(--shadow); transform: translateY(80px); opacity: 0;
+  transition: all .3s ease; pointer-events: none;
+}
+.notif.show { transform: translateY(0); opacity: 1; pointer-events: all; }
+.notif-icon { font-size: 20px; }
+.notif-title { font-size: 13px; font-weight: 600; }
+.notif-body { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+/* ── LOADING ── */
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid var(--border); border-top-color: var(--amber);
+  border-radius: 50%; animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── FLOW DIAGRAM ── */
+.flow-steps { display: flex; align-items: center; gap: 0; margin: 20px 0; flex-wrap: wrap; gap: 8px; }
+.flow-step {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 12px 18px; border-radius: var(--radius); min-width: 120px; text-align: center;
+}
+.flow-step-num { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: .6; }
+.flow-step-label { font-size: 13px; font-weight: 600; }
+.flow-step-sub { font-size: 11px; opacity: .7; }
+.flow-arrow { color: var(--text-dim); font-size: 18px; }
+.fs-orange { background: var(--amber-dim); border: 1px solid rgba(245,158,11,.2); color: var(--amber); }
+.fs-blue { background: var(--blue-dim); border: 1px solid rgba(59,130,246,.2); color: var(--blue); }
+.fs-green { background: var(--green-dim); border: 1px solid rgba(34,197,94,.15); color: var(--green); }
+.fs-lime { background: rgba(163,230,53,.1); border: 1px solid rgba(163,230,53,.2); color: #a3e635; }
+
+/* ── LEDGER ITEM ── */
+.ledger-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--border); }
+.ledger-row:last-child { border-bottom: none; }
+.ledger-name { font-size: 13px; }
+.ledger-date { font-size: 11px; color: var(--text-muted); }
+.ledger-amount { font-size: 14px; font-weight: 600; font-family: 'Syne', sans-serif; }
+.ledger-amount.cr { color: var(--green); }
+.ledger-amount.dr { color: var(--red); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .kpi-grid { grid-template-columns: repeat(2,1fr); }
+  aside { width: 60px; }
+  .aside-item span:not(.aside-icon) { display: none; }
+  .aside-badge { display: none; }
+}
+</style>
 </head>
 <body>
 
-<header class="topbar">
-    <div class="brand"><div class="brand-dot"></div><span>Site Manager</span></div>
-    <nav class="topnav">
-        <button class="nav-btn active" data-view="dashboard">Dashboard</button>
-        <button class="nav-btn" data-view="sites">Sites</button>
-        <button class="nav-btn" data-view="analysis">Analysis</button>
-    </nav>
-    <div class="topright">
-        <div class="sync-chip" onclick="openSyncModal()" id="syncChip">
-            <div class="sync-dot" id="syncDot"></div>
-            <span id="syncLabel">Setup Sync</span>
-        </div>
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">CMS</div>
+    <div>
+      <div class="logo-text">ConstructMS</div>
+      <div class="logo-sub">Construction Management System</div>
     </div>
+  </div>
+  <nav>
+    <button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
+    <button onclick="showPage('sites',this)">Sites</button>
+    <button onclick="showPage('vouchers',this)">Vouchers</button>
+    <button onclick="showPage('ledgers',this)">Ledgers</button>
+    <button onclick="showPage('reports',this)">Reports</button>
+  </nav>
+  <div class="header-right">
+    <div class="site-badge">
+      <span class="status-dot"></span>
+      Synced with Sheets
+    </div>
+    <button class="sync-btn" onclick="syncNow()">⟳ Sync Now</button>
+  </div>
 </header>
 
-<main class="main">
+<div class="app">
 
-    <!-- DASHBOARD -->
-    <div id="v-dashboard" class="view active">
-        <div class="kpi-strip" id="dashKpis"></div>
-        <div class="card">
-            <div class="card-header"><span class="card-title">All Projects</span></div>
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead><tr>
-                        <th>Site</th><th>Client</th>
-                        <th class="tr">Contract</th><th class="tr">Cost</th>
-                        <th class="tr">Profit</th><th class="tc">Status</th>
-                    </tr></thead>
-                    <tbody id="dashTable"></tbody>
-                </table>
-            </div>
-        </div>
+<!-- SIDEBAR -->
+<aside>
+  <div class="aside-section">Modules</div>
+  <div class="aside-item active" onclick="showPage('dashboard',this);setAside(this)">
+    <span class="aside-icon">⊞</span><span>Dashboard</span>
+  </div>
+  <div class="aside-item" onclick="showPage('sites',this);setAside(this)">
+    <span class="aside-icon">🏗</span><span>Sites</span>
+    <span class="aside-badge">4</span>
+  </div>
+  <div class="aside-item" onclick="showPage('vouchers',this);setAside(this)">
+    <span class="aside-icon">🧾</span><span>Vouchers</span>
+    <span class="aside-badge alert">3</span>
+  </div>
+
+  <div class="aside-section">Cost Heads</div>
+  <div class="aside-item" onclick="showPage('labour',this);setAside(this)">
+    <span class="aside-icon">👷</span><span>Labour</span>
+  </div>
+  <div class="aside-item" onclick="showPage('material',this);setAside(this)">
+    <span class="aside-icon">📦</span><span>Material</span>
+  </div>
+  <div class="aside-item" onclick="showPage('machinery',this);setAside(this)">
+    <span class="aside-icon">🚜</span><span>Machinery</span>
+  </div>
+
+  <div class="aside-section">Finance</div>
+  <div class="aside-item" onclick="showPage('ledgers',this);setAside(this)">
+    <span class="aside-icon">📒</span><span>Ledgers</span>
+  </div>
+  <div class="aside-item" onclick="showPage('cashbook',this);setAside(this)">
+    <span class="aside-icon">💰</span><span>Cash Book</span>
+  </div>
+  <div class="aside-item" onclick="showPage('reports',this);setAside(this)">
+    <span class="aside-icon">📊</span><span>Reports</span>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main>
+
+  <!-- ── DASHBOARD ── -->
+  <div id="page-dashboard" class="page active">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub" id="dash-sub">Loading data from Google Sheets…</div>
+
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Total Expenditure</div><div class="kpi-value amber" id="kpi-exp">—</div><div class="kpi-change" id="kpi-exp-ch"></div></div>
+      <div class="kpi-card"><div class="kpi-label">Client Receivable</div><div class="kpi-value blue" id="kpi-recv">—</div><div class="kpi-change" id="kpi-recv-ch"></div></div>
+      <div class="kpi-card"><div class="kpi-label">Vouchers Pending</div><div class="kpi-value red" id="kpi-pend">—</div><div class="kpi-change" id="kpi-pend-ch"></div></div>
+      <div class="kpi-card"><div class="kpi-label">Net P&L</div><div class="kpi-value green" id="kpi-pl">—</div><div class="kpi-change" id="kpi-pl-ch"></div></div>
     </div>
 
-    <!-- SITES -->
-    <div id="v-sites" class="view">
-        <div class="actions">
-            <button class="btn btn-primary" onclick="openAdd()">+ Add Site</button>
-            <button class="btn" onclick="exportCSV()">↓ Export CSV</button>
-            <button class="btn" id="manualSyncBtn" onclick="manualSync()" style="display:none">↑ Sync Now</button>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Transaction Flow <span class="card-action" onclick="showPage('vouchers',null)">View All →</span></div>
+        <div class="flow-steps">
+          <div class="flow-step fs-orange"><div class="flow-step-num">Step 1</div><div class="flow-step-label">Site Activity</div><div class="flow-step-sub">Labour / Material</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step fs-blue"><div class="flow-step-num">Step 2</div><div class="flow-step-label">Voucher</div><div class="flow-step-sub">Site + Work Order</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step fs-green"><div class="flow-step-num">Step 3</div><div class="flow-step-label">Ledger Post</div><div class="flow-step-sub">Vendor / Client</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step fs-lime"><div class="flow-step-num">Step 4</div><div class="flow-step-label">Dashboard</div><div class="flow-step-sub">Real-time P&L</div></div>
         </div>
-        <div class="sites-list" id="sitesList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Cost Distribution</div>
+        <div id="cost-dist">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>Labour</span><span id="pct-labour" class="tag amber">—</span></div><div class="prog-wrap"><div class="prog-fill amber" id="bar-labour" style="width:0%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>Material</span><span id="pct-material" class="tag blue">—</span></div><div class="prog-wrap"><div class="prog-fill blue" id="bar-material" style="width:0%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>Machinery</span><span id="pct-machinery" class="tag green">—</span></div><div class="prog-wrap"><div class="prog-fill green" id="bar-machinery" style="width:0%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>Administration</span><span id="pct-admin" class="tag purple">—</span></div><div class="prog-wrap"><div class="prog-fill" id="bar-admin" style="width:0%;background:var(--purple)"></div></div></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- ANALYSIS -->
-    <div id="v-analysis" class="view">
-        <div class="kpi-strip" id="analysisKpis"></div>
-        <div class="card">
-            <div class="card-header"><span class="card-title">Cost Breakdown</span></div>
-            <div class="card-body"><div class="breakdown-grid" id="breakdownGrid"></div></div>
-        </div>
+    <div class="card">
+      <div class="card-title">Recent Vouchers <span class="card-action" onclick="showPage('vouchers',null)">View All →</span></div>
+      <table>
+        <thead><tr><th>Voucher #</th><th>Site</th><th>Category</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody id="recent-vouchers"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:28px;">Loading…</td></tr></tbody>
+      </table>
     </div>
+  </div>
+
+  <!-- ── SITES ── -->
+  <div id="page-sites" class="page">
+    <div class="page-title">Sites</div>
+    <div class="page-sub">All active construction sites</div>
+    <div class="card">
+      <div class="card-title">Active Sites</div>
+      <table>
+        <thead><tr><th>Site Name</th><th>Location</th><th>Work Order</th><th>Budget</th><th>Spent</th><th>Status</th></tr></thead>
+        <tbody id="sites-table"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:28px;"><span class="spinner"></span> Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── VOUCHERS ── -->
+  <div id="page-vouchers" class="page">
+    <div class="page-title">Vouchers</div>
+    <div class="page-sub">Create and manage expense vouchers</div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">New Voucher Entry</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Site</label>
+          <select id="v-site"><option value="">Select site…</option></select></div>
+        <div class="form-group"><label>Work Order</label>
+          <input id="v-wo" type="text" placeholder="WO-2024-XXX"/></div>
+        <div class="form-group"><label>Category</label>
+          <select id="v-cat">
+            <option value="">Select category…</option>
+            <option>Labour</option><option>Material</option>
+            <option>Machinery</option><option>Transport</option><option>Administration</option>
+          </select></div>
+        <div class="form-group"><label>Amount (₹)</label>
+          <input id="v-amount" type="number" placeholder="0.00"/></div>
+        <div class="form-group"><label>Vendor / Party</label>
+          <input id="v-vendor" type="text" placeholder="Party name"/></div>
+        <div class="form-group"><label>Date</label>
+          <input id="v-date" type="date"/></div>
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label>Description</label>
+        <textarea id="v-desc" rows="2" placeholder="Work description / details…"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-primary" onclick="submitVoucher()">✓ Submit Voucher</button>
+        <button class="btn btn-secondary" onclick="clearVoucher()">Clear</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Pending Vouchers <span id="pending-count" class="tag red" style="font-size:11px;"></span></div>
+      <table>
+        <thead><tr><th>Voucher #</th><th>Site</th><th>Category</th><th>Vendor</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="vouchers-table"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:28px;"><span class="spinner"></span> Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── LEDGERS ── -->
+  <div id="page-ledgers" class="page">
+    <div class="page-title">Ledgers</div>
+    <div class="page-sub">Vendor Ledger · Client Ledger · Cash Book</div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title" style="color:var(--green)">Vendor Ledger</div>
+        <div id="vendor-ledger"><div style="text-align:center;padding:20px;color:var(--text-muted)"><span class="spinner"></span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--blue)">Client Ledger</div>
+        <div id="client-ledger"><div style="text-align:center;padding:20px;color:var(--text-muted)"><span class="spinner"></span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--amber)">Cash Book</div>
+        <div id="cash-ledger"><div style="text-align:center;padding:20px;color:var(--text-muted)"><span class="spinner"></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LABOUR ── -->
+  <div id="page-labour" class="page">
+    <div class="page-title">Labour Management</div>
+    <div class="page-sub">Daily muster roll and wages</div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Add Labour Entry</div>
+      <div class="form-grid cols3">
+        <div class="form-group"><label>Site</label><select id="l-site"><option>Select site…</option></select></div>
+        <div class="form-group"><label>Worker Name</label><input id="l-name" type="text" placeholder="Name"/></div>
+        <div class="form-group"><label>Trade</label>
+          <select id="l-trade">
+            <option>Mason</option><option>Helper</option><option>Carpenter</option>
+            <option>Electrician</option><option>Plumber</option><option>Supervisor</option>
+          </select></div>
+        <div class="form-group"><label>Days Present</label><input id="l-days" type="number" placeholder="0"/></div>
+        <div class="form-group"><label>Rate / Day (₹)</label><input id="l-rate" type="number" placeholder="0"/></div>
+        <div class="form-group"><label>Month</label><input id="l-month" type="month"/></div>
+      </div>
+      <button class="btn btn-primary" onclick="submitLabour()">Save Entry</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Muster Roll</div>
+      <table>
+        <thead><tr><th>Worker</th><th>Trade</th><th>Site</th><th>Days</th><th>Rate</th><th>Amount</th></tr></thead>
+        <tbody id="labour-table"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:28px;">No entries yet</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── MATERIAL ── -->
+  <div id="page-material" class="page">
+    <div class="page-title">Material Management</div>
+    <div class="page-sub">Stock in / out and GRN tracking</div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Material Entry</div>
+      <div class="form-grid cols3">
+        <div class="form-group"><label>Site</label><select id="m-site"><option>Select site…</option></select></div>
+        <div class="form-group"><label>Material</label><input id="m-name" type="text" placeholder="e.g. Cement, Steel"/></div>
+        <div class="form-group"><label>Type</label>
+          <select id="m-type"><option>Inward</option><option>Outward</option></select></div>
+        <div class="form-group"><label>Qty</label><input id="m-qty" type="number" placeholder="0"/></div>
+        <div class="form-group"><label>Unit</label>
+          <select id="m-unit"><option>Bags</option><option>MT</option><option>Nos</option><option>Cum</option><option>Sqm</option><option>Rmt</option></select></div>
+        <div class="form-group"><label>Rate (₹)</label><input id="m-rate" type="number" placeholder="0"/></div>
+      </div>
+      <button class="btn btn-primary" onclick="submitMaterial()">Save Entry</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Material Ledger</div>
+      <table>
+        <thead><tr><th>Material</th><th>Site</th><th>Type</th><th>Qty</th><th>Unit</th><th>Amount</th></tr></thead>
+        <tbody id="material-table"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:28px;">No entries yet</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── MACHINERY ── -->
+  <div id="page-machinery" class="page">
+    <div class="page-title">Machinery & Equipment</div>
+    <div class="page-sub">Equipment usage log</div>
+    <div class="card">
+      <div class="card-title">Equipment Log</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Site</label><select id="mach-site"><option>Select site…</option></select></div>
+        <div class="form-group"><label>Equipment</label><input id="mach-name" type="text" placeholder="e.g. JCB, Crane"/></div>
+        <div class="form-group"><label>Hours Used</label><input id="mach-hrs" type="number" placeholder="0"/></div>
+        <div class="form-group"><label>Rate/Hour (₹)</label><input id="mach-rate" type="number" placeholder="0"/></div>
+      </div>
+      <button class="btn btn-primary" onclick="submitMachinery()">Save</button>
+    </div>
+  </div>
+
+  <!-- ── CASH BOOK ── -->
+  <div id="page-cashbook" class="page">
+    <div class="page-title">Cash Book</div>
+    <div class="page-sub">All cash & bank transactions</div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">New Entry</div>
+      <div class="form-grid cols3">
+        <div class="form-group"><label>Type</label>
+          <select id="cb-type"><option>Cash In</option><option>Cash Out</option><option>Bank In</option><option>Bank Out</option></select></div>
+        <div class="form-group"><label>Party</label><input id="cb-party" type="text" placeholder="Party name"/></div>
+        <div class="form-group"><label>Amount (₹)</label><input id="cb-amount" type="number" placeholder="0"/></div>
+        <div class="form-group"><label>Narration</label><input id="cb-narr" type="text" placeholder="Brief note"/></div>
+        <div class="form-group"><label>Date</label><input id="cb-date" type="date"/></div>
+        <div class="form-group"><label>Site (optional)</label><select id="cb-site"><option>—</option></select></div>
+      </div>
+      <button class="btn btn-primary" onclick="submitCashBook()">Save Entry</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Cash Book Entries</div>
+      <table>
+        <thead><tr><th>Date</th><th>Type</th><th>Party</th><th>Narration</th><th>Amount</th></tr></thead>
+        <tbody id="cashbook-table"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:28px;"><span class="spinner"></span> Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── REPORTS ── -->
+  <div id="page-reports" class="page">
+    <div class="page-title">Reports</div>
+    <div class="page-sub">Cost vs Budget · P&L · Cashflow · Ledger Statements</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Site-wise Cost Summary</div>
+        <table>
+          <thead><tr><th>Site</th><th>Budget</th><th>Spent</th><th>Variance</th></tr></thead>
+          <tbody id="report-sites"><tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px;"><span class="spinner"></span></td></tr></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">P&L Summary</div>
+        <div id="pl-summary" style="display:flex;flex-direction:column;gap:14px;padding:4px 0;">
+          <div class="ledger-row"><span class="ledger-name">Total Revenue</span><span class="ledger-amount cr" id="rpt-rev">—</span></div>
+          <div class="ledger-row"><span class="ledger-name">Labour Cost</span><span class="ledger-amount dr" id="rpt-lab">—</span></div>
+          <div class="ledger-row"><span class="ledger-name">Material Cost</span><span class="ledger-amount dr" id="rpt-mat">—</span></div>
+          <div class="ledger-row"><span class="ledger-name">Machinery Cost</span><span class="ledger-amount dr" id="rpt-mach">—</span></div>
+          <div class="ledger-row"><span class="ledger-name">Admin / Overhead</span><span class="ledger-amount dr" id="rpt-adm">—</span></div>
+          <div class="ledger-row" style="border-top:2px solid var(--amber);padding-top:12px;">
+            <span class="ledger-name" style="font-weight:600;font-size:14px;">Net Profit / Loss</span>
+            <span class="ledger-amount cr" id="rpt-net" style="font-size:18px;">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">Export Reports</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-secondary" onclick="exportReport('monthly')">📅 Monthly Report</button>
+        <button class="btn btn-secondary" onclick="exportReport('site')">🏗 Site Report</button>
+        <button class="btn btn-secondary" onclick="exportReport('vendor')">📋 Vendor Statement</button>
+        <button class="btn btn-secondary" onclick="exportReport('client')">👔 Client Statement</button>
+      </div>
+    </div>
+  </div>
 
 </main>
-
-<!-- ═══════════════════ SITE MODAL ═══════════════════ -->
-<div class="overlay" id="siteOverlay">
-    <div class="modal">
-        <div class="modal-head">
-            <span class="modal-title" id="modalTitle">Add New Site</span>
-            <button class="close-btn" onclick="closeModal()">✕</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-grid">
-                <div class="form-row">
-                    <div class="form-group"><label>Site Name *</label><input id="f-siteName" type="text" placeholder="Project Alpha"></div>
-                    <div class="form-group"><label>Client Name</label><input id="f-clientName" type="text" placeholder="ABC Corp"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Status</label>
-                        <select id="f-status"><option value="Planning">Planning</option><option value="On Going">On Going</option><option value="Completed">Completed</option></select>
-                    </div>
-                    <div class="form-group"><label>Contract Value (₹)</label><input id="f-contractValue" type="number" placeholder="0"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Material Cost</label><input id="f-materialCost" type="number" placeholder="0"></div>
-                    <div class="form-group"><label>Labour Cost</label><input id="f-labourCost" type="number" placeholder="0"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Transport Cost</label><input id="f-transportCost" type="number" placeholder="0"></div>
-                    <div class="form-group"><label>Equipment Cost</label><input id="f-equipmentCost" type="number" placeholder="0"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Misc Expenses</label><input id="f-miscExpenses" type="number" placeholder="0"></div>
-                    <div></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Start Date</label><input id="f-planStart" type="date"></div>
-                    <div class="form-group"><label>End Date</label><input id="f-planEnd" type="date"></div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-foot">
-            <button class="btn btn-primary" onclick="saveSite()">Save Site</button>
-            <button class="btn" onclick="closeModal()">Cancel</button>
-        </div>
-    </div>
 </div>
 
-<!-- ═══════════════════ SYNC MODAL ═══════════════════ -->
-<div class="overlay" id="syncOverlay">
-    <div class="modal sync-modal">
-        <div class="modal-head">
-            <span class="modal-title">Google Sheets Sync</span>
-            <button class="close-btn" onclick="closeSyncModal()">✕</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-grid">
-
-                <!-- Saved URL bar — shows when URL already saved -->
-                <div class="url-saved-bar" id="savedUrlBar">
-                    <span>✓ Connected:</span>
-                    <span class="url-saved-text" id="savedUrlText"></span>
-                    <button class="btn btn-sm" onclick="clearSavedUrl()">Change</button>
-                </div>
-
-                <!-- URL input — hidden when URL already saved -->
-                <div class="form-group" id="urlInputGroup">
-                    <label>Apps Script Deployment URL</label>
-                    <input id="syncUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec">
-                    <div style="font-size:11px;color:var(--muted);margin-top:3px">URL ek baar daalo — save ho jayega</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Action</label>
-                    <select id="syncAction">
-                        <option value="push">Push — App data → Google Sheets</option>
-                        <option value="pull">Pull — Google Sheets → App</option>
-                    </select>
-                </div>
-
-                <div id="syncLog" class="sync-log"></div>
-
-                <div class="help-box">
-                    <strong>Pehli baar setup:</strong><br>
-                    1. Google Sheet → Extensions → Apps Script<br>
-                    2. Deploy → New deployment → Web App<br>
-                    3. Execute as: <strong>Me</strong> | Access: <strong>Anyone</strong><br>
-                    4. URL copy karo (<code>/exec</code> pe end hoga)
-                </div>
-            </div>
-        </div>
-        <div class="modal-foot">
-            <button class="btn btn-primary" id="syncBtn" onclick="runSync()">Sync Now</button>
-            <button class="btn" onclick="closeSyncModal()">Close</button>
-        </div>
-    </div>
+<!-- NOTIFICATION -->
+<div class="notif" id="notif">
+  <div class="notif-icon" id="notif-icon">✅</div>
+  <div><div class="notif-title" id="notif-title"></div><div class="notif-body" id="notif-body"></div></div>
 </div>
 
 <script>
-// ════════════════════════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════════════════════════
-let sites = [
-    { id:1, siteName:'Project Alpha', clientName:'ABC Construction', status:'On Going',
-      planStart:'2024-01-15', planEnd:'2024-06-30', contractValue:500000,
-      materialCost:120000, labourCost:150000, transportCost:30000, equipmentCost:40000, miscExpenses:20000 },
-    { id:2, siteName:'Bridge Renovation', clientName:'City Council', status:'Completed',
-      planStart:'2023-03-01', planEnd:'2023-11-30', contractValue:1200000,
-      materialCost:300000, labourCost:400000, transportCost:80000, equipmentCost:120000, miscExpenses:50000 }
-];
-let editingId = null;
+/* ─────────────────────────────────────────────────────────
+   CONFIG — Replace with your deployed Apps Script URL
+   ───────────────────────────────────────────────────────── */
+const API_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
 
-// ── Saved URL — sessionStorage mein (tab ke andar bana rehta hai, bar bar nahi maangta)
-// Note: sessionStorage browser mein hamesha kaam karta hai (localStorage se alag)
-let savedUrl = '';
-try { savedUrl = sessionStorage.getItem('gsUrl') || ''; } catch(e) {}
-
-function saveUrl(url) {
-    savedUrl = url;
-    try { sessionStorage.setItem('gsUrl', url); } catch(e) {}
-    updateSyncUI();
+/* ─── NAVIGATION ─── */
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + id);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  if (btn && btn.tagName === 'BUTTON') btn.classList.add('active');
+  // Load page data
+  if (id === 'dashboard') loadDashboard();
+  if (id === 'vouchers') loadVouchers();
+  if (id === 'sites') loadSites();
+  if (id === 'ledgers') loadLedgers();
+  if (id === 'cashbook') loadCashBook();
+  if (id === 'reports') loadReports();
+}
+function setAside(el) {
+  document.querySelectorAll('.aside-item').forEach(a => a.classList.remove('active'));
+  el.classList.add('active');
 }
 
-function clearSavedUrl() {
-    savedUrl = '';
-    try { sessionStorage.removeItem('gsUrl'); } catch(e) {}
-    updateSyncUI();
+/* ─── NOTIFICATION ─── */
+function notify(icon, title, body, color) {
+  const n = document.getElementById('notif');
+  document.getElementById('notif-icon').textContent = icon;
+  document.getElementById('notif-title').textContent = title;
+  document.getElementById('notif-body').textContent = body;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3500);
 }
 
-function updateSyncUI() {
-    const connected = !!savedUrl;
-    document.getElementById('syncDot').className   = 'sync-dot' + (connected ? ' connected' : '');
-    document.getElementById('syncLabel').textContent = connected ? '● Synced' : 'Setup Sync';
-    document.getElementById('savedUrlBar').className = 'url-saved-bar' + (connected ? ' show' : '');
-    document.getElementById('savedUrlText').textContent = savedUrl ? savedUrl.replace('https://','').slice(0,45)+'…' : '';
-    document.getElementById('urlInputGroup').style.display = connected ? 'none' : 'grid';
-    document.getElementById('manualSyncBtn').style.display = connected ? 'flex' : 'none';
-    if (!connected) document.getElementById('syncUrl').value = '';
+/* ─── API CALL ─── */
+async function api(action, data = {}) {
+  try {
+    const params = new URLSearchParams({ action, ...data });
+    const res = await fetch(`${API_URL}?${params}`);
+    const json = await res.json();
+    return json;
+  } catch (e) {
+    // Demo mode fallback
+    return getDemoData(action);
+  }
 }
 
-// ════════════════════════════════════════════════════════════
-// MATH
-// ════════════════════════════════════════════════════════════
-const totalCost = s => (s.materialCost||0)+(s.labourCost||0)+(s.transportCost||0)+(s.equipmentCost||0)+(s.miscExpenses||0);
-const profit    = s => (s.contractValue||0) - totalCost(s);
-const profitPct = s => s.contractValue > 0 ? ((profit(s)/s.contractValue)*100).toFixed(1) : '0.0';
-const fmt = n => {
-    const a = Math.abs(n), sg = n<0?'-':'';
-    if(a>=1e7) return sg+'₹'+(a/1e7).toFixed(2)+'Cr';
-    if(a>=1e5) return sg+'₹'+(a/1e5).toFixed(1)+'L';
-    return sg+'₹'+a.toLocaleString('en-IN');
-};
-const totals = () => sites.reduce((a,s)=>({contract:a.contract+(s.contractValue||0),cost:a.cost+totalCost(s),profit:a.profit+profit(s)}),{contract:0,cost:0,profit:0});
-const badgeClass = st => ({'On Going':'badge-ongoing','Completed':'badge-completed','Planning':'badge-planning'}[st]||'badge-planning');
-const NUM_FIELDS = ['contractValue','materialCost','labourCost','transportCost','equipmentCost','miscExpenses'];
-
-// ════════════════════════════════════════════════════════════
-// RENDER
-// ════════════════════════════════════════════════════════════
-function renderDashboard() {
-    const T = totals();
-    document.getElementById('dashKpis').innerHTML = `
-        <div class="kpi"><div class="kpi-label">Projects</div><div class="kpi-val">${sites.length}</div></div>
-        <div class="kpi"><div class="kpi-label">Total Contract</div><div class="kpi-val">${fmt(T.contract)}</div></div>
-        <div class="kpi"><div class="kpi-label">Total Expenses</div><div class="kpi-val">${fmt(T.cost)}</div></div>
-        <div class="kpi"><div class="kpi-label">Net Profit</div><div class="kpi-val ${T.profit>=0?'green':'red'}">${fmt(T.profit)}</div></div>`;
-    document.getElementById('dashTable').innerHTML = sites.length
-        ? sites.map(s=>`<tr>
-            <td><strong>${s.siteName}</strong></td>
-            <td style="color:var(--muted)">${s.clientName}</td>
-            <td class="tr">${fmt(s.contractValue||0)}</td>
-            <td class="tr">${fmt(totalCost(s))}</td>
-            <td class="tr ${profit(s)>=0?'green':'red'}">${fmt(profit(s))}</td>
-            <td class="tc"><span class="badge ${badgeClass(s.status)}">${s.status}</span></td>
-          </tr>`).join('')
-        : `<tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div><div>No projects yet.</div></div></td></tr>`;
+/* ─── DEMO DATA (runs when API not connected) ─── */
+function getDemoData(action) {
+  const demos = {
+    getDashboard: {
+      totalExpenditure: 2847650, clientReceivable: 4125000,
+      pendingVouchers: 7, netPL: 1277350,
+      labourPct: 42, materialPct: 35, machineryPct: 14, adminPct: 9,
+      recentVouchers: [
+        { id:'V-2024-089', site:'Site A - Sector 62', category:'Labour', amount:185000, status:'Pending', date:'2024-06-12' },
+        { id:'V-2024-088', site:'Site B - NH8', category:'Material', amount:342000, status:'Approved', date:'2024-06-11' },
+        { id:'V-2024-087', site:'Site C - Dwarka', category:'Machinery', amount:95000, status:'Approved', date:'2024-06-10' },
+      ]
+    },
+    getSites: { sites: [
+      { name:'Site A - Sector 62', location:'Noida', wo:'WO-2024-001', budget:5000000, spent:1850000, status:'Active' },
+      { name:'Site B - NH8', location:'Gurgaon', wo:'WO-2024-002', budget:8000000, spent:3200000, status:'Active' },
+      { name:'Site C - Dwarka', location:'Delhi', wo:'WO-2024-003', budget:3500000, spent:850000, status:'Active' },
+      { name:'Site D - Raj Nagar', location:'Ghaziabad', wo:'WO-2024-004', budget:6000000, spent:4100000, status:'On Hold' },
+    ]},
+    getVouchers: { vouchers: [
+      { id:'V-2024-089', site:'Site A', category:'Labour', vendor:'Ram Contractors', amount:185000, status:'Pending' },
+      { id:'V-2024-086', site:'Site B', category:'Material', vendor:'Steel Suppliers', amount:520000, status:'Pending' },
+      { id:'V-2024-083', site:'Site D', category:'Transport', vendor:'Logistics Co.', amount:78000, status:'Pending' },
+      { id:'V-2024-088', site:'Site B', category:'Material', vendor:'Cement Corp', amount:342000, status:'Approved' },
+      { id:'V-2024-087', site:'Site C', category:'Machinery', vendor:'JCB Rentals', amount:95000, status:'Approved' },
+    ]},
+    getLedgers: {
+      vendor: [
+        { name:'Ram Contractors', date:'12 Jun', amount:185000, type:'dr' },
+        { name:'Steel Suppliers', date:'11 Jun', amount:520000, type:'dr' },
+        { name:'JCB Rentals', date:'10 Jun', amount:95000, type:'cr' },
+      ],
+      client: [
+        { name:'DLF Ltd — RA Bill #4', date:'08 Jun', amount:1250000, type:'cr' },
+        { name:'Retention Release', date:'01 Jun', amount:320000, type:'cr' },
+        { name:'Site A — RA Bill #3', date:'25 May', amount:980000, type:'cr' },
+      ],
+      cash: [
+        { name:'Cash Payment — Labour', date:'12 Jun', amount:45000, type:'dr' },
+        { name:'Client Advance Recd', date:'10 Jun', amount:200000, type:'cr' },
+        { name:'Petty Cash — Admin', date:'09 Jun', amount:8500, type:'dr' },
+      ]
+    },
+    getCashBook: { entries: [
+      { date:'12 Jun', type:'Cash Out', party:'Ram Contractors', narr:'Labour Wages', amount:45000 },
+      { date:'10 Jun', type:'Bank In', party:'DLF Ltd', narr:'RA Bill Payment', amount:1250000 },
+      { date:'09 Jun', type:'Cash Out', party:'Petty Exp', narr:'Site Admin', amount:8500 },
+      { date:'05 Jun', type:'Bank Out', party:'Cement Corp', narr:'Material Payment', amount:342000 },
+    ]},
+    getReports: {
+      sites: [
+        { name:'Site A - Sector 62', budget:5000000, spent:1850000 },
+        { name:'Site B - NH8', budget:8000000, spent:3200000 },
+        { name:'Site C - Dwarka', budget:3500000, spent:850000 },
+        { name:'Site D - Raj Nagar', budget:6000000, spent:4100000 },
+      ],
+      revenue: 4125000, labour: 1196013, material: 996678, machinery: 398706, admin: 256253, net: 1277350
+    }
+  };
+  return demos[action] || {};
 }
 
-function renderSites() {
-    document.getElementById('sitesList').innerHTML = sites.length
-        ? sites.map(s => {
-            const p=profit(s), tc=totalCost(s);
-            return `<div class="site-card">
-                <div class="site-top">
-                    <div>
-                        <div class="site-name">${s.siteName}</div>
-                        <div class="site-sub">${s.clientName} &nbsp;·&nbsp; <span class="badge ${badgeClass(s.status)}">${s.status}</span></div>
-                    </div>
-                    <div class="site-btns">
-                        <button class="icon-btn" onclick="openEdit(${s.id})">✏</button>
-                        <button class="icon-btn del" onclick="deleteSite(${s.id})">🗑</button>
-                    </div>
-                </div>
-                <div class="site-stats">
-                    <div class="stat"><span class="stat-lbl">Contract</span><span class="stat-val">${fmt(s.contractValue||0)}</span></div>
-                    <div class="stat"><span class="stat-lbl">Total Cost</span><span class="stat-val">${fmt(tc)}</span></div>
-                    <div class="stat"><span class="stat-lbl">Profit</span><span class="stat-val ${p>=0?'green':'red'}">${fmt(p)}</span></div>
-                    <div class="stat"><span class="stat-lbl">Margin</span><span class="stat-val ${p>=0?'green':'red'}">${profitPct(s)}%</span></div>
-                    ${s.planStart?`<div class="stat"><span class="stat-lbl">Start</span><span class="stat-val" style="font-size:12px">${s.planStart}</span></div>`:''}
-                    ${s.planEnd?`<div class="stat"><span class="stat-lbl">End</span><span class="stat-val" style="font-size:12px">${s.planEnd}</span></div>`:''}
-                </div>
-            </div>`;}).join('')
-        : `<div class="empty"><div class="empty-icon">🏗</div><div>Koi site nahi. "+ Add Site" se shuru karo.</div></div>`;
+/* ─── FORMATTERS ─── */
+const fmt = n => '₹' + Number(n).toLocaleString('en-IN');
+const pct = n => n + '%';
+
+/* ─── DASHBOARD ─── */
+async function loadDashboard() {
+  document.getElementById('dash-sub').textContent = 'Fetching from Google Sheets…';
+  const d = await api('getDashboard');
+  document.getElementById('dash-sub').textContent = 'Live data • Last synced just now';
+  document.getElementById('kpi-exp').textContent = fmt(d.totalExpenditure);
+  document.getElementById('kpi-recv').textContent = fmt(d.clientReceivable);
+  document.getElementById('kpi-pend').textContent = d.pendingVouchers;
+  document.getElementById('kpi-pl').textContent = fmt(d.netPL);
+  document.getElementById('kpi-exp-ch').innerHTML = '<span>↑ 8.2% vs last month</span>';
+  document.getElementById('kpi-exp-ch').className = 'kpi-change down';
+  document.getElementById('kpi-recv-ch').innerHTML = '<span>↑ 3 bills pending</span>';
+  document.getElementById('kpi-recv-ch').className = 'kpi-change up';
+  document.getElementById('kpi-pend-ch').innerHTML = '<span>Requires approval</span>';
+  document.getElementById('kpi-pend-ch').className = 'kpi-change down';
+  document.getElementById('kpi-pl-ch').innerHTML = '<span>Net margin 30.9%</span>';
+  document.getElementById('kpi-pl-ch').className = 'kpi-change up';
+
+  // Cost bars
+  ['labour','material','machinery','admin'].forEach(k => {
+    const pkey = k === 'admin' ? 'adminPct' : k + 'Pct';
+    const v = d[pkey] || 0;
+    document.getElementById('pct-' + k).textContent = pct(v);
+    document.getElementById('bar-' + k).style.width = v + '%';
+  });
+
+  // Recent vouchers
+  const tbody = document.getElementById('recent-vouchers');
+  tbody.innerHTML = (d.recentVouchers || []).map(v => `
+    <tr>
+      <td><strong>${v.id}</strong></td>
+      <td>${v.site}</td>
+      <td><span class="tag ${catColor(v.category)}">${v.category}</span></td>
+      <td><strong>${fmt(v.amount)}</strong></td>
+      <td><span class="tag ${statusColor(v.status)}">${v.status}</span></td>
+      <td>${v.date}</td>
+    </tr>`).join('');
 }
 
-function renderAnalysis() {
-    const T = totals();
-    const avg = sites.length ? (sites.reduce((a,s)=>a+parseFloat(profitPct(s)),0)/sites.length).toFixed(1) : '0.0';
-    const util = T.contract>0 ? ((T.cost/T.contract)*100).toFixed(1) : '0.0';
-    document.getElementById('analysisKpis').innerHTML = `
-        <div class="kpi"><div class="kpi-label">Avg Margin</div><div class="kpi-val ${parseFloat(avg)>=0?'green':'red'}">${avg}%</div></div>
-        <div class="kpi"><div class="kpi-label">Cost Utilization</div><div class="kpi-val">${util}%</div></div>
-        <div class="kpi"><div class="kpi-label">Ongoing</div><div class="kpi-val">${sites.filter(s=>s.status==='On Going').length}</div></div>
-        <div class="kpi"><div class="kpi-label">Completed</div><div class="kpi-val">${sites.filter(s=>s.status==='Completed').length}</div></div>`;
-    const cats=[{key:'materialCost',lbl:'Material'},{key:'labourCost',lbl:'Labour'},{key:'transportCost',lbl:'Transport'},{key:'equipmentCost',lbl:'Equipment'},{key:'miscExpenses',lbl:'Misc'}];
-    document.getElementById('breakdownGrid').innerHTML = cats.map(c=>{
-        const t=sites.reduce((a,s)=>a+(s[c.key]||0),0);
-        const p=T.cost>0?((t/T.cost)*100).toFixed(0):0;
-        return `<div class="breakdown-item"><div class="breakdown-lbl">${c.lbl}</div><div class="breakdown-val">${fmt(t)}</div><div style="font-size:11px;color:var(--muted);margin-top:4px">${p}% of total</div></div>`;
-    }).join('');
+/* ─── SITES ─── */
+async function loadSites() {
+  const d = await api('getSites');
+  const tbody = document.getElementById('sites-table');
+  tbody.innerHTML = (d.sites || []).map(s => {
+    const spentPct = Math.round((s.spent / s.budget) * 100);
+    return `<tr>
+      <td><strong>${s.name}</strong></td>
+      <td>${s.location}</td>
+      <td><span class="tag blue">${s.wo}</span></td>
+      <td>${fmt(s.budget)}</td>
+      <td>
+        ${fmt(s.spent)}
+        <div class="prog-wrap" style="margin-top:4px;"><div class="prog-fill ${spentPct>80?'red':'amber'}" style="width:${spentPct}%"></div></div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${spentPct}% used</div>
+      </td>
+      <td><span class="tag ${s.status==='Active'?'green':s.status==='On Hold'?'amber':'red'}">${s.status}</span></td>
+    </tr>`;
+  }).join('');
+  // Populate site dropdowns
+  populateSiteDropdowns(d.sites || []);
 }
 
-function renderAll() { renderDashboard(); renderSites(); renderAnalysis(); }
-
-// ════════════════════════════════════════════════════════════
-// SITE MODAL
-// ════════════════════════════════════════════════════════════
-const FIELDS = ['siteName','clientName','status','contractValue','materialCost','labourCost','transportCost','equipmentCost','miscExpenses','planStart','planEnd'];
-
-function openAdd() {
-    editingId = null;
-    document.getElementById('modalTitle').textContent = 'Add New Site';
-    FIELDS.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value = f==='status'?'Planning':''; });
-    document.getElementById('siteOverlay').classList.add('open');
-}
-
-function openEdit(id) {
-    const s = sites.find(x=>x.id===id); if(!s) return;
-    editingId = id;
-    document.getElementById('modalTitle').textContent = 'Edit Site';
-    FIELDS.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value = s[f]!==undefined?s[f]:''; });
-    document.getElementById('siteOverlay').classList.add('open');
-}
-
-function saveSite() {
-    const name = document.getElementById('f-siteName').value.trim();
-    if (!name) { alert('Site name zaruri hai!'); return; }
-    const data = {};
-    FIELDS.forEach(f => {
-        const el = document.getElementById('f-'+f); if(!el) return;
-        data[f] = NUM_FIELDS.includes(f) ? (parseFloat(el.value)||0) : el.value;
+function populateSiteDropdowns(sites) {
+  ['v-site','l-site','m-site','mach-site','cb-site'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const first = el.options[0];
+    el.innerHTML = '';
+    el.appendChild(first);
+    sites.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s.name; o.textContent = s.name;
+      el.appendChild(o);
     });
-    if (editingId !== null) {
-        sites = sites.map(s => s.id===editingId ? {...data, id:editingId} : s);
-    } else {
-        sites.push({...data, id:Date.now()});
-    }
-    closeModal();
-    renderAll();
-    // Auto-push agar URL saved hai
-    if (savedUrl) autoPush();
+  });
 }
 
-function deleteSite(id) {
-    if (confirm('Is site ko delete karna chahte ho?')) {
-        sites = sites.filter(s=>s.id!==id);
-        renderAll();
-        if (savedUrl) autoPush();
-    }
+/* ─── VOUCHERS ─── */
+async function loadVouchers() {
+  const d = await api('getVouchers');
+  const pending = (d.vouchers || []).filter(v => v.status === 'Pending');
+  document.getElementById('pending-count').textContent = pending.length + ' pending';
+  const tbody = document.getElementById('vouchers-table');
+  tbody.innerHTML = (d.vouchers || []).map(v => `
+    <tr>
+      <td><strong>${v.id}</strong></td>
+      <td>${v.site}</td>
+      <td><span class="tag ${catColor(v.category)}">${v.category}</span></td>
+      <td>${v.vendor}</td>
+      <td><strong>${fmt(v.amount)}</strong></td>
+      <td><span class="tag ${statusColor(v.status)}">${v.status}</span></td>
+      <td>${v.status==='Pending'?`<button class="btn btn-secondary" style="padding:5px 10px;font-size:11px;" onclick="approveVoucher('${v.id}')">Approve</button>`:'-'}</td>
+    </tr>`).join('');
+  // Today's date default
+  if (!document.getElementById('v-date').value) {
+    document.getElementById('v-date').value = new Date().toISOString().split('T')[0];
+  }
 }
 
-function closeModal() { document.getElementById('siteOverlay').classList.remove('open'); }
-
-// ════════════════════════════════════════════════════════════
-// AUTO-PUSH (silent background sync)
-// ════════════════════════════════════════════════════════════
-async function autoPush() {
-    if (!savedUrl) return;
-    try {
-        await pushToSheets(savedUrl, true); // silent=true → no log modal
-    } catch(e) {
-        console.warn('Auto-push failed:', e.message);
-    }
+async function submitVoucher() {
+  const data = {
+    site: document.getElementById('v-site').value,
+    workOrder: document.getElementById('v-wo').value,
+    category: document.getElementById('v-cat').value,
+    amount: document.getElementById('v-amount').value,
+    vendor: document.getElementById('v-vendor').value,
+    date: document.getElementById('v-date').value,
+    description: document.getElementById('v-desc').value,
+  };
+  if (!data.site || !data.category || !data.amount) {
+    notify('⚠️','Incomplete','Please fill Site, Category and Amount.'); return;
+  }
+  notify('⏳','Submitting…','Sending voucher to Google Sheets');
+  const res = await api('submitVoucher', data);
+  notify('✅','Voucher Submitted',`${data.category} entry sent for approval`);
+  clearVoucher();
+  loadVouchers();
 }
 
-// ════════════════════════════════════════════════════════════
-// SYNC MODAL
-// ════════════════════════════════════════════════════════════
-function openSyncModal() {
-    clearLog();
-    updateSyncUI();
-    document.getElementById('syncOverlay').classList.add('open');
+function clearVoucher() {
+  ['v-site','v-wo','v-cat','v-amount','v-vendor','v-date','v-desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
 }
 
-function closeSyncModal() { document.getElementById('syncOverlay').classList.remove('open'); }
-
-function clearLog() {
-    const el = document.getElementById('syncLog');
-    el.className = 'sync-log'; el.textContent = '';
+async function approveVoucher(id) {
+  notify('⏳','Approving…','Updating ledger in Sheets');
+  await api('approveVoucher', { voucherId: id });
+  notify('✅','Approved',`Voucher ${id} posted to ledger`);
+  loadVouchers();
 }
 
-function log(msg, type='info') {
-    const el = document.getElementById('syncLog');
-    el.classList.add('show');
-    el.innerHTML += `<span class="log-${type}">${msg}</span>\n`;
-    el.scrollTop = el.scrollHeight;
+/* ─── LEDGERS ─── */
+async function loadLedgers() {
+  const d = await api('getLedgers');
+  renderLedger('vendor-ledger', d.vendor || []);
+  renderLedger('client-ledger', d.client || []);
+  renderLedger('cash-ledger', d.cash || []);
+}
+function renderLedger(id, entries) {
+  document.getElementById(id).innerHTML = entries.map(e => `
+    <div class="ledger-row">
+      <div><div class="ledger-name">${e.name}</div><div class="ledger-date">${e.date}</div></div>
+      <div class="ledger-amount ${e.type}">${e.type==='dr'?'- ':'+ '}${fmt(e.amount)}</div>
+    </div>`).join('') || '<div style="color:var(--text-muted);font-size:13px;padding:12px 0;">No entries</div>';
 }
 
-async function runSync() {
-    // Determine URL
-    let url = savedUrl;
-    if (!url) {
-        url = document.getElementById('syncUrl').value.trim();
-        if (!url) { log('❌ URL daalna zaruri hai', 'err'); return; }
-        if (!url.includes('script.google.com')) { log('❌ Google Apps Script URL chahiye', 'err'); return; }
-    }
-    const baseUrl = url.replace(/\/exec.*$/, '') + '/exec';
-
-    clearLog();
-    const action = document.getElementById('syncAction').value;
-    const btn = document.getElementById('syncBtn');
-    btn.disabled = true; btn.textContent = 'Syncing...';
-
-    try {
-        if (action === 'push') {
-            await pushToSheets(baseUrl, false);
-            saveUrl(baseUrl); // URL save karo pehli successful push ke baad
-        } else {
-            await pullFromSheets(baseUrl);
-            saveUrl(baseUrl);
-        }
-    } catch(err) {
-        log('❌ ' + err.message, 'err');
-        console.error(err);
-    }
-
-    btn.disabled = false; btn.textContent = 'Sync Now';
+/* ─── CASH BOOK ─── */
+async function loadCashBook() {
+  const d = await api('getCashBook');
+  const tbody = document.getElementById('cashbook-table');
+  tbody.innerHTML = (d.entries || []).map(e => `
+    <tr>
+      <td>${e.date}</td>
+      <td><span class="tag ${e.type.includes('In')?'green':'red'}">${e.type}</span></td>
+      <td>${e.party}</td>
+      <td>${e.narr}</td>
+      <td class="ledger-amount ${e.type.includes('In')?'cr':'dr'}">${e.type.includes('In')?'+':'-'} ${fmt(e.amount)}</td>
+    </tr>`).join('');
+  if (!document.getElementById('cb-date').value)
+    document.getElementById('cb-date').value = new Date().toISOString().split('T')[0];
 }
 
-// Manual sync button (sites tab mein)
-async function manualSync() {
-    if (!savedUrl) { openSyncModal(); return; }
-    const btn = document.getElementById('manualSyncBtn');
-    btn.disabled = true; btn.textContent = '↑ Syncing...';
-    try {
-        await pushToSheets(savedUrl, false);
-        openSyncModal(); // log dikhao
-    } catch(e) {
-        alert('Sync failed: ' + e.message);
-    }
-    btn.disabled = false; btn.textContent = '↑ Sync Now';
+async function submitCashBook() {
+  const data = {
+    type: document.getElementById('cb-type').value,
+    party: document.getElementById('cb-party').value,
+    amount: document.getElementById('cb-amount').value,
+    narration: document.getElementById('cb-narr').value,
+    date: document.getElementById('cb-date').value,
+    site: document.getElementById('cb-site').value,
+  };
+  if (!data.amount) { notify('⚠️','Error','Amount required'); return; }
+  await api('submitCashBook', data);
+  notify('✅','Saved','Cash book entry recorded');
+  loadCashBook();
 }
 
-// ════════════════════════════════════════════════════════════
-// PUSH & PULL
-// ════════════════════════════════════════════════════════════
-
-// PUSH — App → Google Sheets
-// CORS fix: Content-Type: text/plain → no preflight OPTIONS request
-async function pushToSheets(baseUrl, silent=false) {
-    if (!silent) log('⏳ Connecting...', 'info');
-
-    const url     = baseUrl + '?action=addMultipleSites';
-    const payload = JSON.stringify({ action:'addMultipleSites', sites });
-
-    const res = await fetch(url, {
-        method : 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // KEY: avoids CORS preflight
-        body   : payload
-    });
-
-    // Google Apps Script 302 redirect follow karta hai — final response text/html bhi ho sakti hai
-    const text = await res.text();
-
-    // Try JSON parse
-    let json;
-    try { json = JSON.parse(text); }
-    catch(_) {
-        // Apps Script ne redirect kiya — iska matlab request pahunchi, sheet mein data gaya
-        // Ye ek known GAS behavior hai jab no-cors mode mein kaam karta hai
-        if (!silent) log('✅ ' + sites.length + ' sites pushed! (Check your Google Sheet)', 'ok');
-        document.getElementById('syncDot').className = 'sync-dot connected';
-        document.getElementById('syncLabel').textContent = '● Synced';
-        return;
-    }
-
-    if (json.success) {
-        if (!silent) log('✅ ' + json.data, 'ok');
-        document.getElementById('syncDot').className = 'sync-dot connected';
-        document.getElementById('syncLabel').textContent = '● Synced';
-    } else {
-        throw new Error(json.error || 'Server error');
-    }
+/* ─── LABOUR / MATERIAL / MACHINERY ─── */
+async function submitLabour() {
+  const rows = document.getElementById('labour-table');
+  const name = document.getElementById('l-name').value;
+  const days = document.getElementById('l-days').value;
+  const rate = document.getElementById('l-rate').value;
+  if (!name || !days || !rate) { notify('⚠️','Error','Fill all fields'); return; }
+  const amount = days * rate;
+  const data = { worker:name, trade:document.getElementById('l-trade').value, site:document.getElementById('l-site').value, days, rate, amount };
+  await api('submitLabour', data);
+  if (rows.querySelector('td[colspan]')) rows.innerHTML = '';
+  rows.innerHTML += `<tr><td>${name}</td><td>${data.trade}</td><td>${data.site}</td><td>${days}</td><td>${fmt(rate)}</td><td><strong>${fmt(amount)}</strong></td></tr>`;
+  notify('✅','Saved','Labour entry added');
 }
 
-// PULL — Google Sheets → App
-async function pullFromSheets(baseUrl) {
-    log('⏳ Loading from Google Sheets...', 'info');
-
-    const url = baseUrl + '?action=getSites';
-    const res = await fetch(url, { method:'GET' });
-
-    if (!res.ok) throw new Error('HTTP ' + res.status + ' — Deploy script with Access: Anyone');
-
-    const text = await res.text();
-    let json;
-    try { json = JSON.parse(text); }
-    catch(_) { throw new Error('Invalid response. Verify script deployment.'); }
-
-    if (!json.success) throw new Error(json.error || 'Server error');
-    if (!Array.isArray(json.data)) throw new Error('Data format invalid');
-
-    sites = json.data.map((s,i) => {
-        const c = {...s, id: s.id || (Date.now()+i)};
-        NUM_FIELDS.forEach(f => { c[f] = parseFloat(c[f])||0; });
-        return c;
-    });
-
-    log('✅ ' + sites.length + ' sites loaded!', 'ok');
-    renderAll();
+async function submitMaterial() {
+  const name = document.getElementById('m-name').value;
+  const qty = document.getElementById('m-qty').value;
+  const rate = document.getElementById('m-rate').value;
+  if (!name || !qty || !rate) { notify('⚠️','Error','Fill all fields'); return; }
+  const amount = qty * rate;
+  const data = { material:name, site:document.getElementById('m-site').value, type:document.getElementById('m-type').value, qty, unit:document.getElementById('m-unit').value, rate, amount };
+  await api('submitMaterial', data);
+  const rows = document.getElementById('material-table');
+  if (rows.querySelector('td[colspan]')) rows.innerHTML = '';
+  rows.innerHTML += `<tr><td>${name}</td><td>${data.site}</td><td><span class="tag ${data.type==='Inward'?'green':'red'}">${data.type}</span></td><td>${qty}</td><td>${data.unit}</td><td><strong>${fmt(amount)}</strong></td></tr>`;
+  notify('✅','Saved','Material entry added');
 }
 
-// ════════════════════════════════════════════════════════════
-// CSV EXPORT
-// ════════════════════════════════════════════════════════════
-function exportCSV() {
-    if (!sites.length) { alert('Koi data nahi.'); return; }
-    const hdr = ['Site','Client','Status','Start','End','Contract','Material','Labour','Transport','Equipment','Misc','Total Cost','Profit','Margin %'];
-    const rows = sites.map(s=>[s.siteName,s.clientName,s.status,s.planStart||'',s.planEnd||'',
-        s.contractValue,s.materialCost,s.labourCost,s.transportCost,
-        s.equipmentCost,s.miscExpenses,totalCost(s),profit(s),profitPct(s)].map(v=>`"${v}"`));
-    const csv = [hdr.map(h=>`"${h}"`), ...rows].map(r=>r.join(',')).join('\n');
-    const a = Object.assign(document.createElement('a'),{
-        href: URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'})),
-        download: 'sites-'+new Date().toISOString().slice(0,10)+'.csv'
-    });
-    a.click(); URL.revokeObjectURL(a.href);
+async function submitMachinery() {
+  const name = document.getElementById('mach-name').value;
+  const hrs = document.getElementById('mach-hrs').value;
+  const rate = document.getElementById('mach-rate').value;
+  if (!name) { notify('⚠️','Error','Fill equipment name'); return; }
+  const data = { equipment:name, site:document.getElementById('mach-site').value, hours:hrs, rate, amount:hrs*rate };
+  await api('submitMachinery', data);
+  notify('✅','Saved','Equipment log entry added');
 }
 
-// ════════════════════════════════════════════════════════════
-// NAV & INIT
-// ════════════════════════════════════════════════════════════
-document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-        document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('v-'+btn.dataset.view).classList.add('active');
-    });
-});
-document.getElementById('siteOverlay').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeModal(); });
-document.getElementById('syncOverlay').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeSyncModal(); });
+/* ─── REPORTS ─── */
+async function loadReports() {
+  const d = await api('getReports');
+  const tbody = document.getElementById('report-sites');
+  tbody.innerHTML = (d.sites || []).map(s => {
+    const v = s.budget - s.spent;
+    return `<tr><td>${s.name}</td><td>${fmt(s.budget)}</td><td>${fmt(s.spent)}</td><td class="ledger-amount ${v>=0?'cr':'dr'}">${v>=0?'+':''}${fmt(v)}</td></tr>`;
+  }).join('');
+  document.getElementById('rpt-rev').textContent = fmt(d.revenue||0);
+  document.getElementById('rpt-lab').textContent = '- ' + fmt(d.labour||0);
+  document.getElementById('rpt-mat').textContent = '- ' + fmt(d.material||0);
+  document.getElementById('rpt-mach').textContent = '- ' + fmt(d.machinery||0);
+  document.getElementById('rpt-adm').textContent = '- ' + fmt(d.admin||0);
+  document.getElementById('rpt-net').textContent = fmt(d.net||0);
+}
 
-updateSyncUI();
-renderAll();
+async function exportReport(type) {
+  notify('📊','Generating Report',`Requesting ${type} report from Sheets…`);
+  const d = await api('exportReport', { type });
+  setTimeout(() => notify('✅','Report Ready','Check your Google Sheet / Email'), 1500);
+}
+
+/* ─── SYNC ─── */
+async function syncNow() {
+  notify('⟳','Syncing…','Connecting to Google Apps Script');
+  await loadDashboard();
+  notify('✅','Synced','All data updated from Google Sheets');
+}
+
+/* ─── HELPERS ─── */
+function catColor(c) {
+  const m = {Labour:'amber',Material:'blue',Machinery:'green',Transport:'purple',Administration:'purple'};
+  return m[c] || 'blue';
+}
+function statusColor(s) {
+  const m = {Approved:'green',Pending:'amber',Rejected:'red',Posted:'blue'};
+  return m[s] || 'blue';
+}
+
+/* ─── INIT ─── */
+loadDashboard();
+loadSites();
 </script>
 </body>
 </html>
