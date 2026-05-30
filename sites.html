@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sites — ConstructMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --white: #ffffff;
+    --off-white: #f8f7f4;
+    --surface: #f0eeea;
+    --border: #e2dfd8;
+    --border-focus: #e85d26;
+    --text: #1a1814;
+    --text-muted: #7a7670;
+    --text-light: #b0ada8;
+    --accent: #e85d26;
+    --accent-light: #ff7a45;
+    --accent-bg: #fff3ee;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.10);
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--off-white);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .back-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: var(--off-white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 36px; height: 36px;
+    background: var(--accent); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 14px; color: white;
+  }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; }
+  .page-breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--text-muted);
+  }
+  .breadcrumb-sep { opacity: 0.4; }
+  .breadcrumb-current { color: var(--text); font-weight: 600; }
+
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .sync-pill {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--green-bg);
+    border: 1px solid rgba(22,163,74,0.2);
+    color: var(--green);
+    padding: 6px 14px; border-radius: 100px;
+    font-size: 12px; font-weight: 600;
+  }
+  .sync-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── BODY LAYOUT ── */
+  .body-wrap {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* ── SIDEBAR NAV ── */
+  .sidebar {
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    padding: 28px 20px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .sidebar-section {
+    font-size: 10px; font-weight: 700;
+    color: var(--text-light); letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 14px 10px 6px;
+  }
+  .sidebar-section:first-child { padding-top: 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    cursor: pointer; text-decoration: none;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+  .nav-item:hover { background: var(--off-white); color: var(--text); }
+  .nav-item.active {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-color: rgba(232,93,38,0.15);
+    font-weight: 600;
+  }
+  .nav-item-icon { font-size: 16px; width: 22px; text-align: center; }
+  .nav-badge {
+    margin-left: auto;
+    background: var(--red-bg); color: var(--red);
+    border-radius: 100px; padding: 2px 8px;
+    font-size: 10px; font-weight: 700;
+  }
+  .nav-badge.green { background: var(--green-bg); color: var(--green); }
+  .nav-badge.blue { background: var(--blue-bg); color: var(--blue); }
+
+  /* ── MAIN CONTENT ── */
+  .main-content {
+    padding: 32px 40px;
+    overflow-y: auto;
+  }
+
+  .page-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 32px;
+  }
+  .page-title-wrap {}
+  .page-eyebrow {
+    font-size: 11px; font-weight: 700;
+    color: var(--accent); letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: 32px; font-weight: 900;
+    letter-spacing: -1px; color: var(--text);
+    margin-bottom: 6px;
+  }
+  .page-desc { font-size: 14px; color: var(--text-muted); }
+
+  .page-actions { display: flex; gap: 10px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 10px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--accent); color: white;
+  }
+  .btn-primary:hover {
+    background: var(--accent-light);
+    box-shadow: 0 6px 20px rgba(232,93,38,0.3);
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    background: var(--white); color: var(--text);
+    border: 1.5px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── FORM CARD ── */
+  .form-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .form-card-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    background: var(--off-white);
+  }
+  .card-header-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .card-header-icon.orange { background: var(--accent-bg); }
+  .card-header-icon.blue   { background: var(--blue-bg); }
+  .card-header-title {
+    font-size: 15px; font-weight: 700; color: var(--text);
+    margin-bottom: 2px;
+  }
+  .card-header-sub { font-size: 12px; color: var(--text-muted); }
+
+  .form-body { padding: 28px; }
+
+  /* ── FIELD GROUPS ── */
+  .fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .fields-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .fields-grid.cols1 { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: 7px; }
+  .field.full { grid-column: 1 / -1; }
+  .field-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--text-muted); letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .field-label .req { color: var(--accent); margin-left: 2px; }
+
+  .input-wrap { position: relative; }
+  .field-input, .field-select, .field-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--off-white);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; color: var(--text);
+    outline: none; transition: all 0.2s;
+    appearance: none;
+  }
+  .field-input::placeholder { color: var(--text-light); }
+  .field-input:focus, .field-select:focus, .field-textarea:focus {
+    border-color: var(--accent);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(232,93,38,0.08);
+  }
+  .field-textarea { resize: vertical; min-height: 88px; }
+  .field-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+  .field-select option { background: white; }
+
+  .input-prefix {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px; font-weight: 600;
+    color: var(--text-muted); pointer-events: none;
+  }
+  .has-prefix .field-input { padding-left: 34px; }
+
+  /* ── SECTION DIVIDER ── */
+  .section-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 24px 0 20px;
+  }
+  .sd-line { flex: 1; height: 1px; background: var(--border); }
+  .sd-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--text-light); letter-spacing: 1px;
+    text-transform: uppercase; white-space: nowrap;
+  }
+
+  /* ── FORM FOOTER ── */
+  .form-footer {
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+    background: var(--off-white);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .footer-hint { font-size: 12px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
+
+  /* ── SITES TABLE CARD ── */
+  .table-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .table-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--white);
+  }
+  .table-title { font-size: 15px; font-weight: 700; }
+  .table-count {
+    background: var(--blue-bg); color: var(--blue);
+    border-radius: 100px; padding: 3px 10px;
+    font-size: 11px; font-weight: 700;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    padding: 12px 20px;
+    text-align: left;
+    font-size: 10px; font-weight: 700;
+    color: var(--text-light); letter-spacing: 1px;
+    text-transform: uppercase;
+    background: var(--off-white);
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td {
+    padding: 14px 20px;
+    font-size: 13px; color: var(--text);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--off-white); }
+
+  .tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 100px;
+    font-size: 11px; font-weight: 600;
+  }
+  .tag.green  { background: var(--green-bg); color: var(--green); }
+  .tag.amber  { background: var(--amber-bg); color: var(--amber); }
+  .tag.blue   { background: var(--blue-bg); color: var(--blue); }
+  .tag.red    { background: var(--red-bg); color: var(--red); }
+  .tag.orange { background: var(--accent-bg); color: var(--accent); }
+
+  .prog-wrap { background: var(--border); border-radius: 100px; height: 5px; overflow: hidden; margin-top: 5px; min-width: 80px; }
+  .prog-fill { height: 100%; border-radius: 100px; }
+  .prog-fill.orange { background: var(--accent); }
+  .prog-fill.red    { background: var(--red); }
+  .prog-fill.green  { background: var(--green); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center; padding: 48px 20px;
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-text { font-size: 13px; color: var(--text-muted); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 28px; right: 28px;
+    padding: 14px 20px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999; min-width: 240px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--text); color: white; }
+  .toast.error   { background: var(--red); color: white; }
+  .toast.info    { background: var(--blue); color: white; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .anim { opacity: 0; animation: fadeUp 0.4s ease forwards; }
+  .a1 { animation-delay: 0.05s; }
+  .a2 { animation-delay: 0.1s; }
+  .a3 { animation-delay: 0.15s; }
+  .a4 { animation-delay: 0.2s; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="back-btn">← Back</a>
+    <div class="topbar-brand">
+      <div class="brand-icon">CM</div>
+      <div class="brand-name">ConstructMS</div>
+    </div>
+    <div class="page-breadcrumb">
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Sites</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="sync-pill">
+      <span class="sync-dot"></span>
+      Sheets Connected
+    </div>
+    <a href="dashboard.html" class="btn btn-ghost" style="padding:8px 16px;font-size:12px;">📊 Dashboard</a>
+    <a href="workorder.html" class="btn btn-primary" style="padding:8px 16px;font-size:12px;">+ Work Order</a>
+  </div>
+</div>
+
+<div class="body-wrap">
+
+  <!-- SIDEBAR NAV -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Main Modules</div>
+    <a href="index.html" class="nav-item">
+      <span class="nav-item-icon">🏠</span> Home
+    </a>
+    <a href="sites.html" class="nav-item active">
+      <span class="nav-item-icon">🏗</span> Sites
+      <span class="nav-badge green" id="site-nav-count">0</span>
+    </a>
+    <a href="workorder.html" class="nav-item">
+      <span class="nav-item-icon">📋</span> Work Orders & Vendors
+    </a>
+    <a href="dashboard.html" class="nav-item">
+      <span class="nav-item-icon">📊</span> Dashboard
+    </a>
+
+    <div class="sidebar-section">Cost Heads</div>
+    <a href="#" class="nav-item" onclick="quickSection('labour')">
+      <span class="nav-item-icon">👷</span> Labour
+    </a>
+    <a href="#" class="nav-item" onclick="quickSection('material')">
+      <span class="nav-item-icon">📦</span> Material
+    </a>
+    <a href="#" class="nav-item" onclick="quickSection('machinery')">
+      <span class="nav-item-icon">🚜</span> Machinery
+    </a>
+
+    <div class="sidebar-section">Finance</div>
+    <a href="#" class="nav-item">
+      <span class="nav-item-icon">📒</span> Ledgers
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-item-icon">💰</span> Cash Book
+    </a>
+
+    <!-- QUICK STATS -->
+    <div style="margin-top:auto;padding-top:20px;border-top:1px solid var(--border);">
+      <div style="font-size:11px;font-weight:700;color:var(--text-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Quick Stats</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;">
+          <span style="color:var(--text-muted);">Total Sites</span>
+          <span style="font-weight:700;" id="qs-total">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;">
+          <span style="color:var(--text-muted);">Active</span>
+          <span style="font-weight:700;color:var(--green);" id="qs-active">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;">
+          <span style="color:var(--text-muted);">On Hold</span>
+          <span style="font-weight:700;color:var(--amber);" id="qs-hold">—</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <div class="page-header anim a1">
+      <div class="page-title-wrap">
+        <div class="page-eyebrow">Module 01</div>
+        <h1 class="page-title">Sites</h1>
+        <p class="page-desc">Register new construction sites and manage existing ones</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-ghost" onclick="loadSites()">⟳ Refresh</button>
+        <button class="btn btn-primary" onclick="scrollToForm()">+ Add New Site</button>
+      </div>
+    </div>
+
+    <!-- SITES TABLE -->
+    <div class="table-card anim a2" style="margin-bottom:28px;">
+      <div class="table-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="table-title">All Sites</span>
+          <span class="table-count" id="site-count-badge">Loading…</span>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input id="site-search" type="text" placeholder="🔍  Search site…"
+            style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;width:200px;"
+            oninput="filterSites()" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Site Name</th>
+            <th>Location</th>
+            <th>Work Order</th>
+            <th>Status</th>
+            <th>Budget</th>
+            <th>Spent</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="sites-tbody">
+          <tr><td colspan="7">
+            <div class="empty-state">
+              <div class="empty-icon">🏗</div>
+              <div class="empty-text">Loading sites…</div>
+            </div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ADD SITE FORM -->
+    <div id="add-site-form" class="form-card anim a3">
+      <div class="form-card-header">
+        <div class="card-header-icon orange">🏗</div>
+        <div>
+          <div class="card-header-title">Add New Site</div>
+          <div class="card-header-sub">Fill in the details to register a new construction site</div>
+        </div>
+      </div>
+      <div class="form-body">
+
+        <!-- Basic Info -->
+        <div class="section-divider">
+          <div class="sd-line"></div>
+          <div class="sd-label">📍 Basic Information</div>
+          <div class="sd-line"></div>
+        </div>
+
+        <div class="fields-grid">
+          <div class="field">
+            <label class="field-label">Site Name <span class="req">*</span></label>
+            <input class="field-input" id="s-name" type="text" placeholder="e.g. Site A — Sector 62"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Location / City <span class="req">*</span></label>
+            <input class="field-input" id="s-location" type="text" placeholder="e.g. Noida, UP"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Work Order No. <span class="req">*</span></label>
+            <input class="field-input" id="s-wo" type="text" placeholder="WO-2024-001"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Client Name <span class="req">*</span></label>
+            <input class="field-input" id="s-client" type="text" placeholder="Client / Company name"/>
+          </div>
+          <div class="field full">
+            <label class="field-label">Site Address</label>
+            <textarea class="field-textarea" id="s-address" placeholder="Full site address…" rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- Budget Details -->
+        <div class="section-divider">
+          <div class="sd-line"></div>
+          <div class="sd-label">💰 Budget & Timeline</div>
+          <div class="sd-line"></div>
+        </div>
+
+        <div class="fields-grid cols3">
+          <div class="field">
+            <label class="field-label">Total Budget (₹) <span class="req">*</span></label>
+            <div class="input-wrap has-prefix">
+              <span class="input-prefix">₹</span>
+              <input class="field-input" id="s-budget" type="number" placeholder="0"/>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Start Date</label>
+            <input class="field-input" id="s-start" type="date"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Expected End Date</label>
+            <input class="field-input" id="s-end" type="date"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Site Incharge</label>
+            <input class="field-input" id="s-incharge" type="text" placeholder="Engineer name"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Contact No.</label>
+            <input class="field-input" id="s-contact" type="tel" placeholder="+91 XXXXX XXXXX"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Status <span class="req">*</span></label>
+            <select class="field-select" id="s-status">
+              <option value="Active">🟢 Active</option>
+              <option value="Planning">🔵 Planning</option>
+              <option value="On Hold">🟡 On Hold</option>
+              <option value="Completed">✅ Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Project Type -->
+        <div class="section-divider">
+          <div class="sd-line"></div>
+          <div class="sd-label">🏛 Project Details</div>
+          <div class="sd-line"></div>
+        </div>
+
+        <div class="fields-grid">
+          <div class="field">
+            <label class="field-label">Project Type</label>
+            <select class="field-select" id="s-type">
+              <option>Residential</option>
+              <option>Commercial</option>
+              <option>Industrial</option>
+              <option>Infrastructure</option>
+              <option>Renovation</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Scope (Area / Units)</label>
+            <input class="field-input" id="s-scope" type="text" placeholder="e.g. 5000 Sqm / 24 Flats"/>
+          </div>
+          <div class="field full">
+            <label class="field-label">Remarks / Description</label>
+            <textarea class="field-textarea" id="s-remarks" placeholder="Any additional details about the site…" rows="2"></textarea>
+          </div>
+        </div>
+
+      </div>
+      <div class="form-footer">
+        <div class="footer-hint">
+          <span>ℹ️</span> Marked fields <span style="color:var(--accent);font-weight:700;">*</span> are required. Data syncs to Google Sheets.
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost" onclick="clearSiteForm()">Clear</button>
+          <button class="btn btn-primary" onclick="submitSite()">
+            <span id="submit-icon">🏗</span>
+            <span id="submit-text">Save Site</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast success" id="toast">
+  <span id="toast-icon">✅</span>
+  <span id="toast-msg">Saved!</span>
+</div>
+
+<script>
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
+
+  let allSites = [];
+
+  async function api(action, data = {}) {
+    try {
+      const params = new URLSearchParams({ action, ...data });
+      const res = await fetch(`${API_URL}?${params}`);
+      return await res.json();
+    } catch(e) {
+      return getDemoSites();
+    }
+  }
+
+  function getDemoSites() {
+    return { sites: [
+      { name:'Site A — Sector 62', location:'Noida', wo:'WO-2024-001', client:'DLF Ltd', budget:5000000, spent:1850000, status:'Active', type:'Residential' },
+      { name:'Site B — NH8', location:'Gurgaon', wo:'WO-2024-002', client:'Oberoi Realty', budget:8000000, spent:3200000, status:'Active', type:'Commercial' },
+      { name:'Site C — Dwarka', location:'Delhi', wo:'WO-2024-003', client:'DMRC', budget:3500000, spent:850000, status:'Planning', type:'Infrastructure' },
+      { name:'Site D — Raj Nagar', location:'Ghaziabad', wo:'WO-2024-004', client:'Gaur Sons', budget:6000000, spent:4100000, status:'On Hold', type:'Residential' },
+    ]};
+  }
+
+  const fmt = n => '₹' + Number(n).toLocaleString('en-IN');
+
+  async function loadSites() {
+    document.getElementById('site-count-badge').textContent = 'Loading…';
+    const d = await api('getSites');
+    allSites = d.sites || [];
+    renderSites(allSites);
+    updateSidebarStats(allSites);
+  }
+
+  function renderSites(sites) {
+    const badge = document.getElementById('site-count-badge');
+    badge.textContent = sites.length + ' sites';
+    document.getElementById('site-nav-count').textContent = sites.length;
+
+    const tbody = document.getElementById('sites-tbody');
+    if (!sites.length) {
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🏗</div><div class="empty-text">No sites yet. Add your first site below!</div></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = sites.map((s, i) => {
+      const spentPct = Math.min(100, Math.round((s.spent / s.budget) * 100)) || 0;
+      const barColor = spentPct > 85 ? 'red' : spentPct > 60 ? 'orange' : 'green';
+      const statusTag = { Active:'green', Planning:'blue', 'On Hold':'amber', Completed:'green' };
+      return `
+        <tr style="animation: fadeUp 0.3s ease ${i * 0.05}s both;">
+          <td>
+            <div style="font-weight:700;">${s.name}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${s.type || 'General'}</div>
+          </td>
+          <td>${s.location}</td>
+          <td><span class="tag blue">${s.wo}</span></td>
+          <td><span class="tag ${statusTag[s.status] || 'blue'}">${s.status}</span></td>
+          <td style="font-weight:600;">${fmt(s.budget)}</td>
+          <td>
+            <div style="font-size:13px;font-weight:600;">${fmt(s.spent || 0)}</div>
+            <div class="prog-wrap"><div class="prog-fill ${barColor}" style="width:${spentPct}%"></div></div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:3px;">${spentPct}% used</div>
+          </td>
+          <td>
+            <button class="btn btn-ghost" style="padding:6px 12px;font-size:11px;"
+              onclick="editSite(${i})">✏️ Edit</button>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  function filterSites() {
+    const q = document.getElementById('site-search').value.toLowerCase();
+    const filtered = allSites.filter(s =>
+      s.name.toLowerCase().includes(q) || s.location.toLowerCase().includes(q) || s.wo.toLowerCase().includes(q)
+    );
+    renderSites(filtered);
+  }
+
+  function updateSidebarStats(sites) {
+    document.getElementById('qs-total').textContent = sites.length;
+    document.getElementById('qs-active').textContent = sites.filter(s => s.status === 'Active').length;
+    document.getElementById('qs-hold').textContent = sites.filter(s => s.status === 'On Hold').length;
+  }
+
+  async function submitSite() {
+    const name     = document.getElementById('s-name').value.trim();
+    const location = document.getElementById('s-location').value.trim();
+    const wo       = document.getElementById('s-wo').value.trim();
+    const client   = document.getElementById('s-client').value.trim();
+    const budget   = document.getElementById('s-budget').value;
+    const status   = document.getElementById('s-status').value;
+
+    if (!name || !location || !wo || !budget) {
+      showToast('⚠️ Please fill all required fields', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('submit-text');
+    const icon = document.getElementById('submit-icon');
+    btn.textContent = 'Saving…';
+    icon.textContent = '⏳';
+
+    const data = {
+      siteName: name, location, workOrder: wo,
+      client, budget,
+      address: document.getElementById('s-address').value,
+      startDate: document.getElementById('s-start').value,
+      endDate: document.getElementById('s-end').value,
+      incharge: document.getElementById('s-incharge').value,
+      contact: document.getElementById('s-contact').value,
+      status, projectType: document.getElementById('s-type').value,
+      scope: document.getElementById('s-scope').value,
+      remarks: document.getElementById('s-remarks').value,
+    };
+
+    await api('addSite', data);
+
+    btn.textContent = 'Save Site';
+    icon.textContent = '🏗';
+    showToast('✅ Site saved to Google Sheets!', 'success');
+    clearSiteForm();
+    loadSites();
+  }
+
+  function clearSiteForm() {
+    ['s-name','s-location','s-wo','s-client','s-address','s-budget',
+     's-start','s-end','s-incharge','s-contact','s-scope','s-remarks']
+      .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    document.getElementById('s-status').value = 'Active';
+  }
+
+  function editSite(idx) {
+    const s = allSites[idx];
+    if (!s) return;
+    document.getElementById('s-name').value = s.name || '';
+    document.getElementById('s-location').value = s.location || '';
+    document.getElementById('s-wo').value = s.wo || '';
+    document.getElementById('s-client').value = s.client || '';
+    document.getElementById('s-budget').value = s.budget || '';
+    document.getElementById('s-status').value = s.status || 'Active';
+    scrollToForm();
+    showToast('ℹ️ Editing site — update and save', 'info');
+  }
+
+  function scrollToForm() {
+    document.getElementById('add-site-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function quickSection(name) {
+    showToast(`${name} module coming soon!`, 'info');
+  }
+
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    const [icon, ...rest] = msg.split(' ');
+    document.getElementById('toast-icon').textContent = icon;
+    document.getElementById('toast-msg').textContent = rest.join(' ');
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── INIT ──
+  document.getElementById('s-start').value = new Date().toISOString().split('T')[0];
+  loadSites();
+
+  // Animate table row
+  const style = document.createElement('style');
+  style.textContent = `@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }`;
+  document.head.appendChild(style);
+</script>
+</body>
+</html>
