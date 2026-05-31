@@ -190,16 +190,22 @@
     background: var(--off-white); border: 1.5px solid var(--border);
     border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 13px; color: var(--text); outline: none; transition: all 0.2s; appearance: none;
+    text-transform: uppercase;
   }
-  .field-input::placeholder { color: var(--text-light); }
+  .field-input::placeholder { color: var(--text-light); text-transform: none; }
   .field-input:focus, .field-select:focus, .field-textarea:focus {
     border-color: var(--accent); background: var(--white);
     box-shadow: 0 0 0 4px rgba(232,93,38,0.08);
   }
-  .field-textarea { resize: vertical; min-height: 72px; }
+  /* Date inputs and number inputs should NOT be uppercase */
+  input[type="date"], input[type="number"], input[type="tel"] {
+    text-transform: none !important;
+  }
+  .field-textarea { resize: vertical; min-height: 72px; text-transform: uppercase; }
   .field-select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+    text-transform: none;
   }
   .input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; color: var(--text-muted); pointer-events: none; }
   .has-prefix .field-input { padding-left: 28px; }
@@ -213,6 +219,32 @@
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
   }
   .footer-hint { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
+
+  /* LOCKED FIELD STYLES */
+  .field-input:disabled, .field-select:disabled, .field-textarea:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+    background: var(--border) !important;
+    border-color: var(--border) !important;
+    box-shadow: none !important;
+  }
+  .field-locked-label { font-size: 9px; color: var(--text-light); font-weight: 600; letter-spacing: 0.5px; margin-top: 2px; }
+
+  /* EDIT LOCK BANNER */
+  #edit-lock-banner {
+    background: var(--amber-bg);
+    border: 1.5px solid var(--amber);
+    color: #92400e;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.5;
+  }
 
   /* EMPTY */
   .empty-state { text-align: center; padding: 48px 20px; }
@@ -346,7 +378,7 @@
         <div class="card-header-icon orange">🏗</div>
         <div>
           <div class="card-header-title" id="form-title">Add New Site</div>
-          <div class="card-header-sub">Fill all details to register a construction site</div>
+          <div class="card-header-sub" id="form-subtitle">Fill all details to register a construction site</div>
         </div>
       </div>
 
@@ -513,6 +545,18 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
 let allSites = [];
 
+// ── Fields that CAN be edited in edit mode ──────────────────
+const EDITABLE_IN_EDIT = ['s-manager', 's-wo-status', 's-progress', 's-status', 's-priority'];
+
+// ── All form fields (to lock / unlock) ──────────────────────
+const ALL_FORM_FIELDS = [
+  's-name', 's-client', 's-client-contact', 's-site-type',
+  's-location', 's-city', 's-state', 's-project-category',
+  's-plan-start', 's-plan-end', 's-actual-start', 's-actual-end',
+  's-budget', 's-created-by', 's-remarks',
+  's-manager', 's-wo-status', 's-progress', 's-status', 's-priority'
+];
+
 async function api(action, data = {}) {
   try {
     const params = new URLSearchParams({ action, ...data });
@@ -524,38 +568,38 @@ async function api(action, data = {}) {
 function getDemoSites() {
   return { sites: [
     {
-      serialNo:1, siteId:'SITE-2024-1001', name:'Site A — Sector 62', clientName:'DLF Ltd',
-      clientContact:'+91 98100 11111', siteType:'Commercial', location:'Sector 62, Noida',
-      city:'Noida', state:'Uttar Pradesh', projectCategory:'New Construction',
+      serialNo:1, siteId:'SITE-2024-1001', name:'SITE A — SECTOR 62', clientName:'DLF LTD',
+      clientContact:'+91 98100 11111', siteType:'Commercial', location:'SECTOR 62, NOIDA',
+      city:'NOIDA', state:'UTTAR PRADESH', projectCategory:'New Construction',
       planStartDate:'01 Jan 2024', plannedEndDate:'31 Dec 2024',
       actualStartDate:'05 Jan 2024', actualEndDate:'—', budget:5000000,
-      siteManager:'Ramesh Kumar', workOrderStatus:'In Progress', progress:42,
-      status:'Active', priority:'High', remarks:'Phase 1 underway', createdAt:'01 Jan 2024', createdBy:'Admin'
+      siteManager:'RAMESH KUMAR', workOrderStatus:'In Progress', progress:42,
+      status:'Active', priority:'High', remarks:'PHASE 1 UNDERWAY', createdAt:'01 Jan 2024', createdBy:'ADMIN'
     },
     {
-      serialNo:2, siteId:'SITE-2024-1002', name:'Site B — NH8', clientName:'Oberoi Realty',
-      clientContact:'+91 98200 22222', siteType:'Residential', location:'NH8, Gurgaon',
-      city:'Gurgaon', state:'Haryana', projectCategory:'New Construction',
+      serialNo:2, siteId:'SITE-2024-1002', name:'SITE B — NH8', clientName:'OBEROI REALTY',
+      clientContact:'+91 98200 22222', siteType:'Residential', location:'NH8, GURGAON',
+      city:'GURGAON', state:'HARYANA', projectCategory:'New Construction',
       planStartDate:'15 Feb 2024', plannedEndDate:'30 Jun 2025',
       actualStartDate:'20 Feb 2024', actualEndDate:'—', budget:8000000,
-      siteManager:'Suresh Verma', workOrderStatus:'In Progress', progress:28,
-      status:'Active', priority:'Normal', remarks:'', createdAt:'15 Feb 2024', createdBy:'Admin'
+      siteManager:'SURESH VERMA', workOrderStatus:'In Progress', progress:28,
+      status:'Active', priority:'Normal', remarks:'', createdAt:'15 Feb 2024', createdBy:'ADMIN'
     },
     {
-      serialNo:3, siteId:'SITE-2024-1003', name:'Site C — Dwarka', clientName:'DMRC',
-      clientContact:'+91 98300 33333', siteType:'Infrastructure', location:'Sector 10, Dwarka',
-      city:'Delhi', state:'Delhi', projectCategory:'Road / Civil',
+      serialNo:3, siteId:'SITE-2024-1003', name:'SITE C — DWARKA', clientName:'DMRC',
+      clientContact:'+91 98300 33333', siteType:'Infrastructure', location:'SECTOR 10, DWARKA',
+      city:'DELHI', state:'DELHI', projectCategory:'Road / Civil',
       planStartDate:'01 Mar 2024', plannedEndDate:'31 Mar 2025',
       actualStartDate:'—', actualEndDate:'—', budget:3500000,
-      siteManager:'Anjali Sharma', workOrderStatus:'Not Started', progress:0,
-      status:'Planning', priority:'Urgent', remarks:'Govt. project, approvals pending', createdAt:'01 Mar 2024', createdBy:'Admin'
+      siteManager:'ANJALI SHARMA', workOrderStatus:'Not Started', progress:0,
+      status:'Planning', priority:'Urgent', remarks:'GOVT. PROJECT, APPROVALS PENDING', createdAt:'01 Mar 2024', createdBy:'ADMIN'
     },
   ]};
 }
 
 const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
 
-const statusColors = { Active:'green', Planning:'blue', 'On Hold':'amber', Completed:'green', Cancelled:'red' };
+const statusColors  = { Active:'green', Planning:'blue', 'On Hold':'amber', Completed:'green', Cancelled:'red' };
 const priorityColors = { Normal:'blue', Low:'', High:'orange', Urgent:'red' };
 const woStatusColors = { 'Not Started':'', 'In Progress':'orange', Completed:'green', 'On Hold':'amber' };
 
@@ -627,16 +671,47 @@ function filterSites() {
 }
 
 function updateStats(sites) {
-  document.getElementById('qs-total').textContent   = sites.length;
-  document.getElementById('qs-active').textContent  = sites.filter(s => s.status === 'Active').length;
-  document.getElementById('qs-planning').textContent= sites.filter(s => s.status === 'Planning').length;
-  document.getElementById('qs-hold').textContent    = sites.filter(s => s.status === 'On Hold').length;
+  document.getElementById('qs-total').textContent    = sites.length;
+  document.getElementById('qs-active').textContent   = sites.filter(s => s.status === 'Active').length;
+  document.getElementById('qs-planning').textContent = sites.filter(s => s.status === 'Planning').length;
+  document.getElementById('qs-hold').textContent     = sites.filter(s => s.status === 'On Hold').length;
   const totalBudget = sites.reduce((s, x) => s + Number(x.budget||0), 0);
-  document.getElementById('qs-budget').textContent  = totalBudget >= 1e7
+  document.getElementById('qs-budget').textContent   = totalBudget >= 1e7
     ? '₹' + (totalBudget/1e7).toFixed(1) + ' Cr'
     : '₹' + (totalBudget/1e5).toFixed(1) + ' L';
 }
 
+// ── SET EDIT MODE ─────────────────────────────────────────────
+// isEdit=true  → lock all fields EXCEPT EDITABLE_IN_EDIT
+// isEdit=false → unlock all fields
+function setEditMode(isEdit) {
+  ALL_FORM_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const shouldLock = isEdit && !EDITABLE_IN_EDIT.includes(id);
+    el.disabled = shouldLock;
+  });
+
+  // Show / hide lock banner
+  const existingBanner = document.getElementById('edit-lock-banner');
+  if (isEdit) {
+    if (!existingBanner) {
+      const banner = document.createElement('div');
+      banner.id = 'edit-lock-banner';
+      banner.innerHTML = `
+        ⚠️&nbsp; <strong>Edit Mode:</strong> Only
+        <strong>Site Manager, WO Status, Progress %, Status</strong> and
+        <strong>Priority</strong> can be changed. All other fields are locked.
+      `;
+      const formBody = document.querySelector('.form-body');
+      formBody.insertBefore(banner, formBody.firstChild);
+    }
+  } else {
+    if (existingBanner) existingBanner.remove();
+  }
+}
+
+// ── SUBMIT SITE ───────────────────────────────────────────────
 async function submitSite() {
   const name     = document.getElementById('s-name').value.trim();
   const city     = document.getElementById('s-city').value.trim();
@@ -654,28 +729,31 @@ async function submitSite() {
   document.getElementById('submit-text').textContent = 'Saving…';
   document.getElementById('submit-icon').textContent = '⏳';
 
+  // ── All text values sent as UPPERCASE ──
+  const uc = v => (v || '').toString().trim().toUpperCase();
+
   const data = {
     action:          isEdit ? 'updateSite' : 'addSite',
-    siteName:        name,
-    clientName:      client,
-    clientContact:   document.getElementById('s-client-contact').value,
-    siteType:        document.getElementById('s-site-type').value,
-    location:        location,
-    city:            city,
-    state:           document.getElementById('s-state').value,
-    projectCategory: document.getElementById('s-project-category').value,
-    planStartDate:   document.getElementById('s-plan-start').value,
+    siteName:        uc(name),
+    clientName:      uc(client),
+    clientContact:   document.getElementById('s-client-contact').value.trim(),   // phone — keep as-is
+    siteType:        uc(document.getElementById('s-site-type').value),
+    location:        uc(location),
+    city:            uc(city),
+    state:           uc(document.getElementById('s-state').value),
+    projectCategory: uc(document.getElementById('s-project-category').value),
+    planStartDate:   document.getElementById('s-plan-start').value,              // date — keep as-is
     plannedEndDate:  document.getElementById('s-plan-end').value,
     actualStartDate: document.getElementById('s-actual-start').value,
     actualEndDate:   document.getElementById('s-actual-end').value,
     budget:          budget,
-    siteManager:     document.getElementById('s-manager').value,
-    workOrderStatus: document.getElementById('s-wo-status').value,
+    siteManager:     uc(document.getElementById('s-manager').value),
+    workOrderStatus: document.getElementById('s-wo-status').value,               // dropdown value — keep as-is
     progress:        document.getElementById('s-progress').value || 0,
-    status:          document.getElementById('s-status').value,
-    priority:        document.getElementById('s-priority').value,
-    remarks:         document.getElementById('s-remarks').value,
-    createdBy:       document.getElementById('s-created-by').value || 'Admin',
+    status:          document.getElementById('s-status').value,                  // dropdown value — keep as-is
+    priority:        document.getElementById('s-priority').value,                // dropdown value — keep as-is
+    remarks:         uc(document.getElementById('s-remarks').value),
+    createdBy:       uc(document.getElementById('s-created-by').value) || 'ADMIN',
   };
   if (isEdit) data.siteId = siteId;
 
@@ -688,20 +766,28 @@ async function submitSite() {
   loadSites();
 }
 
+// ── CLEAR FORM ────────────────────────────────────────────────
 function clearSiteForm() {
   ['s-siteid','s-name','s-client','s-client-contact','s-location','s-city','s-state',
    's-budget','s-plan-start','s-plan-end','s-actual-start','s-actual-end',
    's-manager','s-created-by','s-remarks','s-progress']
-    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('s-status').value = 'Planning';
-  document.getElementById('s-priority').value = 'Normal';
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+
+  document.getElementById('s-status').value    = 'Planning';
+  document.getElementById('s-priority').value  = 'Normal';
   document.getElementById('s-wo-status').value = 'Not Started';
-  document.getElementById('form-title').textContent = 'Add New Site';
+  document.getElementById('form-title').textContent    = 'Add New Site';
+  document.getElementById('form-subtitle').textContent = 'Fill all details to register a construction site';
+
+  // Unlock all fields
+  setEditMode(false);
 }
 
+// ── EDIT SITE ─────────────────────────────────────────────────
 function editSite(idx) {
   const s = allSites[idx];
   if (!s) return;
+
   document.getElementById('s-siteid').value           = s.siteId || '';
   document.getElementById('s-name').value             = s.name || '';
   document.getElementById('s-client').value           = s.clientName || '';
@@ -714,25 +800,40 @@ function editSite(idx) {
   document.getElementById('s-progress').value         = s.progress || 0;
   document.getElementById('s-remarks').value          = s.remarks || '';
   document.getElementById('s-created-by').value       = s.createdBy || '';
-  // selects
+
+  // Selects
   ['s-site-type','s-project-category','s-wo-status','s-status','s-priority'].forEach(id => {
     const el = document.getElementById(id);
-    const key = { 's-site-type':'siteType','s-project-category':'projectCategory','s-wo-status':'workOrderStatus','s-status':'status','s-priority':'priority' };
-    if(el && s[key[id]]) {
-      const opt = [...el.options].find(o => o.value === s[key[id]] || o.text.includes(s[key[id]]));
-      if(opt) el.value = opt.value;
+    const keyMap = {
+      's-site-type':        'siteType',
+      's-project-category': 'projectCategory',
+      's-wo-status':        'workOrderStatus',
+      's-status':           'status',
+      's-priority':         'priority'
+    };
+    if (el && s[keyMap[id]]) {
+      const opt = [...el.options].find(o => o.value === s[keyMap[id]] || o.text.includes(s[keyMap[id]]));
+      if (opt) el.value = opt.value;
     }
   });
-  document.getElementById('form-title').textContent = 'Edit Site — ' + s.name;
+
+  document.getElementById('form-title').textContent    = '✏️ Edit Site — ' + s.name;
+  document.getElementById('form-subtitle').textContent = 'Only Site Manager, WO Status, Progress %, Status & Priority can be updated';
+
+  // Lock fields — only 5 editable
+  setEditMode(true);
+
   scrollToForm();
-  showToast('ℹ️ Editing site — update and save', 'info');
+  showToast('ℹ️ Edit mode — 5 fields only editable', 'info');
 }
 
+// ── SCROLL TO FORM ────────────────────────────────────────────
 function scrollToForm() {
   document.getElementById('add-site-form').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
-function showToast(msg, type='success') {
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
   const t = document.getElementById('toast');
   const parts = msg.split(' ');
   document.getElementById('toast-icon').textContent = parts[0];
@@ -741,7 +842,7 @@ function showToast(msg, type='success') {
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-// Init
+// ── INIT ──────────────────────────────────────────────────────
 document.getElementById('s-plan-start').value = new Date().toISOString().split('T')[0];
 loadSites();
 
