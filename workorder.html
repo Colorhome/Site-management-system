@@ -185,6 +185,20 @@
   .input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; color: var(--text-muted); pointer-events: none; }
   .has-prefix .field-input { padding-left: 28px; }
 
+  /* AUTO / READONLY display fields */
+  .field-auto {
+    width: 100%; padding: 10px 14px; background: var(--blue-bg); border: 1.5px solid rgba(37,99,235,0.2);
+    border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px;
+    color: var(--blue); font-weight: 700; cursor: default; user-select: all;
+    letter-spacing: 0.3px;
+  }
+  .auto-badge {
+    display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px;
+    background: var(--blue-bg); color: var(--blue); border-radius: 100px;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    margin-left: 6px; vertical-align: middle;
+  }
+
   .section-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 18px; }
   .sd-line { flex: 1; height: 1px; background: var(--border); }
   .sd-label { font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
@@ -198,6 +212,20 @@
   .empty-state { text-align: center; padding: 48px 20px; }
   .empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.4; }
   .empty-text { font-size: 13px; color: var(--text-muted); }
+
+  /* LOCKED FIELD STYLES */
+  .field-input:disabled, .field-select:disabled, .field-textarea:disabled {
+    opacity: 0.42; cursor: not-allowed;
+    background: var(--border) !important; border-color: var(--border) !important;
+    box-shadow: none !important;
+  }
+
+  /* EDIT LOCK BANNER */
+  #wo-edit-lock-banner {
+    background: var(--amber-bg); border: 1.5px solid var(--amber); color: #92400e;
+    padding: 12px 16px; border-radius: 10px; font-size: 12px; font-weight: 600;
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px; line-height: 1.5;
+  }
 
   .toast {
     position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: var(--radius);
@@ -266,7 +294,7 @@
       </div>
       <div class="page-actions">
         <button class="btn btn-ghost" onclick="loadWorkOrders()">⟳ Refresh</button>
-        <button class="btn btn-primary" onclick="scrollToForm()">+ New Work Order</button>
+        <button class="btn btn-primary" onclick="newWOForm()">+ New Work Order</button>
       </div>
     </div>
 
@@ -326,10 +354,11 @@
         <div class="card-header-icon blue">📋</div>
         <div>
           <div class="card-header-title" id="wo-form-title">New Work Order</div>
-          <div class="card-header-sub">Create a work order and assign to a site</div>
+          <div class="card-header-sub" id="wo-form-subtitle">Create a work order and assign to a site</div>
         </div>
       </div>
 
+      <!-- Hidden fields -->
       <input type="hidden" id="wo-id"/>
 
       <div class="form-body">
@@ -337,18 +366,28 @@
         <!-- Section 1: Core Info -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📋 Work Order Details</div><div class="sd-line"></div></div>
         <div class="fields-grid cols3">
+
+          <!-- Auto: Work Order ID (display only) -->
           <div class="field">
-            <label class="field-label">Site ID <span class="req">*</span></label>
-            <input class="field-input" id="wo-site-id" type="text" placeholder="SITE-2024-XXXX"/>
+            <label class="field-label">Work Order ID <span class="auto-badge">⚡ Auto</span></label>
+            <div class="field-auto" id="wo-id-display">Will be generated on save</div>
           </div>
+
+          <!-- Site Name — dropdown of active sites -->
           <div class="field">
             <label class="field-label">Site Name <span class="req">*</span></label>
-            <input class="field-input" id="wo-site-name" type="text" placeholder="e.g. Site A — Sector 62"/>
+            <select class="field-select" id="wo-site-name" onchange="onSiteSelect()">
+              <option value="">— Select Active Site —</option>
+            </select>
           </div>
+
+          <!-- Site ID — auto filled from site selection -->
           <div class="field">
-            <label class="field-label">Work Order No.</label>
-            <input class="field-input" id="wo-num" type="text" placeholder="WO-2024-XXX (auto if blank)"/>
+            <label class="field-label">Site ID <span class="auto-badge">⚡ Auto</span></label>
+            <div class="field-auto" id="wo-site-id-display">—</div>
+            <input type="hidden" id="wo-site-id"/>
           </div>
+
           <div class="field">
             <label class="field-label">Issue Date</label>
             <input class="field-input" id="wo-issue-date" type="date"/>
@@ -389,14 +428,20 @@
 
         <!-- Section 2: Vendor -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">👔 Vendor Details</div><div class="sd-line"></div></div>
-        <div class="fields-grid">
+        <div class="fields-grid cols3">
+          <!-- Auto: Vendor ID -->
           <div class="field">
-            <label class="field-label">Vendor ID</label>
-            <input class="field-input" id="wo-vendor-id" type="text" placeholder="VEND-XXXX"/>
+            <label class="field-label">Vendor ID <span class="auto-badge">⚡ Auto</span></label>
+            <div class="field-auto" id="wo-vendor-id-display">Will be generated on save</div>
+            <input type="hidden" id="wo-vendor-id"/>
           </div>
           <div class="field">
             <label class="field-label">Vendor Name</label>
             <input class="field-input" id="wo-vendor-name" type="text" placeholder="Vendor / contractor name"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Work Order No.</label>
+            <input class="field-input" id="wo-num" type="text" placeholder="WO-2024-XXX (auto if blank)"/>
           </div>
         </div>
 
@@ -511,66 +556,182 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
-let allWOs = [];
+let allWOs    = [];
+let activeSites = []; // cache of active sites for dropdown
 
+// ── Edit mode: fields that CAN be edited ─────────────────────
+const WO_EDITABLE_IN_EDIT = [
+  'wo-payment-terms', 'wo-payment-status',
+  'wo-start', 'wo-plan-end', 'wo-actual-end',
+  'wo-completion', 'wo-status', 'wo-priority',
+  'wo-created-by', 'wo-remarks'
+];
+
+// ── All lockable form fields ──────────────────────────────────
+const WO_ALL_FORM_FIELDS = [
+  'wo-site-name', 'wo-issue-date', 'wo-type', 'wo-category',
+  'wo-scope', 'wo-vendor-name', 'wo-num',
+  'wo-amount', 'wo-advance',
+  'wo-payment-terms', 'wo-payment-status',
+  'wo-start', 'wo-plan-end', 'wo-actual-end',
+  'wo-completion', 'wo-status', 'wo-priority',
+  'wo-created-by', 'wo-remarks'
+];
+
+// ── Closed/inactive statuses (these sites won't appear in dropdown) ──
+const CLOSED_STATUSES = ['Completed', 'Cancelled'];
+
+// ── API helper ────────────────────────────────────────────────
 async function api(action, data = {}) {
   try {
     const params = new URLSearchParams({ action, ...data });
     const res = await fetch(`${API_URL}?${params}`);
     return await res.json();
-  } catch(e) { return getDemoWOs(); }
+  } catch(e) { return null; }
+}
+
+// ── ID generators ─────────────────────────────────────────────
+function generateWODisplayId() {
+  const yr = new Date().getFullYear();
+  const rnd = String(Math.floor(Math.random() * 9000) + 1000);
+  return `WO-${yr}-${rnd}`;
+}
+function generateVendorId() {
+  const yr = new Date().getFullYear();
+  const rnd = String(Math.floor(Math.random() * 9000) + 1000);
+  return `VEND-${yr}-${rnd}`;
+}
+
+// ── Load active sites into dropdown ──────────────────────────
+async function loadActiveSites() {
+  const siteSelect = document.getElementById('wo-site-name');
+
+  // Try real API first
+  let sites = [];
+  const d = await api('getSites');
+  if (d && d.sites && d.sites.length) {
+    sites = d.sites;
+  } else {
+    // Demo fallback
+    sites = getDemoSites();
+  }
+
+  // Filter out closed sites
+  activeSites = sites.filter(s => !CLOSED_STATUSES.includes(s.status));
+
+  // Rebuild dropdown
+  siteSelect.innerHTML = '<option value="">— Select Active Site —</option>';
+  activeSites.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value       = s.name;
+    opt.dataset.id  = s.siteId;
+    opt.textContent = `${s.name}  [${s.siteId}]`;
+    siteSelect.appendChild(opt);
+  });
+}
+
+// Demo sites fallback
+function getDemoSites() {
+  return [
+    { siteId:'SITE-2024-1001', name:'SITE A — SECTOR 62', status:'Active' },
+    { siteId:'SITE-2024-1002', name:'SITE B — NH8',        status:'Active' },
+    { siteId:'SITE-2024-1003', name:'SITE C — DWARKA',     status:'Planning' },
+    { siteId:'SITE-2024-1004', name:'SITE D — FARIDABAD',  status:'Completed' }, // excluded
+  ];
+}
+
+// ── When user selects a site → auto-fill Site ID ─────────────
+function onSiteSelect() {
+  const sel = document.getElementById('wo-site-name');
+  const selectedOpt = sel.options[sel.selectedIndex];
+  const siteId = selectedOpt ? (selectedOpt.dataset.id || '') : '';
+  document.getElementById('wo-site-id').value       = siteId;
+  document.getElementById('wo-site-id-display').textContent = siteId || '—';
+  // Colour the auto display to green once filled
+  document.getElementById('wo-site-id-display').style.color = siteId ? 'var(--green)' : 'var(--blue)';
+}
+
+// ── Render preview IDs on form load (new mode) ───────────────
+function refreshAutoIds() {
+  const woId     = generateWODisplayId();
+  const vendorId = generateVendorId();
+  document.getElementById('wo-id-display').textContent      = woId;
+  document.getElementById('wo-id-display').style.color      = 'var(--blue)';
+  document.getElementById('wo-vendor-id-display').textContent = vendorId;
+  document.getElementById('wo-vendor-id-display').style.color  = 'var(--blue)';
+  // Store in hidden inputs for use during submit
+  document.getElementById('wo-id').value         = '';        // blank = new
+  document.getElementById('wo-vendor-id').value  = vendorId;
+}
+
+// ── SET EDIT MODE ─────────────────────────────────────────────
+function setWOEditMode(isEdit) {
+  WO_ALL_FORM_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.disabled = isEdit && !WO_EDITABLE_IN_EDIT.includes(id);
+  });
+
+  const existing = document.getElementById('wo-edit-lock-banner');
+  if (isEdit) {
+    if (!existing) {
+      const banner = document.createElement('div');
+      banner.id = 'wo-edit-lock-banner';
+      banner.innerHTML = `⚠️&nbsp; <strong>Edit Mode:</strong> Only
+        <strong>Payment Terms, Payment Status, Start Date, Planned End, Actual End,
+        Completion %, Status, Priority, Created By</strong> and <strong>Remarks</strong>
+        can be changed. All other fields are locked.`;
+      document.querySelector('.form-body').insertBefore(banner, document.querySelector('.form-body').firstChild);
+    }
+  } else {
+    if (existing) existing.remove();
+  }
+}
+
+// ── Load work orders table ────────────────────────────────────
+async function loadWorkOrders() {
+  document.getElementById('wo-count-badge').textContent = 'Loading…';
+  const d = await api('getWorkOrders');
+  if (d && d.workOrders) {
+    allWOs = d.workOrders;
+  } else {
+    allWOs = getDemoWOs().workOrders;
+  }
+  renderWOs(allWOs);
+  updateStats(allWOs);
 }
 
 function getDemoWOs() {
   return { workOrders: [
     {
       serialNo:1, workOrderId:'WO-2024-1001', siteId:'SITE-2024-1001',
-      siteName:'Site A — Sector 62', workOrderNo:'WO-2024-001',
-      issueDate:'01 Jan 2024', vendorId:'VEND-001', vendorName:'Ram Contractors',
+      siteName:'SITE A — SECTOR 62', workOrderNo:'WO-2024-001',
+      issueDate:'01 Jan 2024', vendorId:'VEND-2024-1001', vendorName:'RAM CONTRACTORS',
       workType:'Civil Work', scopeOfWork:'RCC slab & beam work for ground floor',
       workCategory:'Labour + Material', woAmount:1200000, advanceAmount:200000,
       startDate:'05 Jan 2024', plannedEndDate:'30 Mar 2024', actualEndDate:'—',
       status:'In Progress', priority:'High', paymentTerms:'Running Bill',
       paymentStatus:'Advance Paid', completion:55, remarks:'On schedule',
-      createdAt:'01 Jan 2024', createdBy:'Admin'
+      createdAt:'01 Jan 2024', createdBy:'ADMIN'
     },
     {
       serialNo:2, workOrderId:'WO-2024-1002', siteId:'SITE-2024-1002',
-      siteName:'Site B — NH8', workOrderNo:'WO-2024-002',
-      issueDate:'20 Feb 2024', vendorId:'VEND-002', vendorName:'Steel Suppliers Ltd',
+      siteName:'SITE B — NH8', workOrderNo:'WO-2024-002',
+      issueDate:'20 Feb 2024', vendorId:'VEND-2024-1002', vendorName:'STEEL SUPPLIERS LTD',
       workType:'Structural', scopeOfWork:'TMT steel supply for 3 floors',
       workCategory:'Material', woAmount:2500000, advanceAmount:500000,
       startDate:'25 Feb 2024', plannedEndDate:'30 Apr 2024', actualEndDate:'—',
       status:'Issued', priority:'Normal', paymentTerms:'Item Rate',
       paymentStatus:'Advance Paid', completion:0, remarks:'',
-      createdAt:'20 Feb 2024', createdBy:'Admin'
-    },
-    {
-      serialNo:3, workOrderId:'WO-2024-1003', siteId:'SITE-2024-1001',
-      siteName:'Site A — Sector 62', workOrderNo:'WO-2024-003',
-      issueDate:'15 Mar 2024', vendorId:'VEND-003', vendorName:'JCB Rentals',
-      workType:'Excavation', scopeOfWork:'Soil excavation for basement 3000 sqm',
-      workCategory:'Machinery', woAmount:380000, advanceAmount:0,
-      startDate:'18 Mar 2024', plannedEndDate:'10 Apr 2024', actualEndDate:'12 Apr 2024',
-      status:'Completed', priority:'Urgent', paymentTerms:'Lump Sum',
-      paymentStatus:'Fully Paid', completion:100, remarks:'Completed 2 days late',
-      createdAt:'15 Mar 2024', createdBy:'Admin'
+      createdAt:'20 Feb 2024', createdBy:'ADMIN'
     },
   ]};
 }
 
 const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
-const statusColors = { 'In Progress':'orange', Issued:'blue', Completed:'green', 'On Hold':'amber', Cancelled:'red', Draft:'' };
+const statusColors   = { 'In Progress':'orange', Issued:'blue', Completed:'green', 'On Hold':'amber', Cancelled:'red', Draft:'' };
 const priorityColors = { Normal:'blue', Low:'', High:'orange', Urgent:'red' };
-const payStatusColors = { Unpaid:'red', 'Advance Paid':'amber', 'Partially Paid':'orange', 'Fully Paid':'green', 'On Hold':'amber' };
-
-async function loadWorkOrders() {
-  document.getElementById('wo-count-badge').textContent = 'Loading…';
-  const d = await api('getWorkOrders');
-  allWOs = d.workOrders || [];
-  renderWOs(allWOs);
-  updateStats(allWOs);
-}
+const payStatusColors= { Unpaid:'red', 'Advance Paid':'amber', 'Partially Paid':'orange', 'Fully Paid':'green', 'On Hold':'amber' };
 
 function renderWOs(wos) {
   document.getElementById('wo-count-badge').textContent = wos.length + ' orders';
@@ -640,20 +801,29 @@ function updateStats(wos) {
     : '₹' + (total/1e5).toFixed(1) + ' L';
 }
 
+// ── SUBMIT WORK ORDER ─────────────────────────────────────────
 async function submitWO() {
   const siteId   = document.getElementById('wo-site-id').value.trim();
   const siteName = document.getElementById('wo-site-name').value.trim();
   const amount   = document.getElementById('wo-amount').value;
 
-  if (!siteId || !siteName || !amount) {
-    showToast('⚠️ Site ID, Site Name and WO Amount are required', 'error'); return;
+  if (!siteName || !siteId) {
+    showToast('⚠️ Please select an active site', 'error'); return;
+  }
+  if (!amount) {
+    showToast('⚠️ WO Amount is required', 'error'); return;
   }
 
-  const woId = document.getElementById('wo-id').value;
+  const woId   = document.getElementById('wo-id').value;   // blank = new WO
   const isEdit = !!woId;
 
   document.getElementById('wo-submit-text').textContent = 'Saving…';
   document.getElementById('wo-submit-icon').textContent = '⏳';
+
+  // For new WO: generate fresh vendor ID at save time (not just preview)
+  const vendorId = isEdit
+    ? document.getElementById('wo-vendor-id').value
+    : generateVendorId();
 
   const data = {
     action:         isEdit ? 'updateWorkOrder' : 'addWorkOrder',
@@ -661,7 +831,7 @@ async function submitWO() {
     siteName,
     workOrderNo:    document.getElementById('wo-num').value,
     issueDate:      document.getElementById('wo-issue-date').value,
-    vendorId:       document.getElementById('wo-vendor-id').value,
+    vendorId,
     vendorName:     document.getElementById('wo-vendor-name').value,
     workType:       document.getElementById('wo-type').value,
     scopeOfWork:    document.getElementById('wo-scope').value,
@@ -690,27 +860,65 @@ async function submitWO() {
   loadWorkOrders();
 }
 
+// ── CLEAR / RESET FORM ────────────────────────────────────────
 function clearWOForm() {
-  ['wo-id','wo-site-id','wo-site-name','wo-num','wo-vendor-id','wo-vendor-name',
-   'wo-scope','wo-amount','wo-advance','wo-start','wo-plan-end','wo-actual-end',
-   'wo-completion','wo-remarks','wo-created-by']
-    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('wo-status').value         = 'Issued';
-  document.getElementById('wo-priority').value       = 'Normal';
-  document.getElementById('wo-payment-terms').value  = 'Running Bill';
-  document.getElementById('wo-payment-status').value = 'Unpaid';
-  document.getElementById('wo-form-title').textContent = 'New Work Order';
+  ['wo-id', 'wo-scope', 'wo-vendor-name', 'wo-num',
+   'wo-amount', 'wo-advance', 'wo-start', 'wo-plan-end',
+   'wo-actual-end', 'wo-completion', 'wo-remarks', 'wo-created-by']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+
+  document.getElementById('wo-site-name').value     = '';
+  document.getElementById('wo-site-id').value       = '';
+  document.getElementById('wo-site-id-display').textContent = '—';
+  document.getElementById('wo-site-id-display').style.color = 'var(--blue)';
+  document.getElementById('wo-vendor-id').value     = '';
+  document.getElementById('wo-status').value        = 'Issued';
+  document.getElementById('wo-priority').value      = 'Normal';
+  document.getElementById('wo-payment-terms').value = 'Running Bill';
+  document.getElementById('wo-payment-status').value= 'Unpaid';
+  document.getElementById('wo-issue-date').value    = new Date().toISOString().split('T')[0];
+  document.getElementById('wo-form-title').textContent    = 'New Work Order';
+  document.getElementById('wo-form-subtitle').textContent = 'Create a work order and assign to a site';
+
+  // Refresh preview IDs
+  refreshAutoIds();
+  // Unlock all fields
+  setWOEditMode(false);
 }
 
+// ── EDIT WORK ORDER ───────────────────────────────────────────
 function editWO(idx) {
   const w = allWOs[idx];
   if (!w) return;
+
+  // Fill hidden + display
   document.getElementById('wo-id').value              = w.workOrderId || '';
-  document.getElementById('wo-site-id').value         = w.siteId || '';
-  document.getElementById('wo-site-name').value       = w.siteName || '';
-  document.getElementById('wo-num').value             = w.workOrderNo || '';
+  document.getElementById('wo-id-display').textContent = w.workOrderId || '—';
+  document.getElementById('wo-id-display').style.color = 'var(--green)';
+
   document.getElementById('wo-vendor-id').value       = w.vendorId || '';
+  document.getElementById('wo-vendor-id-display').textContent = w.vendorId || '—';
+  document.getElementById('wo-vendor-id-display').style.color = 'var(--green)';
+
+  // Site — set dropdown to matching site name, update hidden ID display
+  const siteSelect = document.getElementById('wo-site-name');
+  // Try to find the option matching siteName; if not found (e.g. closed site), add temporary
+  let found = [...siteSelect.options].find(o => o.value === w.siteName);
+  if (!found) {
+    const opt = document.createElement('option');
+    opt.value       = w.siteName || '';
+    opt.dataset.id  = w.siteId || '';
+    opt.textContent = `${w.siteName}  [${w.siteId}]`;
+    siteSelect.appendChild(opt);
+  }
+  siteSelect.value = w.siteName || '';
+  document.getElementById('wo-site-id').value         = w.siteId || '';
+  document.getElementById('wo-site-id-display').textContent = w.siteId || '—';
+  document.getElementById('wo-site-id-display').style.color = 'var(--green)';
+
+  // Text & number fields
   document.getElementById('wo-vendor-name').value     = w.vendorName || '';
+  document.getElementById('wo-num').value             = w.workOrderNo || '';
   document.getElementById('wo-scope').value           = w.scopeOfWork || '';
   document.getElementById('wo-amount').value          = w.woAmount || '';
   document.getElementById('wo-advance').value         = w.advanceAmount || '';
@@ -731,19 +939,31 @@ function editWO(idx) {
     const el = document.getElementById(id);
     if (el && val) {
       const opt = [...el.options].find(o => o.value === val);
-      if(opt) el.value = val;
+      if (opt) el.value = val;
     }
   });
-  document.getElementById('wo-form-title').textContent = 'Edit WO — ' + w.workOrderNo;
+
+  document.getElementById('wo-form-title').textContent    = '✏️ Edit WO — ' + w.workOrderNo;
+  document.getElementById('wo-form-subtitle').textContent = 'Only Payment Terms, Status, Dates, Completion & Priority can be updated';
+
+  // Lock non-editable fields
+  setWOEditMode(true);
+
   scrollToForm();
-  showToast('ℹ️ Editing work order — update and save', 'info');
+  showToast('ℹ️ Edit mode — limited fields editable', 'info');
+}
+
+// ── NEW WO button (scroll + unlock + refresh IDs) ────────────
+function newWOForm() {
+  clearWOForm();
+  scrollToForm();
 }
 
 function scrollToForm() {
   document.getElementById('add-wo-form').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
-function showToast(msg, type='success') {
+function showToast(msg, type = 'success') {
   const t = document.getElementById('toast');
   const parts = msg.split(' ');
   document.getElementById('toast-icon').textContent = parts[0];
@@ -752,10 +972,13 @@ function showToast(msg, type='success') {
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-// Init
+// ── INIT ──────────────────────────────────────────────────────
 document.getElementById('wo-issue-date').value = new Date().toISOString().split('T')[0];
-document.getElementById('wo-start').value       = new Date().toISOString().split('T')[0];
-loadWorkOrders();
+
+// Load sites dropdown + work orders + generate preview IDs in parallel
+Promise.all([loadActiveSites(), loadWorkOrders()]).then(() => {
+  refreshAutoIds();
+});
 
 const s2 = document.createElement('style');
 s2.textContent = `@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }`;
