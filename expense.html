@@ -684,10 +684,10 @@ async function loadSites() {
     showToast('⚠️ Could not load sites from sheet', 'error');
     return;
   }
-  allSites = d.sites;
-  const sel = document.getElementById('exp-site-name');
-  sel.innerHTML = '<option value="">— Select Site —</option>';
-  allSites.forEach(s => {
+  allSites = d.sites.filter(s => (s.status || '').toLowerCase() === 'active');
+const sel = document.getElementById('exp-site-name');
+sel.innerHTML = '<option value="">— Select Site —</option>';
+allSites.forEach(s => {
     const opt = document.createElement('option');
     opt.value       = s.name;
     opt.dataset.id  = s.siteId;
