@@ -383,7 +383,7 @@
         <div class="card-header-icon green">💸</div>
         <div>
           <div class="card-header-title" id="exp-form-title">Add New Expense</div>
-          <div class="card-header-sub" id="exp-form-subtitle">Select site → vendors & work orders auto-load</div>
+          <div class="card-header-sub" id="exp-form-subtitle">Select site → vendors & work orders auto-load from Work Orders sheet</div>
         </div>
       </div>
 
@@ -434,17 +434,8 @@
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">👔 Vendor & Work Order</div><div class="sd-line"></div></div>
         <div class="fields-grid cols4">
           <div class="field">
-            <label class="field-label">Vendor Name</label>
-            <select class="field-select" id="exp-vendor-name" onchange="onVendorSelect()">
-              <option value="">— Select Vendor (after site) —</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Vendor ID <span class="auto-badge">⚡ Auto</span></label>
-            <div class="field-auto" id="exp-vendor-id-display">—</div>
-          </div>
-          <div class="field">
-            <label class="field-label">Work Order</label>
+            <label class="field-label">Work Order No</label>
+            <!-- ✅ FIX: WO pehle select karo → vendor auto-fill hoga -->
             <select class="field-select" id="exp-work-order" onchange="onWOSelect()">
               <option value="">— Select Work Order (after site) —</option>
             </select>
@@ -452,6 +443,17 @@
           <div class="field">
             <label class="field-label">Work Order ID <span class="auto-badge">⚡ Auto</span></label>
             <div class="field-auto" id="exp-wo-id-display">—</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Vendor Name</label>
+            <!-- ✅ FIX: Vendor dropdown — WO select ke baad auto-fill, ya manually bhi select kar sakte hain -->
+            <select class="field-select" id="exp-vendor-name" onchange="onVendorSelect()">
+              <option value="">— Select Vendor (after site) —</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Vendor ID <span class="auto-badge">⚡ Auto</span></label>
+            <div class="field-auto" id="exp-vendor-id-display">—</div>
           </div>
         </div>
 
@@ -575,14 +577,14 @@
 
 <script>
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  CONFIG — apna Google Apps Script URL yahan daalein
+//  CONFIG
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
 
 let allExpenses = [];
 let allSites    = [];
-let siteVendors = [];
-let siteWOs     = [];
+let siteVendors = [];   // ✅ Work Orders se nikale unique vendors
+let siteWOs     = [];   // ✅ Work Orders list
 
 // ── Cost Heads master ─────────────────────────────────────────
 const COST_HEADS = [
@@ -611,11 +613,17 @@ const COST_HEADS = [
   { id:'CH-023', name:'Miscellaneous',          type:'Miscellaneous' },
 ];
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  EDIT MODE: kon se fields lock rahenge
+//  ✅ FIX: qty, unit, rate ab bhi editable hain
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const EXP_EDITABLE = [
   'exp-status', 'exp-approved-by', 'exp-remarks',
   'exp-payment-mode', 'exp-bill-no', 'exp-invoice-no',
-  'exp-description', 'exp-tax', 'exp-amount'
+  'exp-description', 'exp-tax', 'exp-amount',
+  'exp-qty', 'exp-unit', 'exp-rate'   // ✅ Amount section fully editable
 ];
+
 const EXP_ALL_FIELDS = [
   'exp-site-name', 'exp-date', 'exp-cost-head',
   'exp-vendor-name', 'exp-work-order',
@@ -625,10 +633,7 @@ const EXP_ALL_FIELDS = [
 ];
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  FIX #1 — API helper: sahi tarike se params build karo
-//  Purani problem: URLSearchParams({action, ...data}) mein
-//  'action' data ke andar bhi tha, aur Numbers/null sahi se
-//  serialize nahi hote the.
+//  API HELPER
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function api(action, data) {
   try {
@@ -636,7 +641,6 @@ async function api(action, data) {
     params.set('action', action);
     if (data) {
       Object.entries(data).forEach(([k, v]) => {
-        // null/undefined skip karo, baaki sab string mein convert karo
         if (v !== null && v !== undefined && v !== '') {
           params.set(k, String(v));
         }
@@ -692,7 +696,12 @@ async function loadSites() {
   });
 }
 
-// ── WHEN SITE SELECTED ────────────────────────────────────────
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  SITE SELECT → Work Orders fetch karo
+//  ✅ KEY FIX: Vendors alag API se nahi, Work Orders se nikalo
+//  WO sheet headers: WorkOrderID, SiteID, SiteName,
+//  "Work Order No", "Vendor ID", "Vendor Name", WorkType etc.
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function onExpSiteSelect() {
   const sel         = document.getElementById('exp-site-name');
   const selectedOpt = sel.options[sel.selectedIndex];
@@ -708,58 +717,85 @@ async function onExpSiteSelect() {
     return;
   }
 
-  showLoadingInDropdown('exp-vendor-name', 'Loading vendors…');
   showLoadingInDropdown('exp-work-order',  'Loading work orders…');
+  showLoadingInDropdown('exp-vendor-name', 'Loading vendors…');
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  //  FIX #2 — siteId alag se pass karo, data object mein nahi
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  const [vendorRes, woRes] = await Promise.all([
-    api('getVendorsBySite', { siteId }),
-    api('getExpenseWOBySite', { siteId })
-  ]);
+  // Work Orders fetch karo site ke liye
+  const woRes = await api('getExpenseWOBySite', { siteId });
 
-  // Vendors
-  siteVendors = (vendorRes && vendorRes.vendors) ? vendorRes.vendors : [];
+  // ✅ FIX: WO data se vendors nikaalo — WO sheet mein Vendor ID + Vendor Name hote hain
+  siteWOs = (woRes && woRes.workOrders) ? woRes.workOrders : [];
+
+  // ── Work Order Dropdown build karo ───────────────────────
+  const woSel = document.getElementById('exp-work-order');
+  woSel.innerHTML = '<option value="">— Select Work Order (optional) —</option>';
+
+  if (siteWOs.length) {
+    siteWOs.forEach(w => {
+      const opt = document.createElement('option');
+
+      // ✅ FIX: Sheet header "Work Order No" → Apps Script mein property name
+      // Common mappings: workOrderNo / workOrderNo / "Work Order No"
+      // Saare possible keys try karo
+      const woNo = w.workOrderNo || w['Work Order No'] || w.workorderNo || w.WorkOrderNo || w.workOrderID || w.workOrderId || '';
+      const woId = w.workOrderId || w.workOrderID || w.WorkOrderID || '';
+
+      opt.value           = woId;          // value = WorkOrderID (unique key)
+      opt.dataset.id      = woId;
+      opt.dataset.woNo    = woNo;
+      opt.dataset.vendorId   = w.vendorId   || w['Vendor ID']   || w.VendorID   || '';
+      opt.dataset.vendorName = w.vendorName || w['Vendor Name'] || w.VendorName || '';
+      opt.dataset.workType   = w.workType   || w['Work Type']   || w.WorkType   || '';
+
+      // Display: WO No | Work Type | Vendor Name
+      const displayVendor = opt.dataset.vendorName || 'No Vendor';
+      const displayWoNo   = woNo || woId;
+      const displayType   = opt.dataset.workType || '';
+      opt.textContent = `${displayWoNo}  |  ${displayType}  |  ${displayVendor}`;
+
+      woSel.appendChild(opt);
+    });
+  } else {
+    woSel.innerHTML = '<option value="">No work orders found for this site</option>';
+  }
+
+  // ✅ FIX: Vendors — WO list se unique vendors extract karo
+  const vendorMap = new Map();
+  siteWOs.forEach(w => {
+    const vId   = w.vendorId   || w['Vendor ID']   || w.VendorID   || '';
+    const vName = w.vendorName || w['Vendor Name'] || w.VendorName || '';
+    if (vId && vName && !vendorMap.has(vId)) {
+      vendorMap.set(vId, vName);
+    } else if (!vId && vName && !vendorMap.has(vName)) {
+      // vendorId nahi hai toh name se key banao
+      vendorMap.set('name_' + vName, vName);
+    }
+  });
+
+  siteVendors = [...vendorMap.entries()].map(([k, v]) => ({
+    vendorId:   k.startsWith('name_') ? '' : k,
+    vendorName: v
+  }));
+
   const vSel = document.getElementById('exp-vendor-name');
   vSel.innerHTML = '<option value="">— Select Vendor —</option>';
+
   if (siteVendors.length) {
     siteVendors.forEach(v => {
       const opt = document.createElement('option');
-      opt.value           = v.vendorName;
-      opt.dataset.id      = v.vendorId;
-      opt.dataset.vendorId = v.vendorId;
-      opt.textContent     = `${v.vendorName}  [${v.vendorId}]`;
+      opt.value              = v.vendorName;
+      opt.dataset.id         = v.vendorId;
+      opt.dataset.vendorId   = v.vendorId;
+      opt.textContent        = v.vendorId ? `${v.vendorName}  [${v.vendorId}]` : v.vendorName;
       vSel.appendChild(opt);
     });
   } else {
     vSel.innerHTML = '<option value="">No vendors found for this site</option>';
   }
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  //  FIX #3 — Work Orders: workOrderId ko opt.value mein
-  //  store karo (sirf woId), taaki edit mein match ho sake
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  siteWOs = (woRes && woRes.workOrders) ? woRes.workOrders : [];
-  const woSel = document.getElementById('exp-work-order');
-  woSel.innerHTML = '<option value="">— Select Work Order (optional) —</option>';
-  if (siteWOs.length) {
-    siteWOs.forEach(w => {
-      const opt = document.createElement('option');
-      // value = workOrderId (unique key for matching in edit mode)
-      opt.value           = w.workOrderId;
-      opt.dataset.id      = w.workOrderId;
-      opt.dataset.vname   = w.vendorName || '';
-      opt.dataset.vid     = w.vendorId   || '';
-      opt.dataset.no      = w.workOrderNo || w.workOrderId;
-      opt.textContent     = `${w.workOrderNo || w.workOrderId}  |  ${w.workType}  |  ${w.vendorName}`;
-      woSel.appendChild(opt);
-    });
-  } else {
-    woSel.innerHTML = '<option value="">No work orders for this site</option>';
-  }
-
-  showToast(`✅ Loaded ${siteVendors.length} vendors, ${siteWOs.length} WOs`, 'success');
+  const woCount = siteWOs.length;
+  const vCount  = siteVendors.length;
+  showToast(`✅ Loaded ${woCount} work orders, ${vCount} vendors`, 'success');
 }
 
 function showLoadingInDropdown(id, msg) {
@@ -787,31 +823,47 @@ function onVendorSelect() {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  FIX #4 — WO SELECT: opt.value ab workOrderId hai
-//  isliye direct use karo; vendor match bhi fix kiya
+//  WORK ORDER SELECT
+//  ✅ FIX: Vendor name + ID WO se auto-fill hoga
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function onWOSelect() {
   const sel  = document.getElementById('exp-work-order');
   const opt  = sel.options[sel.selectedIndex];
-  const woId = opt ? (opt.dataset.id || '') : '';
+  const woId = opt ? (opt.dataset.id || opt.value || '') : '';
 
   document.getElementById('exp-wo-id-hidden').value        = woId;
   document.getElementById('exp-wo-id-display').textContent = woId || '—';
   document.getElementById('exp-wo-id-display').style.color = woId ? 'var(--green)' : '';
 
-  // WO se juda vendor auto-fill karo
-  if (opt && opt.dataset.vid) {
-    const vSel     = document.getElementById('exp-vendor-name');
-    // dataset.vid se match karo
+  // ✅ FIX: WO se vendor auto-fill karo
+  if (opt && opt.dataset.vendorId) {
+    const vSel   = document.getElementById('exp-vendor-name');
+    // vendorId se match karo
     const matchOpt = [...vSel.options].find(o =>
-      (o.dataset.id || o.dataset.vendorId) === opt.dataset.vid
+      (o.dataset.id || o.dataset.vendorId) === opt.dataset.vendorId
     );
     if (matchOpt) {
       vSel.value = matchOpt.value;
-      document.getElementById('exp-vendor-id-hidden').value        = opt.dataset.vid;
-      document.getElementById('exp-vendor-id-display').textContent = opt.dataset.vid;
+      document.getElementById('exp-vendor-id-hidden').value        = opt.dataset.vendorId;
+      document.getElementById('exp-vendor-id-display').textContent = opt.dataset.vendorId;
       document.getElementById('exp-vendor-id-display').style.color = 'var(--green)';
+    } else if (opt.dataset.vendorName) {
+      // Vendor dropdown mein nahi mila toh naam se match karo
+      const nameOpt = [...vSel.options].find(o => o.value === opt.dataset.vendorName);
+      if (nameOpt) {
+        vSel.value = nameOpt.value;
+        document.getElementById('exp-vendor-id-hidden').value        = opt.dataset.vendorId;
+        document.getElementById('exp-vendor-id-display').textContent = opt.dataset.vendorId;
+        document.getElementById('exp-vendor-id-display').style.color = 'var(--green)';
+      }
     }
+  } else if (opt && opt.dataset.vendorName && !opt.dataset.vendorId) {
+    // sirf vendor name hai, id nahi
+    const vSel    = document.getElementById('exp-vendor-name');
+    const nameOpt = [...vSel.options].find(o => o.value === opt.dataset.vendorName);
+    if (nameOpt) vSel.value = nameOpt.value;
+    document.getElementById('exp-vendor-id-hidden').value        = '';
+    document.getElementById('exp-vendor-id-display').textContent = '—';
   }
 }
 
@@ -952,6 +1004,11 @@ function refreshExpId() {
   document.getElementById('exp-id-display').style.color = 'var(--green)';
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  EDIT MODE LOCK
+//  ✅ FIX: qty, unit, rate lock se bahar hain
+//  Banner mein updated text
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function setExpEditMode(isEdit) {
   EXP_ALL_FIELDS.forEach(id => {
     const el = document.getElementById(id);
@@ -963,9 +1020,9 @@ function setExpEditMode(isEdit) {
     if (!existing) {
       const banner = document.createElement('div');
       banner.id = 'exp-edit-lock-banner';
-      banner.innerHTML = `⚠️&nbsp; <strong>Edit Mode:</strong> Only
-        <strong>Status, Approved By, Remarks, Payment Mode, Bill No, Invoice No,
-        Description, Tax Amount</strong> and <strong>Amount</strong> can be changed.`;
+      banner.innerHTML = `⚠️&nbsp; <strong>Edit Mode:</strong> Site, Date & Cost Head are locked.
+        You can update: <strong>Qty, Unit, Rate, Amount, Tax, Status, Approved By,
+        Payment Mode, Bill No, Invoice No, Description</strong> and <strong>Remarks</strong>.`;
       document.querySelector('.form-body').insertBefore(banner, document.querySelector('.form-body').firstChild);
     }
   } else {
@@ -973,11 +1030,7 @@ function setExpEditMode(isEdit) {
   }
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  FIX #5 — SUBMIT: data object se 'action' key hataao
-//  (api() function khud action set karta hai)
-//  aur saare values properly pass karo
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ── SUBMIT ────────────────────────────────────────────────────
 async function submitExpense() {
   const siteName = document.getElementById('exp-site-name').value.trim();
   const siteId   = document.getElementById('exp-site-id-hidden').value.trim();
@@ -1002,7 +1055,6 @@ async function submitExpense() {
   const headMatch   = COST_HEADS.find(h => h.name === costHead);
   const expenseType = headMatch ? headMatch.type : 'Miscellaneous';
 
-  // 'action' key bilkul mat dalo — api() khud set karta hai
   const data = {
     siteId,
     siteName,
@@ -1069,7 +1121,7 @@ function clearExpForm() {
   document.getElementById('exp-vendor-id-display').textContent  = '—';
   document.getElementById('exp-wo-id-display').textContent      = '—';
   document.getElementById('exp-form-title').textContent         = 'Add New Expense';
-  document.getElementById('exp-form-subtitle').textContent      = 'Select site → vendors & work orders auto-load';
+  document.getElementById('exp-form-subtitle').textContent      = 'Select site → vendors & work orders auto-load from Work Orders sheet';
 
   ['exp-site-id-display','exp-costhead-id-display','exp-vendor-id-display','exp-wo-id-display']
     .forEach(id => { document.getElementById(id).style.color = ''; });
@@ -1079,9 +1131,8 @@ function clearExpForm() {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  FIX #6 — EDIT: WO match ab workOrderId se hoga
-//  (pehle workOrderNo se match karne ki koshish hoti thi jo
-//  fail ho jata tha jab value alag hoti thi)
+//  EDIT EXPENSE
+//  ✅ FIX: WO match ab workOrderId se, vendor WO ke data se
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function editExpense(idx) {
   const e = allExpenses[idx];
@@ -1109,28 +1160,7 @@ async function editExpense(idx) {
   // Site select trigger — vendors & WOs load karo
   await onExpSiteSelect();
 
-  // Vendor — id se match karo pehle
-  const vSel = document.getElementById('exp-vendor-name');
-  let vOpt   = [...vSel.options].find(o =>
-    (o.dataset.id || o.dataset.vendorId) === e.vendorId
-  );
-  if (!vOpt && e.vendorName) {
-    // Fallback: name se match
-    vOpt = [...vSel.options].find(o => o.value === e.vendorName);
-  }
-  if (!vOpt && e.vendorName) {
-    // Nahi mila toh add karo
-    const opt = document.createElement('option');
-    opt.value = e.vendorName; opt.dataset.id = e.vendorId; opt.textContent = e.vendorName;
-    vSel.appendChild(opt);
-    vOpt = opt;
-  }
-  if (vOpt) vSel.value = vOpt.value;
-  document.getElementById('exp-vendor-id-hidden').value         = e.vendorId || '';
-  document.getElementById('exp-vendor-id-display').textContent   = e.vendorId || '—';
-  if (e.vendorId) document.getElementById('exp-vendor-id-display').style.color = 'var(--green)';
-
-  // Work Order — workOrderId se match karo (opt.value = workOrderId hai ab)
+  // Work Order — workOrderId se match karo (opt.value = workOrderId)
   const woSel = document.getElementById('exp-work-order');
   let woOpt   = [...woSel.options].find(o => o.value === e.workOrderId || o.dataset.id === e.workOrderId);
   if (!woOpt && e.workOrderId) {
@@ -1143,6 +1173,25 @@ async function editExpense(idx) {
   document.getElementById('exp-wo-id-hidden').value         = e.workOrderId || '';
   document.getElementById('exp-wo-id-display').textContent   = e.workOrderId || '—';
   if (e.workOrderId) document.getElementById('exp-wo-id-display').style.color = 'var(--green)';
+
+  // Vendor — vendorId se match karo
+  const vSel = document.getElementById('exp-vendor-name');
+  let vOpt   = [...vSel.options].find(o =>
+    (o.dataset.id || o.dataset.vendorId) === e.vendorId
+  );
+  if (!vOpt && e.vendorName) {
+    vOpt = [...vSel.options].find(o => o.value === e.vendorName);
+  }
+  if (!vOpt && e.vendorName) {
+    const opt = document.createElement('option');
+    opt.value = e.vendorName; opt.dataset.id = e.vendorId || ''; opt.textContent = e.vendorName;
+    vSel.appendChild(opt);
+    vOpt = opt;
+  }
+  if (vOpt) vSel.value = vOpt.value;
+  document.getElementById('exp-vendor-id-hidden').value         = e.vendorId || '';
+  document.getElementById('exp-vendor-id-display').textContent   = e.vendorId || '—';
+  if (e.vendorId) document.getElementById('exp-vendor-id-display').style.color = 'var(--green)';
 
   // Cost Head
   const chSel = document.getElementById('exp-cost-head');
@@ -1179,11 +1228,11 @@ async function editExpense(idx) {
   document.getElementById('exp-created-by').value   = e.createdBy     || '';
 
   document.getElementById('exp-form-title').textContent    = '✏️ Edit Expense — ' + e.expenseId;
-  document.getElementById('exp-form-subtitle').textContent = 'Only Status, Approver, Amounts & Remarks can be updated';
+  document.getElementById('exp-form-subtitle').textContent = 'Site/Date/CostHead locked. Amount, Status & other fields editable.';
 
   setExpEditMode(true);
   scrollToForm();
-  showToast('ℹ️ Edit mode — limited fields editable', 'info');
+  showToast('ℹ️ Edit mode — amount fields bhi editable hain', 'info');
 }
 
 function scrollToForm() {
@@ -1192,7 +1241,6 @@ function scrollToForm() {
 
 function showToast(msg, type = 'success') {
   const t = document.getElementById('toast');
-  // Pehla word emoji hai — alag karo
   const spaceIdx = msg.indexOf(' ');
   const icon = spaceIdx > -1 ? msg.slice(0, spaceIdx) : msg;
   const text = spaceIdx > -1 ? msg.slice(spaceIdx + 1) : '';
