@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Work Orders — ConstructMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --white: #ffffff;
+    --off-white: #f8f7f4;
+    --border: #e2dfd8;
+    --text: #1a1814;
+    --text-muted: #7a7670;
+    --text-light: #b0ada8;
+    --accent: #e85d26;
+    --accent-light: #ff7a45;
+    --accent-bg: #fff3ee;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.10);
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
+
+  /* TOPBAR */
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .back-btn {
+    display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+    background: var(--off-white); border: 1px solid var(--border); border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-weight: 500;
+    color: var(--text-muted); text-decoration: none; transition: all 0.15s;
+  }
+  .back-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .brand-icon {
+    width: 36px; height: 36px; background: var(--blue); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 14px; color: white;
+  }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; }
+  .page-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); }
+  .breadcrumb-current { color: var(--text); font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .sync-pill {
+    display: flex; align-items: center; gap: 7px; background: var(--blue-bg);
+    border: 1px solid rgba(37,99,235,0.2); color: var(--blue);
+    padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  }
+  .sync-dot { width: 6px; height: 6px; background: var(--blue); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* LAYOUT */
+  .body-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 64px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--white); border-right: 1px solid var(--border);
+    padding: 28px 20px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .sidebar-section { font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 10px 6px; }
+  .sidebar-section:first-child { padding-top: 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+    cursor: pointer; text-decoration: none; font-size: 13px; font-weight: 500;
+    color: var(--text-muted); transition: all 0.15s; border: 1px solid transparent;
+  }
+  .nav-item:hover { background: var(--off-white); color: var(--text); }
+  .nav-item.active { background: var(--blue-bg); color: var(--blue); border-color: rgba(37,99,235,0.15); font-weight: 600; }
+  .nav-item-icon { font-size: 16px; width: 22px; text-align: center; }
+
+  /* MAIN */
+  .main-content { padding: 32px 40px; overflow-y: auto; }
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; }
+  .page-eyebrow { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .page-title { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 6px; }
+  .page-desc { font-size: 14px; color: var(--text-muted); }
+  .page-actions { display: flex; gap: 10px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+    border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s;
+  }
+  .btn-primary { background: var(--blue); color: white; }
+  .btn-primary:hover { background: #1d4ed8; box-shadow: 0 6px 20px rgba(37,99,235,0.3); transform: translateY(-1px); }
+  .btn-ghost { background: var(--white); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+  /* TABLE CARD */
+  .table-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 28px;
+  }
+  .table-header {
+    padding: 18px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .table-title { font-size: 15px; font-weight: 700; }
+  .table-count { background: var(--blue-bg); color: var(--blue); border-radius: 100px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 2000px; }
+  thead th {
+    padding: 11px 13px; text-align: left; font-size: 10px; font-weight: 700;
+    color: var(--text-light); letter-spacing: 0.8px; text-transform: uppercase;
+    background: var(--off-white); border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  tbody td {
+    padding: 11px 13px; font-size: 12px; color: var(--text);
+    border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--off-white); }
+
+  .tag { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 100px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+  .tag.green  { background: var(--green-bg); color: var(--green); }
+  .tag.amber  { background: var(--amber-bg); color: var(--amber); }
+  .tag.blue   { background: var(--blue-bg); color: var(--blue); }
+  .tag.red    { background: var(--red-bg); color: var(--red); }
+  .tag.orange { background: var(--accent-bg); color: var(--accent); }
+  .tag.purple { background: var(--purple-bg); color: var(--purple); }
+
+  .prog-wrap { background: var(--border); border-radius: 100px; height: 5px; overflow: hidden; min-width: 70px; margin-top: 4px; }
+  .prog-fill { height: 100%; border-radius: 100px; }
+  .prog-fill.orange { background: var(--accent); }
+  .prog-fill.red    { background: var(--red); }
+  .prog-fill.green  { background: var(--green); }
+  .prog-fill.blue   { background: var(--blue); }
+
+  /* FORM CARD */
+  .form-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-sm);
+  }
+  .form-card-header {
+    padding: 20px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; background: var(--off-white);
+  }
+  .card-header-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .card-header-icon.blue  { background: var(--blue-bg); }
+  .card-header-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .card-header-sub { font-size: 12px; color: var(--text-muted); }
+  .form-body { padding: 28px; }
+
+  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+  .fields-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .fields-grid.cols4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  .field { display: flex; flex-direction: column; gap: 7px; }
+  .field.full { grid-column: 1 / -1; }
+  .field-label { font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.8px; text-transform: uppercase; }
+  .req { color: var(--accent); margin-left: 2px; }
+
+  .input-wrap { position: relative; }
+  .field-input, .field-select, .field-textarea {
+    width: 100%; padding: 10px 14px; background: var(--off-white); border: 1.5px solid var(--border);
+    border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; color: var(--text);
+    outline: none; transition: all 0.2s; appearance: none;
+  }
+  .field-input::placeholder { color: var(--text-light); }
+  .field-input:focus, .field-select:focus, .field-textarea:focus {
+    border-color: var(--blue); background: var(--white);
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+  }
+  .field-textarea { resize: vertical; min-height: 72px; }
+  .field-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+  }
+  .input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; color: var(--text-muted); pointer-events: none; }
+  .has-prefix .field-input { padding-left: 28px; }
+
+  /* AUTO / READONLY display fields */
+  .field-auto {
+    width: 100%; padding: 10px 14px; background: var(--blue-bg); border: 1.5px solid rgba(37,99,235,0.2);
+    border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px;
+    color: var(--blue); font-weight: 700; cursor: default; user-select: all;
+    letter-spacing: 0.3px;
+  }
+  .auto-badge {
+    display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px;
+    background: var(--blue-bg); color: var(--blue); border-radius: 100px;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    margin-left: 6px; vertical-align: middle;
+  }
+
+  .section-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 18px; }
+  .sd-line { flex: 1; height: 1px; background: var(--border); }
+  .sd-label { font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+
+  .form-footer {
+    padding: 18px 28px; border-top: 1px solid var(--border); background: var(--off-white);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .footer-hint { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
+
+  .empty-state { text-align: center; padding: 48px 20px; }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.4; }
+  .empty-text { font-size: 13px; color: var(--text-muted); }
+
+  /* LOCKED FIELD STYLES */
+  .field-input:disabled, .field-select:disabled, .field-textarea:disabled {
+    opacity: 0.42; cursor: not-allowed;
+    background: var(--border) !important; border-color: var(--border) !important;
+    box-shadow: none !important;
+  }
+
+  /* EDIT LOCK BANNER */
+  #wo-edit-lock-banner {
+    background: var(--amber-bg); border: 1.5px solid var(--amber); color: #92400e;
+    padding: 12px 16px; border-radius: 10px; font-size: 12px; font-weight: 600;
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px; line-height: 1.5;
+  }
+
+  .toast {
+    position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow-lg); transform: translateY(80px); opacity: 0;
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; min-width: 240px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--text); color: white; }
+  .toast.error   { background: var(--red); color: white; }
+  .toast.info    { background: var(--blue); color: white; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  .anim { opacity:0; animation: fadeUp 0.4s ease forwards; }
+  .a1{animation-delay:0.05s} .a2{animation-delay:0.1s} .a3{animation-delay:0.15s} .a4{animation-delay:0.2s}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="back-btn">← Back</a>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="brand-icon">WO</div>
+      <div class="brand-name">ConstructMS</div>
+    </div>
+    <div class="page-breadcrumb">
+      <span style="opacity:0.4;">/</span>
+      <span class="breadcrumb-current">Work Orders</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="sync-pill"><span class="sync-dot"></span>Sheets Connected</div>
+    <a href="sites.html"     class="btn btn-ghost"   style="padding:8px 16px;font-size:12px;">🏗 Sites</a>
+    <a href="dashboard.html" class="btn btn-primary" style="padding:8px 16px;font-size:12px;">📊 Dashboard</a>
+  </div>
+</div>
+
+<div class="body-wrap">
+  <aside class="sidebar">
+    <div class="sidebar-section">Navigate</div>
+    <a href="index.html"     class="nav-item"><span class="nav-item-icon">🏠</span> Home</a>
+    <a href="sites.html"     class="nav-item"><span class="nav-item-icon">🏗</span> Sites</a>
+    <a href="workorder.html" class="nav-item active"><span class="nav-item-icon">📋</span> Work Orders</a>
+    <a href="dashboard.html" class="nav-item"><span class="nav-item-icon">📊</span> Dashboard</a>
+
+    <div style="margin-top:auto;padding-top:20px;border-top:1px solid var(--border);">
+      <div style="font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Summary</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total WOs</span><span style="font-weight:700;" id="qs-total">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">In Progress</span><span style="font-weight:700;color:var(--accent);" id="qs-inprogress">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Issued</span><span style="font-weight:700;color:var(--blue);" id="qs-issued">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Completed</span><span style="font-weight:700;color:var(--green);" id="qs-completed">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total Value</span><span style="font-weight:700;color:var(--accent);" id="qs-value">—</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="page-header anim a1">
+      <div>
+        <div class="page-eyebrow">Module 02</div>
+        <h1 class="page-title">Work Orders</h1>
+        <p class="page-desc">Create and manage work orders across all sites</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-ghost" onclick="loadWorkOrders()">⟳ Refresh</button>
+        <button class="btn btn-primary" onclick="newWOForm()">+ New Work Order</button>
+      </div>
+    </div>
+
+    <!-- WORK ORDERS TABLE -->
+    <div class="table-card anim a2">
+      <div class="table-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="table-title">All Work Orders</span>
+          <span class="table-count" id="wo-count-badge">Loading…</span>
+        </div>
+        <input id="wo-search" type="text" placeholder="🔍  Search by WO no, site, vendor…"
+          style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:260px;"
+          oninput="filterWOs()"
+          onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>WO ID</th>
+              <th>Site ID</th>
+              <th>Site Name</th>
+              <th>WO Number</th>
+              <th>Issue Date</th>
+              <th>Vendor ID</th>
+              <th>Vendor Name</th>
+              <th>Work Type</th>
+              <th>Scope of Work</th>
+              <th>Work Category</th>
+              <th>WO Amount</th>
+              <th>Advance</th>
+              <th>Start Date</th>
+              <th>Planned End</th>
+              <th>Actual End</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Payment Terms</th>
+              <th>Payment Status</th>
+              <th>Completion</th>
+              <th>Remarks</th>
+              <th>Created At</th>
+              <th>Created By</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="wo-tbody">
+            <tr><td colspan="25"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Loading work orders…</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ADD / EDIT WORK ORDER FORM -->
+    <div id="add-wo-form" class="form-card anim a3">
+      <div class="form-card-header">
+        <div class="card-header-icon blue">📋</div>
+        <div>
+          <div class="card-header-title" id="wo-form-title">New Work Order</div>
+          <div class="card-header-sub" id="wo-form-subtitle">Create a work order and assign to a site</div>
+        </div>
+      </div>
+
+      <!-- Hidden fields -->
+      <input type="hidden" id="wo-id"/>
+
+      <div class="form-body">
+
+        <!-- Section 1: Core Info -->
+        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📋 Work Order Details</div><div class="sd-line"></div></div>
+        <div class="fields-grid cols3">
+
+          <!-- Auto: Work Order ID (display only) -->
+          <div class="field">
+            <label class="field-label">Work Order ID <span class="auto-badge">⚡ Auto</span></label>
+            <div class="field-auto" id="wo-id-display">Will be generated on save</div>
+          </div>
+
+          <!-- Site Name — dropdown of active sites -->
+          <div class="field">
+            <label class="field-label">Site Name <span class="req">*</span></label>
+            <select class="field-select" id="wo-site-name" onchange="onSiteSelect()">
+              <option value="">— Select Active Site —</option>
+            </select>
+          </div>
+
+          <!-- Site ID — auto filled from site selection -->
+          <div class="field">
+            <label class="field-label">Site ID <span class="auto-badge">⚡ Auto</span></label>
+            <div class="field-auto" id="wo-site-id-display">—</div>
+            <input type="hidden" id="wo-site-id"/>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Issue Date</label>
+            <input class="field-input" id="wo-issue-date" type="date"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Work Type <span class="req">*</span></label>
+            <select class="field-select" id="wo-type">
+              <option>Civil Work</option>
+              <option>Electrical</option>
+              <option>Plumbing</option>
+              <option>Finishing</option>
+              <option>Structural</option>
+              <option>Excavation</option>
+              <option>Road Work</option>
+              <option>Painting</option>
+              <option>Tiling</option>
+              <option>False Ceiling</option>
+              <option>Waterproofing</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Work Category</label>
+            <select class="field-select" id="wo-category">
+              <option>Labour + Material</option>
+              <option>Labour</option>
+              <option>Material</option>
+              <option>Machinery</option>
+              <option>Consultancy</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label class="field-label">Scope of Work</label>
+            <textarea class="field-textarea" id="wo-scope" placeholder="Detailed description of work scope…"></textarea>
+          </div>
+        </div>
+
+        <!-- Section 2: Vendor -->
+        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">👔 Vendor Details</div><div class="sd-line"></div></div>
+        <div class="fields-grid cols3">
+          <!-- Auto: Vendor ID -->
+          <div class="field">
+            <label class="field-label">Vendor ID <span class="auto-badge">⚡ Auto</span></label>
+            <div class="field-auto" id="wo-vendor-id-display">Will be generated on save</div>
+            <input type="hidden" id="wo-vendor-id"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Vendor Name</label>
+            <input class="field-input" id="wo-vendor-name" type="text" placeholder="Vendor / contractor name"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Work Order No.</label>
+            <input class="field-input" id="wo-num" type="text" placeholder="WO-2024-XXX (auto if blank)"/>
+          </div>
+        </div>
+
+        <!-- Section 3: Financial -->
+        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Financials</div><div class="sd-line"></div></div>
+        <div class="fields-grid cols4">
+          <div class="field">
+            <label class="field-label">WO Amount (₹) <span class="req">*</span></label>
+            <div class="input-wrap has-prefix">
+              <span class="input-prefix">₹</span>
+              <input class="field-input" id="wo-amount" type="number" placeholder="0"/>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Advance Amount (₹)</label>
+            <div class="input-wrap has-prefix">
+              <span class="input-prefix">₹</span>
+              <input class="field-input" id="wo-advance" type="number" placeholder="0"/>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Payment Terms</label>
+            <select class="field-select" id="wo-payment-terms">
+              <option>Running Bill</option>
+              <option>Lump Sum</option>
+              <option>Milestone Based</option>
+              <option>Item Rate</option>
+              <option>Percentage Complete</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Payment Status</label>
+            <select class="field-select" id="wo-payment-status">
+              <option>Unpaid</option>
+              <option>Advance Paid</option>
+              <option>Partially Paid</option>
+              <option>Fully Paid</option>
+              <option>On Hold</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section 4: Timeline & Status -->
+        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📅 Timeline & Status</div><div class="sd-line"></div></div>
+        <div class="fields-grid cols4">
+          <div class="field">
+            <label class="field-label">Start Date</label>
+            <input class="field-input" id="wo-start" type="date"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Planned End Date</label>
+            <input class="field-input" id="wo-plan-end" type="date"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Actual End Date</label>
+            <input class="field-input" id="wo-actual-end" type="date"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Completion %</label>
+            <input class="field-input" id="wo-completion" type="number" min="0" max="100" placeholder="0"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Status</label>
+            <select class="field-select" id="wo-status">
+              <option>Issued</option>
+              <option>In Progress</option>
+              <option>On Hold</option>
+              <option>Completed</option>
+              <option>Cancelled</option>
+              <option>Draft</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Priority</label>
+            <select class="field-select" id="wo-priority">
+              <option>Normal</option>
+              <option>Low</option>
+              <option>High</option>
+              <option>Urgent</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Created By</label>
+            <input class="field-input" id="wo-created-by" type="text" placeholder="Your name"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Remarks</label>
+            <input class="field-input" id="wo-remarks" type="text" placeholder="Short note…"/>
+          </div>
+        </div>
+
+      </div>
+      <div class="form-footer">
+        <div class="footer-hint"><span>ℹ️</span> Fields marked <span style="color:var(--accent);font-weight:700;">*</span> are required. Saves to Google Sheets.</div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost" onclick="clearWOForm()">Clear</button>
+          <button class="btn btn-primary" onclick="submitWO()">
+            <span id="wo-submit-icon">📋</span>
+            <span id="wo-submit-text">Save Work Order</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast success" id="toast">
+  <span id="toast-icon">✅</span>
+  <span id="toast-msg">Saved!</span>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
+let allWOs    = [];
+let activeSites = []; // cache of active sites for dropdown
+
+// ── Edit mode: fields that CAN be edited ─────────────────────
+const WO_EDITABLE_IN_EDIT = [
+  'wo-payment-terms', 'wo-payment-status',
+  'wo-start', 'wo-plan-end', 'wo-actual-end',
+  'wo-completion', 'wo-status', 'wo-priority',
+  'wo-created-by', 'wo-remarks'
+];
+
+// ── All lockable form fields ──────────────────────────────────
+const WO_ALL_FORM_FIELDS = [
+  'wo-site-name', 'wo-issue-date', 'wo-type', 'wo-category',
+  'wo-scope', 'wo-vendor-name', 'wo-num',
+  'wo-amount', 'wo-advance',
+  'wo-payment-terms', 'wo-payment-status',
+  'wo-start', 'wo-plan-end', 'wo-actual-end',
+  'wo-completion', 'wo-status', 'wo-priority',
+  'wo-created-by', 'wo-remarks'
+];
+
+// ── Closed/inactive statuses (these sites won't appear in dropdown) ──
+const CLOSED_STATUSES = ['Completed', 'Cancelled'];
+
+// ── API helper ────────────────────────────────────────────────
+async function api(action, data = {}) {
+  try {
+    const params = new URLSearchParams({ action, ...data });
+    const res = await fetch(`${API_URL}?${params}`);
+    return await res.json();
+  } catch(e) { return null; }
+}
+
+// ── ID generators ─────────────────────────────────────────────
+function generateWODisplayId() {
+  const yr = new Date().getFullYear();
+  const rnd = String(Math.floor(Math.random() * 9000) + 1000);
+  return `WO-${yr}-${rnd}`;
+}
+function generateVendorId() {
+  const yr = new Date().getFullYear();
+  const rnd = String(Math.floor(Math.random() * 9000) + 1000);
+  return `VEND-${yr}-${rnd}`;
+}
+
+// ── Load active sites into dropdown ──────────────────────────
+async function loadActiveSites() {
+  const siteSelect = document.getElementById('wo-site-name');
+
+  // Try real API first
+  let sites = [];
+  const d = await api('getSites');
+  if (d && d.sites && d.sites.length) {
+    sites = d.sites;
+  } else {
+    // Demo fallback
+    sites = getDemoSites();
+  }
+
+  // Filter out closed sites
+  activeSites = sites.filter(s => !CLOSED_STATUSES.includes(s.status));
+
+  // Rebuild dropdown
+  siteSelect.innerHTML = '<option value="">— Select Active Site —</option>';
+  activeSites.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value       = s.name;
+    opt.dataset.id  = s.siteId;
+    opt.textContent = `${s.name}  [${s.siteId}]`;
+    siteSelect.appendChild(opt);
+  });
+}
+
+// Demo sites fallback
+function getDemoSites() {
+  return [
+    { siteId:'SITE-2024-1001', name:'SITE A — SECTOR 62', status:'Active' },
+    { siteId:'SITE-2024-1002', name:'SITE B — NH8',        status:'Active' },
+    { siteId:'SITE-2024-1003', name:'SITE C — DWARKA',     status:'Planning' },
+    { siteId:'SITE-2024-1004', name:'SITE D — FARIDABAD',  status:'Completed' }, // excluded
+  ];
+}
+
+// ── When user selects a site → auto-fill Site ID ─────────────
+function onSiteSelect() {
+  const sel = document.getElementById('wo-site-name');
+  const selectedOpt = sel.options[sel.selectedIndex];
+  const siteId = selectedOpt ? (selectedOpt.dataset.id || '') : '';
+  document.getElementById('wo-site-id').value       = siteId;
+  document.getElementById('wo-site-id-display').textContent = siteId || '—';
+  // Colour the auto display to green once filled
+  document.getElementById('wo-site-id-display').style.color = siteId ? 'var(--green)' : 'var(--blue)';
+}
+
+// ── Render preview IDs on form load (new mode) ───────────────
+function refreshAutoIds() {
+  const woId     = generateWODisplayId();
+  const vendorId = generateVendorId();
+  document.getElementById('wo-id-display').textContent      = woId;
+  document.getElementById('wo-id-display').style.color      = 'var(--blue)';
+  document.getElementById('wo-vendor-id-display').textContent = vendorId;
+  document.getElementById('wo-vendor-id-display').style.color  = 'var(--blue)';
+  // Store in hidden inputs for use during submit
+  document.getElementById('wo-id').value         = '';        // blank = new
+  document.getElementById('wo-vendor-id').value  = vendorId;
+}
+
+// ── SET EDIT MODE ─────────────────────────────────────────────
+function setWOEditMode(isEdit) {
+  WO_ALL_FORM_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.disabled = isEdit && !WO_EDITABLE_IN_EDIT.includes(id);
+  });
+
+  const existing = document.getElementById('wo-edit-lock-banner');
+  if (isEdit) {
+    if (!existing) {
+      const banner = document.createElement('div');
+      banner.id = 'wo-edit-lock-banner';
+      banner.innerHTML = `⚠️&nbsp; <strong>Edit Mode:</strong> Only
+        <strong>Payment Terms, Payment Status, Start Date, Planned End, Actual End,
+        Completion %, Status, Priority, Created By</strong> and <strong>Remarks</strong>
+        can be changed. All other fields are locked.`;
+      document.querySelector('.form-body').insertBefore(banner, document.querySelector('.form-body').firstChild);
+    }
+  } else {
+    if (existing) existing.remove();
+  }
+}
+
+// ── Load work orders table ────────────────────────────────────
+async function loadWorkOrders() {
+  document.getElementById('wo-count-badge').textContent = 'Loading…';
+  const d = await api('getWorkOrders');
+  if (d && d.workOrders) {
+    allWOs = d.workOrders;
+  } else {
+    allWOs = getDemoWOs().workOrders;
+  }
+  renderWOs(allWOs);
+  updateStats(allWOs);
+}
+
+function getDemoWOs() {
+  return { workOrders: [
+    {
+      serialNo:1, workOrderId:'WO-2024-1001', siteId:'SITE-2024-1001',
+      siteName:'SITE A — SECTOR 62', workOrderNo:'WO-2024-001',
+      issueDate:'01 Jan 2024', vendorId:'VEND-2024-1001', vendorName:'RAM CONTRACTORS',
+      workType:'Civil Work', scopeOfWork:'RCC slab & beam work for ground floor',
+      workCategory:'Labour + Material', woAmount:1200000, advanceAmount:200000,
+      startDate:'05 Jan 2024', plannedEndDate:'30 Mar 2024', actualEndDate:'—',
+      status:'In Progress', priority:'High', paymentTerms:'Running Bill',
+      paymentStatus:'Advance Paid', completion:55, remarks:'On schedule',
+      createdAt:'01 Jan 2024', createdBy:'ADMIN'
+    },
+    {
+      serialNo:2, workOrderId:'WO-2024-1002', siteId:'SITE-2024-1002',
+      siteName:'SITE B — NH8', workOrderNo:'WO-2024-002',
+      issueDate:'20 Feb 2024', vendorId:'VEND-2024-1002', vendorName:'STEEL SUPPLIERS LTD',
+      workType:'Structural', scopeOfWork:'TMT steel supply for 3 floors',
+      workCategory:'Material', woAmount:2500000, advanceAmount:500000,
+      startDate:'25 Feb 2024', plannedEndDate:'30 Apr 2024', actualEndDate:'—',
+      status:'Issued', priority:'Normal', paymentTerms:'Item Rate',
+      paymentStatus:'Advance Paid', completion:0, remarks:'',
+      createdAt:'20 Feb 2024', createdBy:'ADMIN'
+    },
+  ]};
+}
+
+const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
+const statusColors   = { 'In Progress':'orange', Issued:'blue', Completed:'green', 'On Hold':'amber', Cancelled:'red', Draft:'' };
+const priorityColors = { Normal:'blue', Low:'', High:'orange', Urgent:'red' };
+const payStatusColors= { Unpaid:'red', 'Advance Paid':'amber', 'Partially Paid':'orange', 'Fully Paid':'green', 'On Hold':'amber' };
+
+function renderWOs(wos) {
+  document.getElementById('wo-count-badge').textContent = wos.length + ' orders';
+  const tbody = document.getElementById('wo-tbody');
+  if (!wos.length) {
+    tbody.innerHTML = `<tr><td colspan="25"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No work orders yet. Add one below!</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = wos.map((w, i) => {
+    const pct = Math.min(100, Number(w.completion || 0));
+    const barColor = pct >= 100 ? 'green' : pct >= 60 ? 'orange' : pct >= 30 ? 'blue' : 'red';
+    return `
+      <tr style="animation:fadeUp 0.3s ease ${i*0.04}s both;">
+        <td style="color:var(--text-muted);font-size:11px;">${w.serialNo || i+1}</td>
+        <td><span style="font-size:11px;background:var(--off-white);padding:2px 7px;border-radius:6px;font-weight:600;">${w.workOrderId || '—'}</span></td>
+        <td style="color:var(--text-muted);font-size:11px;">${w.siteId || '—'}</td>
+        <td style="font-weight:700;min-width:140px;">${w.siteName || '—'}</td>
+        <td><span class="tag blue">${w.workOrderNo || '—'}</span></td>
+        <td style="color:var(--text-muted);">${w.issueDate || '—'}</td>
+        <td style="color:var(--text-muted);font-size:11px;">${w.vendorId || '—'}</td>
+        <td>${w.vendorName || '—'}</td>
+        <td><span class="tag purple">${w.workType || '—'}</span></td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${w.scopeOfWork || '—'}</td>
+        <td><span class="tag orange">${w.workCategory || '—'}</span></td>
+        <td style="font-weight:700;">${fmt(w.woAmount)}</td>
+        <td style="color:var(--text-muted);">${fmt(w.advanceAmount)}</td>
+        <td style="color:var(--text-muted);">${w.startDate || '—'}</td>
+        <td style="color:var(--text-muted);">${w.plannedEndDate || '—'}</td>
+        <td style="color:var(--text-muted);">${w.actualEndDate || '—'}</td>
+        <td><span class="tag ${statusColors[w.status] || 'blue'}">${w.status}</span></td>
+        <td><span class="tag ${priorityColors[w.priority] || 'blue'}">${w.priority || 'Normal'}</span></td>
+        <td style="font-size:11px;">${w.paymentTerms || '—'}</td>
+        <td><span class="tag ${payStatusColors[w.paymentStatus] || 'blue'}">${w.paymentStatus || '—'}</span></td>
+        <td style="min-width:90px;">
+          <div style="font-size:11px;font-weight:700;margin-bottom:3px;">${pct}%</div>
+          <div class="prog-wrap"><div class="prog-fill ${barColor}" style="width:${pct}%"></div></div>
+        </td>
+        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${w.remarks || '—'}</td>
+        <td style="color:var(--text-muted);font-size:11px;">${w.createdAt || '—'}</td>
+        <td style="color:var(--text-muted);font-size:11px;">${w.createdBy || '—'}</td>
+        <td>
+          <button class="btn btn-ghost" style="padding:5px 10px;font-size:11px;" onclick="editWO(${i})">✏️ Edit</button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function filterWOs() {
+  const q = document.getElementById('wo-search').value.toLowerCase();
+  const filtered = allWOs.filter(w =>
+    (w.workOrderNo ||'').toLowerCase().includes(q) ||
+    (w.siteName    ||'').toLowerCase().includes(q) ||
+    (w.vendorName  ||'').toLowerCase().includes(q) ||
+    (w.workType    ||'').toLowerCase().includes(q)
+  );
+  renderWOs(filtered);
+}
+
+function updateStats(wos) {
+  document.getElementById('qs-total').textContent      = wos.length;
+  document.getElementById('qs-inprogress').textContent = wos.filter(w => w.status === 'In Progress').length;
+  document.getElementById('qs-issued').textContent     = wos.filter(w => w.status === 'Issued').length;
+  document.getElementById('qs-completed').textContent  = wos.filter(w => w.status === 'Completed').length;
+  const total = wos.reduce((s, w) => s + Number(w.woAmount||0), 0);
+  document.getElementById('qs-value').textContent = total >= 1e7
+    ? '₹' + (total/1e7).toFixed(1) + ' Cr'
+    : '₹' + (total/1e5).toFixed(1) + ' L';
+}
+
+// ── SUBMIT WORK ORDER ─────────────────────────────────────────
+async function submitWO() {
+  const siteId   = document.getElementById('wo-site-id').value.trim();
+  const siteName = document.getElementById('wo-site-name').value.trim();
+  const amount   = document.getElementById('wo-amount').value;
+
+  if (!siteName || !siteId) {
+    showToast('⚠️ Please select an active site', 'error'); return;
+  }
+  if (!amount) {
+    showToast('⚠️ WO Amount is required', 'error'); return;
+  }
+
+  const woId   = document.getElementById('wo-id').value;   // blank = new WO
+  const isEdit = !!woId;
+
+  document.getElementById('wo-submit-text').textContent = 'Saving…';
+  document.getElementById('wo-submit-icon').textContent = '⏳';
+
+  // For new WO: generate fresh vendor ID at save time (not just preview)
+  const vendorId = isEdit
+    ? document.getElementById('wo-vendor-id').value
+    : generateVendorId();
+
+  const data = {
+    action:         isEdit ? 'updateWorkOrder' : 'addWorkOrder',
+    siteId,
+    siteName,
+    workOrderNo:    document.getElementById('wo-num').value,
+    issueDate:      document.getElementById('wo-issue-date').value,
+    vendorId,
+    vendorName:     document.getElementById('wo-vendor-name').value,
+    workType:       document.getElementById('wo-type').value,
+    scopeOfWork:    document.getElementById('wo-scope').value,
+    workCategory:   document.getElementById('wo-category').value,
+    woAmount:       amount,
+    advanceAmount:  document.getElementById('wo-advance').value || 0,
+    startDate:      document.getElementById('wo-start').value,
+    plannedEndDate: document.getElementById('wo-plan-end').value,
+    actualEndDate:  document.getElementById('wo-actual-end').value,
+    status:         document.getElementById('wo-status').value,
+    priority:       document.getElementById('wo-priority').value,
+    paymentTerms:   document.getElementById('wo-payment-terms').value,
+    paymentStatus:  document.getElementById('wo-payment-status').value,
+    completion:     document.getElementById('wo-completion').value || 0,
+    remarks:        document.getElementById('wo-remarks').value,
+    createdBy:      document.getElementById('wo-created-by').value || 'Admin',
+  };
+  if (isEdit) data.workOrderId = woId;
+
+  await api(data.action, data);
+
+  document.getElementById('wo-submit-text').textContent = 'Save Work Order';
+  document.getElementById('wo-submit-icon').textContent = '📋';
+  showToast(isEdit ? '✅ Work Order updated!' : '✅ Work Order saved to Sheets!', 'success');
+  clearWOForm();
+  loadWorkOrders();
+}
+
+// ── CLEAR / RESET FORM ────────────────────────────────────────
+function clearWOForm() {
+  ['wo-id', 'wo-scope', 'wo-vendor-name', 'wo-num',
+   'wo-amount', 'wo-advance', 'wo-start', 'wo-plan-end',
+   'wo-actual-end', 'wo-completion', 'wo-remarks', 'wo-created-by']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+
+  document.getElementById('wo-site-name').value     = '';
+  document.getElementById('wo-site-id').value       = '';
+  document.getElementById('wo-site-id-display').textContent = '—';
+  document.getElementById('wo-site-id-display').style.color = 'var(--blue)';
+  document.getElementById('wo-vendor-id').value     = '';
+  document.getElementById('wo-status').value        = 'Issued';
+  document.getElementById('wo-priority').value      = 'Normal';
+  document.getElementById('wo-payment-terms').value = 'Running Bill';
+  document.getElementById('wo-payment-status').value= 'Unpaid';
+  document.getElementById('wo-issue-date').value    = new Date().toISOString().split('T')[0];
+  document.getElementById('wo-form-title').textContent    = 'New Work Order';
+  document.getElementById('wo-form-subtitle').textContent = 'Create a work order and assign to a site';
+
+  // Refresh preview IDs
+  refreshAutoIds();
+  // Unlock all fields
+  setWOEditMode(false);
+}
+
+// ── EDIT WORK ORDER ───────────────────────────────────────────
+function editWO(idx) {
+  const w = allWOs[idx];
+  if (!w) return;
+
+  // Fill hidden + display
+  document.getElementById('wo-id').value              = w.workOrderId || '';
+  document.getElementById('wo-id-display').textContent = w.workOrderId || '—';
+  document.getElementById('wo-id-display').style.color = 'var(--green)';
+
+  document.getElementById('wo-vendor-id').value       = w.vendorId || '';
+  document.getElementById('wo-vendor-id-display').textContent = w.vendorId || '—';
+  document.getElementById('wo-vendor-id-display').style.color = 'var(--green)';
+
+  // Site — set dropdown to matching site name, update hidden ID display
+  const siteSelect = document.getElementById('wo-site-name');
+  // Try to find the option matching siteName; if not found (e.g. closed site), add temporary
+  let found = [...siteSelect.options].find(o => o.value === w.siteName);
+  if (!found) {
+    const opt = document.createElement('option');
+    opt.value       = w.siteName || '';
+    opt.dataset.id  = w.siteId || '';
+    opt.textContent = `${w.siteName}  [${w.siteId}]`;
+    siteSelect.appendChild(opt);
+  }
+  siteSelect.value = w.siteName || '';
+  document.getElementById('wo-site-id').value         = w.siteId || '';
+  document.getElementById('wo-site-id-display').textContent = w.siteId || '—';
+  document.getElementById('wo-site-id-display').style.color = 'var(--green)';
+
+  // Text & number fields
+  document.getElementById('wo-vendor-name').value     = w.vendorName || '';
+  document.getElementById('wo-num').value             = w.workOrderNo || '';
+  document.getElementById('wo-scope').value           = w.scopeOfWork || '';
+  document.getElementById('wo-amount').value          = w.woAmount || '';
+  document.getElementById('wo-advance').value         = w.advanceAmount || '';
+  document.getElementById('wo-completion').value      = w.completion || 0;
+  document.getElementById('wo-remarks').value         = w.remarks || '';
+  document.getElementById('wo-created-by').value      = w.createdBy || '';
+
+  // Selects
+  const selects = {
+    'wo-type':           w.workType,
+    'wo-category':       w.workCategory,
+    'wo-status':         w.status,
+    'wo-priority':       w.priority,
+    'wo-payment-terms':  w.paymentTerms,
+    'wo-payment-status': w.paymentStatus,
+  };
+  Object.entries(selects).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && val) {
+      const opt = [...el.options].find(o => o.value === val);
+      if (opt) el.value = val;
+    }
+  });
+
+  document.getElementById('wo-form-title').textContent    = '✏️ Edit WO — ' + w.workOrderNo;
+  document.getElementById('wo-form-subtitle').textContent = 'Only Payment Terms, Status, Dates, Completion & Priority can be updated';
+
+  // Lock non-editable fields
+  setWOEditMode(true);
+
+  scrollToForm();
+  showToast('ℹ️ Edit mode — limited fields editable', 'info');
+}
+
+// ── NEW WO button (scroll + unlock + refresh IDs) ────────────
+function newWOForm() {
+  clearWOForm();
+  scrollToForm();
+}
+
+function scrollToForm() {
+  document.getElementById('add-wo-form').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  const parts = msg.split(' ');
+  document.getElementById('toast-icon').textContent = parts[0];
+  document.getElementById('toast-msg').textContent  = parts.slice(1).join(' ');
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+document.getElementById('wo-issue-date').value = new Date().toISOString().split('T')[0];
+
+// Load sites dropdown + work orders + generate preview IDs in parallel
+Promise.all([loadActiveSites(), loadWorkOrders()]).then(() => {
+  refreshAutoIds();
+});
+
+const s2 = document.createElement('style');
+s2.textContent = `@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }`;
+document.head.appendChild(s2);
+</script>
+</body>
+</html>
