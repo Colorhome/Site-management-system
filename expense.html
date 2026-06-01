@@ -395,7 +395,6 @@
 
       <div class="form-body">
 
-        <!-- Section 1: Site -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🏗 Site Details</div><div class="sd-line"></div></div>
         <div class="fields-grid cols3">
           <div class="field">
@@ -414,7 +413,6 @@
           </div>
         </div>
 
-        <!-- Section 2: Cost Head -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📋 Cost Classification</div><div class="sd-line"></div></div>
         <div class="fields-grid cols3">
           <div class="field">
@@ -433,7 +431,6 @@
           </div>
         </div>
 
-        <!-- Section 3: Vendor & WO -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">👔 Vendor & Work Order</div><div class="sd-line"></div></div>
         <div class="fields-grid cols4">
           <div class="field">
@@ -458,7 +455,6 @@
           </div>
         </div>
 
-        <!-- Section 4: Financials -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Amount Details</div><div class="sd-line"></div></div>
         <div class="fields-grid cols5">
           <div class="field">
@@ -505,7 +501,6 @@
           <div class="ap-val" id="exp-total-display">₹0</div>
         </div>
 
-        <!-- Section 5: Payment & Status -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💳 Payment & Status</div><div class="sd-line"></div></div>
         <div class="fields-grid cols4">
           <div class="field">
@@ -537,7 +532,6 @@
           </div>
         </div>
 
-        <!-- Section 6: Notes -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📝 Notes & Approval</div><div class="sd-line"></div></div>
         <div class="fields-grid cols3">
           <div class="field">
@@ -580,6 +574,9 @@
 </div>
 
 <script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  CONFIG — apna Google Apps Script URL yahan daalein
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
 
 let allExpenses = [];
@@ -627,13 +624,31 @@ const EXP_ALL_FIELDS = [
   'exp-description', 'exp-approved-by', 'exp-remarks', 'exp-created-by'
 ];
 
-// ── API helper ────────────────────────────────────────────────
-async function api(action, data = {}) {
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  FIX #1 — API helper: sahi tarike se params build karo
+//  Purani problem: URLSearchParams({action, ...data}) mein
+//  'action' data ke andar bhi tha, aur Numbers/null sahi se
+//  serialize nahi hote the.
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function api(action, data) {
   try {
-    const params = new URLSearchParams({ action, ...data });
-    const res = await fetch(`${API_URL}?${params}`);
+    const params = new URLSearchParams();
+    params.set('action', action);
+    if (data) {
+      Object.entries(data).forEach(([k, v]) => {
+        // null/undefined skip karo, baaki sab string mein convert karo
+        if (v !== null && v !== undefined && v !== '') {
+          params.set(k, String(v));
+        }
+      });
+    }
+    const res = await fetch(`${API_URL}?${params.toString()}`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     return await res.json();
-  } catch(e) { return null; }
+  } catch(e) {
+    console.error('API error [' + action + ']:', e);
+    return null;
+  }
 }
 
 const fmt = n => '₹' + Number(n || 0).toLocaleString('en-IN');
@@ -696,6 +711,9 @@ async function onExpSiteSelect() {
   showLoadingInDropdown('exp-vendor-name', 'Loading vendors…');
   showLoadingInDropdown('exp-work-order',  'Loading work orders…');
 
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  //  FIX #2 — siteId alag se pass karo, data object mein nahi
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   const [vendorRes, woRes] = await Promise.all([
     api('getVendorsBySite', { siteId }),
     api('getExpenseWOBySite', { siteId })
@@ -708,27 +726,33 @@ async function onExpSiteSelect() {
   if (siteVendors.length) {
     siteVendors.forEach(v => {
       const opt = document.createElement('option');
-      opt.value       = v.vendorName;
-      opt.dataset.id  = v.vendorId;
-      opt.textContent = `${v.vendorName}  [${v.vendorId}]`;
+      opt.value           = v.vendorName;
+      opt.dataset.id      = v.vendorId;
+      opt.dataset.vendorId = v.vendorId;
+      opt.textContent     = `${v.vendorName}  [${v.vendorId}]`;
       vSel.appendChild(opt);
     });
   } else {
     vSel.innerHTML = '<option value="">No vendors found for this site</option>';
   }
 
-  // Work Orders
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  //  FIX #3 — Work Orders: workOrderId ko opt.value mein
+  //  store karo (sirf woId), taaki edit mein match ho sake
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   siteWOs = (woRes && woRes.workOrders) ? woRes.workOrders : [];
   const woSel = document.getElementById('exp-work-order');
   woSel.innerHTML = '<option value="">— Select Work Order (optional) —</option>';
   if (siteWOs.length) {
     siteWOs.forEach(w => {
       const opt = document.createElement('option');
-      opt.value         = w.workOrderNo || w.workOrderId;
-      opt.dataset.id    = w.workOrderId;
-      opt.dataset.vname = w.vendorName;
-      opt.dataset.vid   = w.vendorId;
-      opt.textContent   = `${w.workOrderNo || w.workOrderId}  |  ${w.workType}  |  ${w.vendorName}`;
+      // value = workOrderId (unique key for matching in edit mode)
+      opt.value           = w.workOrderId;
+      opt.dataset.id      = w.workOrderId;
+      opt.dataset.vname   = w.vendorName || '';
+      opt.dataset.vid     = w.vendorId   || '';
+      opt.dataset.no      = w.workOrderNo || w.workOrderId;
+      opt.textContent     = `${w.workOrderNo || w.workOrderId}  |  ${w.workType}  |  ${w.vendorName}`;
       woSel.appendChild(opt);
     });
   } else {
@@ -756,24 +780,32 @@ function resetWODropdown() {
 function onVendorSelect() {
   const sel      = document.getElementById('exp-vendor-name');
   const opt      = sel.options[sel.selectedIndex];
-  const vendorId = opt ? (opt.dataset.id || '') : '';
+  const vendorId = opt ? (opt.dataset.id || opt.dataset.vendorId || '') : '';
   document.getElementById('exp-vendor-id-hidden').value        = vendorId;
   document.getElementById('exp-vendor-id-display').textContent = vendorId || '—';
   document.getElementById('exp-vendor-id-display').style.color = vendorId ? 'var(--green)' : '';
 }
 
-// ── WO SELECT ─────────────────────────────────────────────────
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  FIX #4 — WO SELECT: opt.value ab workOrderId hai
+//  isliye direct use karo; vendor match bhi fix kiya
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function onWOSelect() {
   const sel  = document.getElementById('exp-work-order');
   const opt  = sel.options[sel.selectedIndex];
   const woId = opt ? (opt.dataset.id || '') : '';
+
   document.getElementById('exp-wo-id-hidden').value        = woId;
   document.getElementById('exp-wo-id-display').textContent = woId || '—';
   document.getElementById('exp-wo-id-display').style.color = woId ? 'var(--green)' : '';
 
+  // WO se juda vendor auto-fill karo
   if (opt && opt.dataset.vid) {
     const vSel     = document.getElementById('exp-vendor-name');
-    const matchOpt = [...vSel.options].find(o => o.dataset.id === opt.dataset.vid);
+    // dataset.vid se match karo
+    const matchOpt = [...vSel.options].find(o =>
+      (o.dataset.id || o.dataset.vendorId) === opt.dataset.vid
+    );
     if (matchOpt) {
       vSel.value = matchOpt.value;
       document.getElementById('exp-vendor-id-hidden').value        = opt.dataset.vid;
@@ -812,7 +844,7 @@ function recalcTotal() {
   document.getElementById('exp-total-display').textContent = fmt(amount + tax);
 }
 
-// ── LOAD EXPENSES — real sheet data only ──────────────────────
+// ── LOAD EXPENSES ─────────────────────────────────────────────
 async function loadExpenses() {
   document.getElementById('exp-count-badge').textContent = 'Loading…';
   document.getElementById('exp-tbody').innerHTML =
@@ -822,7 +854,7 @@ async function loadExpenses() {
 
   if (!d) {
     document.getElementById('exp-tbody').innerHTML =
-      `<tr><td colspan="27"><div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">Could not connect to Google Sheets. Check your API_URL.</div></div></td></tr>`;
+      `<tr><td colspan="27"><div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">Could not connect to Google Sheets. Check API_URL and deployment.</div></div></td></tr>`;
     document.getElementById('exp-count-badge').textContent = 'Error';
     return;
   }
@@ -834,7 +866,7 @@ async function loadExpenses() {
 
 function updateSummary(d) {
   const total    = d.total        || allExpenses.length;
-  const amount   = d.totalAmount  || allExpenses.reduce((s,e)=>s+e.totalAmount,0);
+  const amount   = d.totalAmount  || allExpenses.reduce((s,e)=>s+(e.totalAmount||0),0);
   const pending  = (d.byStatus && d.byStatus.Pending)  || allExpenses.filter(e=>e.expenseStatus==='Pending').length;
   const approved = (d.byStatus && d.byStatus.Approved) || allExpenses.filter(e=>e.expenseStatus==='Approved').length;
   const rejected = (d.byStatus && d.byStatus.Rejected) || allExpenses.filter(e=>e.expenseStatus==='Rejected').length;
@@ -933,7 +965,7 @@ function setExpEditMode(isEdit) {
       banner.id = 'exp-edit-lock-banner';
       banner.innerHTML = `⚠️&nbsp; <strong>Edit Mode:</strong> Only
         <strong>Status, Approved By, Remarks, Payment Mode, Bill No, Invoice No,
-        Description, Tax Amount</strong> and <strong>Amount</strong> can be changed. All other fields are locked.`;
+        Description, Tax Amount</strong> and <strong>Amount</strong> can be changed.`;
       document.querySelector('.form-body').insertBefore(banner, document.querySelector('.form-body').firstChild);
     }
   } else {
@@ -941,7 +973,11 @@ function setExpEditMode(isEdit) {
   }
 }
 
-// ── SUBMIT ────────────────────────────────────────────────────
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  FIX #5 — SUBMIT: data object se 'action' key hataao
+//  (api() function khud action set karta hai)
+//  aur saare values properly pass karo
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function submitExpense() {
   const siteName = document.getElementById('exp-site-name').value.trim();
   const siteId   = document.getElementById('exp-site-id-hidden').value.trim();
@@ -963,35 +999,39 @@ async function submitExpense() {
   document.getElementById('exp-submit-text').textContent = 'Saving…';
   document.getElementById('exp-submit-icon').textContent = '⏳';
 
-  // Derive expenseType from cost head
   const headMatch   = COST_HEADS.find(h => h.name === costHead);
   const expenseType = headMatch ? headMatch.type : 'Miscellaneous';
 
+  // 'action' key bilkul mat dalo — api() khud set karta hai
   const data = {
-    action:        isEdit ? 'updateExpense' : 'addExpense',
-    siteId, siteName, date,
+    siteId,
+    siteName,
+    date,
     costHeadName:  costHead,
-    costHeadId:    document.getElementById('exp-costhead-id-hidden').value,
+    costHeadId:    document.getElementById('exp-costhead-id-hidden').value || (headMatch ? headMatch.id : 'CH-099'),
     expenseType,
-    vendorId:      document.getElementById('exp-vendor-id-hidden').value,
-    vendorName:    document.getElementById('exp-vendor-name').value,
-    workOrderId:   document.getElementById('exp-wo-id-hidden').value,
-    description:   document.getElementById('exp-description').value,
-    qty:           document.getElementById('exp-qty').value || 1,
+    vendorId:      document.getElementById('exp-vendor-id-hidden').value   || '',
+    vendorName:    document.getElementById('exp-vendor-name').value         || '',
+    workOrderId:   document.getElementById('exp-wo-id-hidden').value        || '',
+    description:   document.getElementById('exp-description').value         || '',
+    qty:           parseFloat(document.getElementById('exp-qty').value)     || 1,
     unit:          document.getElementById('exp-unit').value,
-    rate:          document.getElementById('exp-rate').value || 0,
-    amount, taxAmount: tax, totalAmount: total,
+    rate:          parseFloat(document.getElementById('exp-rate').value)    || 0,
+    amount,
+    taxAmount:     tax,
+    totalAmount:   total,
     paymentMode:   document.getElementById('exp-payment-mode').value,
-    billNo:        document.getElementById('exp-bill-no').value,
-    invoiceNo:     document.getElementById('exp-invoice-no').value,
+    billNo:        document.getElementById('exp-bill-no').value             || '',
+    invoiceNo:     document.getElementById('exp-invoice-no').value          || '',
     expenseStatus: document.getElementById('exp-status').value,
-    approvedBy:    document.getElementById('exp-approved-by').value,
-    remarks:       document.getElementById('exp-remarks').value,
-    createdBy:     document.getElementById('exp-created-by').value || 'Admin',
+    approvedBy:    document.getElementById('exp-approved-by').value         || '',
+    remarks:       document.getElementById('exp-remarks').value             || '',
+    createdBy:     document.getElementById('exp-created-by').value          || 'Admin',
   };
   if (isEdit) data.expenseId = expId;
 
-  const res = await api(data.action, data);
+  const action = isEdit ? 'updateExpense' : 'addExpense';
+  const res    = await api(action, data);
 
   document.getElementById('exp-submit-text').textContent = 'Save Expense';
   document.getElementById('exp-submit-icon').textContent = '💸';
@@ -1001,7 +1041,9 @@ async function submitExpense() {
     clearExpForm();
     loadExpenses();
   } else {
-    showToast('❌ Save failed: ' + ((res && res.error) || 'Unknown error'), 'error');
+    const errMsg = (res && res.error) ? res.error : 'Unknown error — check Apps Script logs';
+    showToast('❌ Save failed: ' + errMsg, 'error');
+    console.error('Save failed response:', res);
   }
 }
 
@@ -1036,75 +1078,105 @@ function clearExpForm() {
   setExpEditMode(false);
 }
 
-// ── EDIT ──────────────────────────────────────────────────────
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  FIX #6 — EDIT: WO match ab workOrderId se hoga
+//  (pehle workOrderNo se match karne ki koshish hoti thi jo
+//  fail ho jata tha jab value alag hoti thi)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function editExpense(idx) {
   const e = allExpenses[idx];
   if (!e) return;
 
-  document.getElementById('exp-id').value              = e.expenseId || '';
+  // Expense ID
+  document.getElementById('exp-id').value               = e.expenseId || '';
   document.getElementById('exp-id-display').textContent = e.expenseId || '—';
   document.getElementById('exp-id-display').style.color = 'var(--green)';
 
+  // Site
   const siteSel = document.getElementById('exp-site-name');
-  let siteOpt = [...siteSel.options].find(o => o.value === e.siteName);
+  let siteOpt   = [...siteSel.options].find(o => o.dataset.id === e.siteId || o.value === e.siteName);
   if (!siteOpt) {
     const opt = document.createElement('option');
     opt.value = e.siteName; opt.dataset.id = e.siteId; opt.textContent = e.siteName;
     siteSel.appendChild(opt);
+    siteOpt = opt;
   }
-  siteSel.value = e.siteName || '';
+  siteSel.value = siteOpt.value;
   document.getElementById('exp-site-id-hidden').value          = e.siteId || '';
   document.getElementById('exp-site-id-display').textContent    = e.siteId || '—';
   document.getElementById('exp-site-id-display').style.color    = 'var(--green)';
 
+  // Site select trigger — vendors & WOs load karo
   await onExpSiteSelect();
 
+  // Vendor — id se match karo pehle
   const vSel = document.getElementById('exp-vendor-name');
-  let vOpt = [...vSel.options].find(o => o.value === e.vendorName);
-  if (!vOpt) {
-    const opt = document.createElement('option'); opt.value = e.vendorName; opt.dataset.id = e.vendorId; opt.textContent = e.vendorName;
-    vSel.appendChild(opt);
+  let vOpt   = [...vSel.options].find(o =>
+    (o.dataset.id || o.dataset.vendorId) === e.vendorId
+  );
+  if (!vOpt && e.vendorName) {
+    // Fallback: name se match
+    vOpt = [...vSel.options].find(o => o.value === e.vendorName);
   }
-  vSel.value = e.vendorName || '';
+  if (!vOpt && e.vendorName) {
+    // Nahi mila toh add karo
+    const opt = document.createElement('option');
+    opt.value = e.vendorName; opt.dataset.id = e.vendorId; opt.textContent = e.vendorName;
+    vSel.appendChild(opt);
+    vOpt = opt;
+  }
+  if (vOpt) vSel.value = vOpt.value;
   document.getElementById('exp-vendor-id-hidden').value         = e.vendorId || '';
   document.getElementById('exp-vendor-id-display').textContent   = e.vendorId || '—';
-  document.getElementById('exp-vendor-id-display').style.color   = 'var(--green)';
+  if (e.vendorId) document.getElementById('exp-vendor-id-display').style.color = 'var(--green)';
 
+  // Work Order — workOrderId se match karo (opt.value = workOrderId hai ab)
   const woSel = document.getElementById('exp-work-order');
-  let woOpt = [...woSel.options].find(o => o.dataset.id === e.workOrderId);
-  if (!woOpt) {
-    const opt = document.createElement('option'); opt.value = e.workOrderId; opt.dataset.id = e.workOrderId; opt.textContent = e.workOrderId;
+  let woOpt   = [...woSel.options].find(o => o.value === e.workOrderId || o.dataset.id === e.workOrderId);
+  if (!woOpt && e.workOrderId) {
+    const opt = document.createElement('option');
+    opt.value = e.workOrderId; opt.dataset.id = e.workOrderId; opt.textContent = e.workOrderId;
     woSel.appendChild(opt);
+    woOpt = opt;
   }
   if (woOpt) woSel.value = woOpt.value;
   document.getElementById('exp-wo-id-hidden').value         = e.workOrderId || '';
   document.getElementById('exp-wo-id-display').textContent   = e.workOrderId || '—';
-  document.getElementById('exp-wo-id-display').style.color   = 'var(--green)';
+  if (e.workOrderId) document.getElementById('exp-wo-id-display').style.color = 'var(--green)';
 
+  // Cost Head
   const chSel = document.getElementById('exp-cost-head');
   const chOpt = [...chSel.options].find(o => o.value === e.costHeadName);
   if (chOpt) chSel.value = e.costHeadName;
   document.getElementById('exp-costhead-id-hidden').value        = e.costHeadId || '';
   document.getElementById('exp-costhead-id-display').textContent  = e.costHeadId || '—';
-  document.getElementById('exp-costhead-id-display').style.color  = 'var(--green)';
+  if (e.costHeadId) document.getElementById('exp-costhead-id-display').style.color = 'var(--green)';
 
+  // Date
   if (e.date && e.date !== '—') {
-    try { document.getElementById('exp-date').value = new Date(e.date).toISOString().split('T')[0]; } catch(x){}
+    try {
+      const d = new Date(e.date);
+      if (!isNaN(d)) document.getElementById('exp-date').value = d.toISOString().split('T')[0];
+    } catch(x){}
   }
-  document.getElementById('exp-qty').value        = e.qty || 1;
-  document.getElementById('exp-rate').value       = e.rate || '';
-  document.getElementById('exp-amount').value     = e.amount || '';
+
+  // Amounts
+  document.getElementById('exp-qty').value        = e.qty       || 1;
+  document.getElementById('exp-rate').value       = e.rate      || '';
+  document.getElementById('exp-amount').value     = e.amount    || '';
   document.getElementById('exp-tax').value        = e.taxAmount || '';
   document.getElementById('exp-total-display').textContent = fmt(e.totalAmount);
+
+  // Other fields
   document.getElementById('exp-unit').value         = e.unit          || 'LS';
   document.getElementById('exp-payment-mode').value = e.paymentMode   || 'Cash';
   document.getElementById('exp-status').value       = e.expenseStatus || 'Pending';
-  document.getElementById('exp-bill-no').value      = e.billNo      || '';
-  document.getElementById('exp-invoice-no').value   = e.invoiceNo   || '';
-  document.getElementById('exp-description').value  = e.description || '';
-  document.getElementById('exp-approved-by').value  = e.approvedBy  || '';
-  document.getElementById('exp-remarks').value      = e.remarks     || '';
-  document.getElementById('exp-created-by').value   = e.createdBy   || '';
+  document.getElementById('exp-bill-no').value      = e.billNo        || '';
+  document.getElementById('exp-invoice-no').value   = e.invoiceNo     || '';
+  document.getElementById('exp-description').value  = e.description   || '';
+  document.getElementById('exp-approved-by').value  = e.approvedBy    || '';
+  document.getElementById('exp-remarks').value      = e.remarks       || '';
+  document.getElementById('exp-created-by').value   = e.createdBy     || '';
 
   document.getElementById('exp-form-title').textContent    = '✏️ Edit Expense — ' + e.expenseId;
   document.getElementById('exp-form-subtitle').textContent = 'Only Status, Approver, Amounts & Remarks can be updated';
@@ -1120,9 +1192,12 @@ function scrollToForm() {
 
 function showToast(msg, type = 'success') {
   const t = document.getElementById('toast');
-  const parts = msg.split(' ');
-  document.getElementById('toast-icon').textContent = parts[0];
-  document.getElementById('toast-msg').textContent  = parts.slice(1).join(' ');
+  // Pehla word emoji hai — alag karo
+  const spaceIdx = msg.indexOf(' ');
+  const icon = spaceIdx > -1 ? msg.slice(0, spaceIdx) : msg;
+  const text = spaceIdx > -1 ? msg.slice(spaceIdx + 1) : '';
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-msg').textContent  = text;
   t.className = `toast ${type} show`;
   setTimeout(() => t.classList.remove('show'), 3200);
 }
