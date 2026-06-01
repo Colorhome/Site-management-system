@@ -38,7 +38,6 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
 
-  /* TOPBAR */
   .topbar {
     background: var(--white); border-bottom: 1px solid var(--border);
     padding: 0 32px; height: 64px;
@@ -72,10 +71,8 @@
   .sync-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* LAYOUT */
   .body-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 64px); }
 
-  /* SIDEBAR */
   .sidebar {
     background: var(--white); border-right: 1px solid var(--border);
     padding: 28px 20px; display: flex; flex-direction: column; gap: 4px;
@@ -94,7 +91,6 @@
   .nav-badge.green  { background: var(--green-bg); color: var(--green); }
   .nav-badge.amber  { background: var(--amber-bg); color: var(--amber); }
 
-  /* MAIN */
   .main-content { padding: 32px 40px; overflow-y: auto; }
   .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; }
   .page-eyebrow { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
@@ -113,10 +109,7 @@
   .btn-ghost:hover { border-color: var(--green); color: var(--green); }
   .btn-sm { padding: 6px 12px; font-size: 11px; }
 
-  /* SUMMARY STRIP */
-  .summary-strip {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px;
-  }
+  .summary-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px; }
   .sum-card {
     background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
     padding: 16px 18px; box-shadow: var(--shadow-sm);
@@ -129,7 +122,6 @@
   .sum-val.red    { color: var(--red); }
   .sum-val.blue   { color: var(--blue); }
 
-  /* TABLE CARD */
   .table-card {
     background: var(--white); border: 1px solid var(--border);
     border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 28px;
@@ -167,12 +159,10 @@
   .filter-bar { display: flex; align-items: center; gap: 8px; }
   .filter-select {
     padding: 6px 10px; background: var(--off-white); border: 1px solid var(--border);
-    border-radius: 8px; font-size: 12px; font-family: inherit; outline: none; color: var(--text);
-    cursor: pointer;
+    border-radius: 8px; font-size: 12px; font-family: inherit; outline: none; color: var(--text); cursor: pointer;
   }
   .filter-select:focus { border-color: var(--green); }
 
-  /* FORM CARD */
   .form-card {
     background: var(--white); border: 1px solid var(--border);
     border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-sm);
@@ -208,7 +198,6 @@
     border-color: var(--green); background: var(--white);
     box-shadow: 0 0 0 4px rgba(22,163,74,0.08);
   }
-  input[type="date"], input[type="number"] { text-transform: none !important; }
   .field-textarea { resize: vertical; min-height: 72px; }
   .field-select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
@@ -217,7 +206,6 @@
   .input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; color: var(--text-muted); pointer-events: none; }
   .has-prefix .field-input { padding-left: 28px; }
 
-  /* AUTO DISPLAY field */
   .field-auto {
     width: 100%; padding: 10px 14px;
     background: var(--green-bg); border: 1.5px solid rgba(22,163,74,0.25);
@@ -233,7 +221,6 @@
     margin-left: 6px; vertical-align: middle;
   }
 
-  /* AMOUNT PREVIEW */
   .amount-preview {
     background: linear-gradient(135deg, var(--green-bg), rgba(22,163,74,0.05));
     border: 1.5px solid rgba(22,163,74,0.25); border-radius: 12px; padding: 16px 20px;
@@ -252,7 +239,6 @@
   }
   .footer-hint { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
 
-  /* LOCKED FIELDS */
   .field-input:disabled, .field-select:disabled, .field-textarea:disabled {
     opacity: 0.42; cursor: not-allowed;
     background: var(--border) !important; border-color: var(--border) !important; box-shadow: none !important;
@@ -263,12 +249,10 @@
     margin-bottom: 20px; display: flex; align-items: center; gap: 10px; line-height: 1.5;
   }
 
-  /* EMPTY */
   .empty-state { text-align: center; padding: 48px 20px; }
   .empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.4; }
   .empty-text { font-size: 13px; color: var(--text-muted); }
 
-  /* TOAST */
   .toast {
     position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: var(--radius);
     font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
@@ -283,16 +267,10 @@
   @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
   .anim { opacity:0; animation: fadeUp 0.4s ease forwards; }
   .a1{animation-delay:.05s} .a2{animation-delay:.10s} .a3{animation-delay:.15s} .a4{animation-delay:.20s}
-
-  /* Loading spinner */
-  .loading-dot { display:inline-block; width:6px; height:6px; background:currentColor; border-radius:50%; animation:ldot .8s infinite alternate; }
-  .loading-dot:nth-child(2){animation-delay:.2s} .loading-dot:nth-child(3){animation-delay:.4s}
-  @keyframes ldot{from{opacity:0.2}to{opacity:1}}
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
   <div class="topbar-left">
     <a href="index.html" class="back-btn">← Back</a>
@@ -314,7 +292,6 @@
 </div>
 
 <div class="body-wrap">
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-section">Main Modules</div>
     <a href="index.html"      class="nav-item"><span class="nav-item-icon">🏠</span> Home</a>
@@ -335,10 +312,8 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main-content">
 
-    <!-- PAGE HEADER -->
     <div class="page-header anim a1">
       <div>
         <div class="page-eyebrow">Module 03</div>
@@ -351,31 +326,14 @@
       </div>
     </div>
 
-    <!-- SUMMARY STRIP -->
     <div class="summary-strip anim a2">
-      <div class="sum-card">
-        <div class="sum-label">Total Entries</div>
-        <div class="sum-val green" id="sum-total">—</div>
-      </div>
-      <div class="sum-card">
-        <div class="sum-label">Total Amount</div>
-        <div class="sum-val green" id="sum-amount">—</div>
-      </div>
-      <div class="sum-card">
-        <div class="sum-label">Pending Approval</div>
-        <div class="sum-val amber" id="sum-pending">—</div>
-      </div>
-      <div class="sum-card">
-        <div class="sum-label">Approved</div>
-        <div class="sum-val blue" id="sum-approved">—</div>
-      </div>
-      <div class="sum-card">
-        <div class="sum-label">Rejected</div>
-        <div class="sum-val red" id="sum-rejected">—</div>
-      </div>
+      <div class="sum-card"><div class="sum-label">Total Entries</div><div class="sum-val green" id="sum-total">—</div></div>
+      <div class="sum-card"><div class="sum-label">Total Amount</div><div class="sum-val green" id="sum-amount">—</div></div>
+      <div class="sum-card"><div class="sum-label">Pending Approval</div><div class="sum-val amber" id="sum-pending">—</div></div>
+      <div class="sum-card"><div class="sum-label">Approved</div><div class="sum-val blue" id="sum-approved">—</div></div>
+      <div class="sum-card"><div class="sum-label">Rejected</div><div class="sum-val red" id="sum-rejected">—</div></div>
     </div>
 
-    <!-- TABLE -->
     <div class="table-card anim a3">
       <div class="table-header">
         <div style="display:flex;align-items:center;gap:10px;">
@@ -385,21 +343,13 @@
         <div class="filter-bar">
           <select class="filter-select" id="filter-status" onchange="applyFilters()">
             <option value="">All Statuses</option>
-            <option>Draft</option>
-            <option>Pending</option>
-            <option>Approved</option>
-            <option>Rejected</option>
-            <option>Posted</option>
-            <option>On Hold</option>
+            <option>Draft</option><option>Pending</option><option>Approved</option>
+            <option>Rejected</option><option>Posted</option><option>On Hold</option>
           </select>
           <select class="filter-select" id="filter-type" onchange="applyFilters()">
             <option value="">All Types</option>
-            <option>Labour</option>
-            <option>Material</option>
-            <option>Machinery</option>
-            <option>Transport</option>
-            <option>Consultancy</option>
-            <option>Administration</option>
+            <option>Labour</option><option>Material</option><option>Machinery</option>
+            <option>Transport</option><option>Consultancy</option><option>Administration</option>
             <option>Miscellaneous</option>
           </select>
           <input id="exp-search" type="text" placeholder="🔍  Search expense…"
@@ -412,33 +362,12 @@
         <table>
           <thead>
             <tr>
-              <th>#</th>
-              <th>Expense ID</th>
-              <th>Site ID</th>
-              <th>Site Name</th>
-              <th>Date</th>
-              <th>Cost Head ID</th>
-              <th>Cost Head</th>
-              <th>Expense Type</th>
-              <th>Vendor ID</th>
-              <th>Vendor Name</th>
-              <th>Work Order ID</th>
-              <th>Description</th>
-              <th>Qty</th>
-              <th>Unit</th>
-              <th>Rate</th>
-              <th>Amount</th>
-              <th>Tax Amt</th>
-              <th>Total Amt</th>
-              <th>Payment Mode</th>
-              <th>Bill No</th>
-              <th>Invoice No</th>
-              <th>Status</th>
-              <th>Approved By</th>
-              <th>Remarks</th>
-              <th>Created At</th>
-              <th>Created By</th>
-              <th>Action</th>
+              <th>#</th><th>Expense ID</th><th>Site ID</th><th>Site Name</th><th>Date</th>
+              <th>Cost Head ID</th><th>Cost Head</th><th>Expense Type</th>
+              <th>Vendor ID</th><th>Vendor Name</th><th>Work Order ID</th><th>Description</th>
+              <th>Qty</th><th>Unit</th><th>Rate</th><th>Amount</th><th>Tax Amt</th><th>Total Amt</th>
+              <th>Payment Mode</th><th>Bill No</th><th>Invoice No</th><th>Status</th>
+              <th>Approved By</th><th>Remarks</th><th>Created At</th><th>Created By</th><th>Action</th>
             </tr>
           </thead>
           <tbody id="exp-tbody">
@@ -458,7 +387,6 @@
         </div>
       </div>
 
-      <!-- Hidden fields -->
       <input type="hidden" id="exp-id"/>
       <input type="hidden" id="exp-site-id-hidden"/>
       <input type="hidden" id="exp-wo-id-hidden"/>
@@ -467,7 +395,7 @@
 
       <div class="form-body">
 
-        <!-- Section 1: Site Selection -->
+        <!-- Section 1: Site -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🏗 Site Details</div><div class="sd-line"></div></div>
         <div class="fields-grid cols3">
           <div class="field">
@@ -486,9 +414,9 @@
           </div>
         </div>
 
-        <!-- Section 2: Cost Head & Expense Type -->
+        <!-- Section 2: Cost Head -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📋 Cost Classification</div><div class="sd-line"></div></div>
-        <div class="fields-grid cols4">
+        <div class="fields-grid cols3">
           <div class="field">
             <label class="field-label">Cost Head <span class="req">*</span></label>
             <select class="field-select" id="exp-cost-head" onchange="onCostHeadSelect()">
@@ -500,16 +428,12 @@
             <div class="field-auto" id="exp-costhead-id-display">—</div>
           </div>
           <div class="field">
-            <label class="field-label">Expense Type <span class="auto-badge">⚡ Auto</span></label>
-            <div class="field-auto" id="exp-type-display">—</div>
-          </div>
-          <div class="field">
             <label class="field-label">Date <span class="req">*</span></label>
             <input class="field-input" id="exp-date" type="date"/>
           </div>
         </div>
 
-        <!-- Section 3: Vendor & Work Order -->
+        <!-- Section 3: Vendor & WO -->
         <div class="section-divider"><div class="sd-line"></div><div class="sd-label">👔 Vendor & Work Order</div><div class="sd-line"></div></div>
         <div class="fields-grid cols4">
           <div class="field">
@@ -544,10 +468,9 @@
           <div class="field">
             <label class="field-label">Unit</label>
             <select class="field-select" id="exp-unit">
-              <option>LS</option><option>Nos</option><option>Sqft</option>
-              <option>Sqm</option><option>Rmt</option><option>MT</option>
-              <option>Kg</option><option>Bags</option><option>Cum</option>
-              <option>Ltr</option><option>Trip</option><option>Day</option>
+              <option>LS</option><option>Nos</option><option>Sqft</option><option>Sqm</option>
+              <option>Rmt</option><option>MT</option><option>Kg</option><option>Bags</option>
+              <option>Cum</option><option>Ltr</option><option>Trip</option><option>Day</option>
               <option>Month</option><option>Other</option>
             </select>
           </div>
@@ -574,7 +497,6 @@
           </div>
         </div>
 
-        <!-- AMOUNT PREVIEW -->
         <div class="amount-preview">
           <div>
             <div class="ap-label">Total Amount (incl. tax)</div>
@@ -660,12 +582,12 @@
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
 
-let allExpenses   = [];
-let allSites      = [];
-let siteVendors   = [];   // vendors for selected site
-let siteWOs       = [];   // work orders for selected site
+let allExpenses = [];
+let allSites    = [];
+let siteVendors = [];
+let siteWOs     = [];
 
-// ── Cost Heads master (mirrors expense.gs COST_HEADS) ────────
+// ── Cost Heads master ─────────────────────────────────────────
 const COST_HEADS = [
   { id:'CH-001', name:'Civil Labour',          type:'Labour' },
   { id:'CH-002', name:'Finishing Labour',       type:'Labour' },
@@ -692,7 +614,6 @@ const COST_HEADS = [
   { id:'CH-023', name:'Miscellaneous',          type:'Miscellaneous' },
 ];
 
-// ── Edit mode: editable fields only ──────────────────────────
 const EXP_EDITABLE = [
   'exp-status', 'exp-approved-by', 'exp-remarks',
   'exp-payment-mode', 'exp-bill-no', 'exp-invoice-no',
@@ -727,25 +648,24 @@ function initCostHeads() {
     grp.label = t;
     COST_HEADS.filter(h => h.type === t).forEach(h => {
       const opt = document.createElement('option');
-      opt.value       = h.name;
-      opt.dataset.id  = h.id;
-      opt.dataset.type= h.type;
-      opt.textContent = h.name;
+      opt.value        = h.name;
+      opt.dataset.id   = h.id;
+      opt.dataset.type = h.type;
+      opt.textContent  = h.name;
       grp.appendChild(opt);
     });
     sel.appendChild(grp);
   });
 }
 
-// ── LOAD SITES into site dropdown ────────────────────────────
+// ── LOAD SITES ────────────────────────────────────────────────
 async function loadSites() {
   const d = await api('getSites');
-  if (d && d.sites && d.sites.length) {
-    allSites = d.sites;
-  } else {
-    allSites = getDemoSites();
+  if (!d || !d.sites || !d.sites.length) {
+    showToast('⚠️ Could not load sites from sheet', 'error');
+    return;
   }
-
+  allSites = d.sites;
   const sel = document.getElementById('exp-site-name');
   sel.innerHTML = '<option value="">— Select Site —</option>';
   allSites.forEach(s => {
@@ -757,20 +677,11 @@ async function loadSites() {
   });
 }
 
-function getDemoSites() {
-  return [
-    { siteId:'SITE-2024-1001', name:'SITE A — SECTOR 62', status:'Active' },
-    { siteId:'SITE-2024-1002', name:'SITE B — NH8',        status:'Active' },
-    { siteId:'SITE-2024-1003', name:'SITE C — DWARKA',     status:'Planning' },
-  ];
-}
-
-// ── WHEN SITE IS SELECTED ─────────────────────────────────────
+// ── WHEN SITE SELECTED ────────────────────────────────────────
 async function onExpSiteSelect() {
   const sel         = document.getElementById('exp-site-name');
   const selectedOpt = sel.options[sel.selectedIndex];
   const siteId      = selectedOpt ? (selectedOpt.dataset.id || '') : '';
-  const siteName    = sel.value;
 
   document.getElementById('exp-site-id-hidden').value = siteId;
   document.getElementById('exp-site-id-display').textContent = siteId || 'Select a site first';
@@ -782,50 +693,53 @@ async function onExpSiteSelect() {
     return;
   }
 
-  // Show loading
   showLoadingInDropdown('exp-vendor-name', 'Loading vendors…');
   showLoadingInDropdown('exp-work-order',  'Loading work orders…');
 
-  // Fetch vendors & WOs for this site in parallel
   const [vendorRes, woRes] = await Promise.all([
     api('getVendorsBySite', { siteId }),
     api('getExpenseWOBySite', { siteId })
   ]);
 
-  // Populate vendors
-  siteVendors = (vendorRes && vendorRes.vendors) ? vendorRes.vendors : getDemoVendors();
+  // Vendors
+  siteVendors = (vendorRes && vendorRes.vendors) ? vendorRes.vendors : [];
   const vSel = document.getElementById('exp-vendor-name');
   vSel.innerHTML = '<option value="">— Select Vendor —</option>';
-  siteVendors.forEach(v => {
-    const opt = document.createElement('option');
-    opt.value        = v.vendorName;
-    opt.dataset.id   = v.vendorId;
-    opt.textContent  = `${v.vendorName}  [${v.vendorId}]`;
-    vSel.appendChild(opt);
-  });
-  if (!siteVendors.length) vSel.innerHTML = '<option value="">No vendors found for this site</option>';
+  if (siteVendors.length) {
+    siteVendors.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value       = v.vendorName;
+      opt.dataset.id  = v.vendorId;
+      opt.textContent = `${v.vendorName}  [${v.vendorId}]`;
+      vSel.appendChild(opt);
+    });
+  } else {
+    vSel.innerHTML = '<option value="">No vendors found for this site</option>';
+  }
 
-  // Populate Work Orders
-  siteWOs = (woRes && woRes.workOrders) ? woRes.workOrders : getDemoWOs(siteId);
+  // Work Orders
+  siteWOs = (woRes && woRes.workOrders) ? woRes.workOrders : [];
   const woSel = document.getElementById('exp-work-order');
   woSel.innerHTML = '<option value="">— Select Work Order (optional) —</option>';
-  siteWOs.forEach(w => {
-    const opt = document.createElement('option');
-    opt.value         = w.workOrderNo || w.workOrderId;
-    opt.dataset.id    = w.workOrderId;
-    opt.dataset.vname = w.vendorName;
-    opt.dataset.vid   = w.vendorId;
-    opt.textContent   = `${w.workOrderNo || w.workOrderId}  |  ${w.workType}  |  ${w.vendorName}`;
-    woSel.appendChild(opt);
-  });
-  if (!siteWOs.length) woSel.innerHTML = '<option value="">No work orders for this site</option>';
+  if (siteWOs.length) {
+    siteWOs.forEach(w => {
+      const opt = document.createElement('option');
+      opt.value         = w.workOrderNo || w.workOrderId;
+      opt.dataset.id    = w.workOrderId;
+      opt.dataset.vname = w.vendorName;
+      opt.dataset.vid   = w.vendorId;
+      opt.textContent   = `${w.workOrderNo || w.workOrderId}  |  ${w.workType}  |  ${w.vendorName}`;
+      woSel.appendChild(opt);
+    });
+  } else {
+    woSel.innerHTML = '<option value="">No work orders for this site</option>';
+  }
 
-  showToast(`✅ Loaded ${siteVendors.length} vendors, ${siteWOs.length} WOs for this site`, 'success');
+  showToast(`✅ Loaded ${siteVendors.length} vendors, ${siteWOs.length} WOs`, 'success');
 }
 
 function showLoadingInDropdown(id, msg) {
-  const el = document.getElementById(id);
-  el.innerHTML = `<option>${msg}</option>`;
+  document.getElementById(id).innerHTML = `<option>${msg}</option>`;
 }
 function resetVendorDropdown() {
   document.getElementById('exp-vendor-name').innerHTML = '<option value="">— Select Vendor (after site) —</option>';
@@ -838,128 +752,89 @@ function resetWODropdown() {
   document.getElementById('exp-wo-id-hidden').value = '';
 }
 
-function getDemoVendors() {
-  return [
-    { vendorId:'VEND-2024-1001', vendorName:'RAM CONTRACTORS',   siteId:'' },
-    { vendorId:'VEND-2024-1002', vendorName:'STEEL SUPPLIERS LTD',siteId:'' },
-  ];
-}
-function getDemoWOs(siteId) {
-  return [
-    { workOrderId:'WO-2024-1001', workOrderNo:'WO-2024-001', workType:'Civil Work', vendorName:'RAM CONTRACTORS', vendorId:'VEND-2024-1001' },
-    { workOrderId:'WO-2024-1002', workOrderNo:'WO-2024-002', workType:'Structural',  vendorName:'STEEL SUPPLIERS LTD', vendorId:'VEND-2024-1002' },
-  ];
-}
-
-// ── WHEN VENDOR IS SELECTED ───────────────────────────────────
+// ── VENDOR SELECT ─────────────────────────────────────────────
 function onVendorSelect() {
-  const sel     = document.getElementById('exp-vendor-name');
-  const opt     = sel.options[sel.selectedIndex];
-  const vendorId= opt ? (opt.dataset.id || '') : '';
-  document.getElementById('exp-vendor-id-hidden').value       = vendorId;
+  const sel      = document.getElementById('exp-vendor-name');
+  const opt      = sel.options[sel.selectedIndex];
+  const vendorId = opt ? (opt.dataset.id || '') : '';
+  document.getElementById('exp-vendor-id-hidden').value        = vendorId;
   document.getElementById('exp-vendor-id-display').textContent = vendorId || '—';
   document.getElementById('exp-vendor-id-display').style.color = vendorId ? 'var(--green)' : '';
 }
 
-// ── WHEN WORK ORDER IS SELECTED ───────────────────────────────
+// ── WO SELECT ─────────────────────────────────────────────────
 function onWOSelect() {
   const sel  = document.getElementById('exp-work-order');
   const opt  = sel.options[sel.selectedIndex];
   const woId = opt ? (opt.dataset.id || '') : '';
-  document.getElementById('exp-wo-id-hidden').value       = woId;
+  document.getElementById('exp-wo-id-hidden').value        = woId;
   document.getElementById('exp-wo-id-display').textContent = woId || '—';
   document.getElementById('exp-wo-id-display').style.color = woId ? 'var(--green)' : '';
 
-  // Auto-fill vendor from WO if not already filled
   if (opt && opt.dataset.vid) {
-    const vSel = document.getElementById('exp-vendor-name');
+    const vSel     = document.getElementById('exp-vendor-name');
     const matchOpt = [...vSel.options].find(o => o.dataset.id === opt.dataset.vid);
     if (matchOpt) {
       vSel.value = matchOpt.value;
       document.getElementById('exp-vendor-id-hidden').value        = opt.dataset.vid;
-      document.getElementById('exp-vendor-id-display').textContent  = opt.dataset.vid;
-      document.getElementById('exp-vendor-id-display').style.color  = 'var(--green)';
+      document.getElementById('exp-vendor-id-display').textContent = opt.dataset.vid;
+      document.getElementById('exp-vendor-id-display').style.color = 'var(--green)';
     }
   }
 }
 
-// ── WHEN COST HEAD IS SELECTED ────────────────────────────────
+// ── COST HEAD SELECT ──────────────────────────────────────────
 function onCostHeadSelect() {
   const sel = document.getElementById('exp-cost-head');
   const opt = sel.options[sel.selectedIndex];
   if (!opt || !opt.dataset.id) {
     document.getElementById('exp-costhead-id-display').textContent = '—';
     document.getElementById('exp-costhead-id-hidden').value = '';
-    document.getElementById('exp-type-display').textContent = '—';
     return;
   }
   document.getElementById('exp-costhead-id-display').textContent = opt.dataset.id;
   document.getElementById('exp-costhead-id-hidden').value        = opt.dataset.id;
-  document.getElementById('exp-type-display').textContent        = opt.dataset.type || '—';
   document.getElementById('exp-costhead-id-display').style.color = 'var(--green)';
-  document.getElementById('exp-type-display').style.color        = 'var(--blue)';
 }
 
-// ── AMOUNT CALCULATIONS ───────────────────────────────────────
+// ── AMOUNT CALC ───────────────────────────────────────────────
 function recalcAmount() {
   const qty  = parseFloat(document.getElementById('exp-qty').value)  || 0;
   const rate = parseFloat(document.getElementById('exp-rate').value) || 0;
   if (qty > 0 && rate > 0) {
-    const amount = qty * rate;
-    document.getElementById('exp-amount').value = amount.toFixed(2);
+    document.getElementById('exp-amount').value = (qty * rate).toFixed(2);
   }
   recalcTotal();
 }
-
 function recalcTotal() {
   const amount = parseFloat(document.getElementById('exp-amount').value) || 0;
   const tax    = parseFloat(document.getElementById('exp-tax').value)    || 0;
-  const total  = amount + tax;
-  document.getElementById('exp-total-display').textContent = fmt(total);
+  document.getElementById('exp-total-display').textContent = fmt(amount + tax);
 }
 
-// ── LOAD EXPENSES TABLE ───────────────────────────────────────
+// ── LOAD EXPENSES — real sheet data only ──────────────────────
 async function loadExpenses() {
   document.getElementById('exp-count-badge').textContent = 'Loading…';
+  document.getElementById('exp-tbody').innerHTML =
+    `<tr><td colspan="27"><div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-text">Fetching from Google Sheets…</div></div></td></tr>`;
+
   const d = await api('getExpenses');
-  if (d && d.expenses) {
-    allExpenses = d.expenses;
-    updateSummary(d);
-  } else {
-    allExpenses = getDemoExpenses();
-    updateSummary({ total: allExpenses.length, totalAmount: allExpenses.reduce((s,e)=>s+e.totalAmount,0), byStatus:{Pending:1} });
+
+  if (!d) {
+    document.getElementById('exp-tbody').innerHTML =
+      `<tr><td colspan="27"><div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">Could not connect to Google Sheets. Check your API_URL.</div></div></td></tr>`;
+    document.getElementById('exp-count-badge').textContent = 'Error';
+    return;
   }
+
+  allExpenses = d.expenses || [];
+  updateSummary(d);
   renderExpenses(allExpenses);
 }
 
-function getDemoExpenses() {
-  return [
-    {
-      serialNo:1, expenseId:'EXP-2024-10001', siteId:'SITE-2024-1001',
-      siteName:'SITE A — SECTOR 62', date:'10 Jun 2024',
-      costHeadId:'CH-001', costHeadName:'Civil Labour', expenseType:'Labour',
-      vendorId:'VEND-2024-1001', vendorName:'RAM CONTRACTORS',
-      workOrderId:'WO-2024-1001', description:'Daily labour charges',
-      qty:25, unit:'Day', rate:600, amount:15000, taxAmount:0, totalAmount:15000,
-      paymentMode:'Cash', billNo:'', invoiceNo:'', expenseStatus:'Pending',
-      approvedBy:'', remarks:'', createdAt:'10 Jun 2024', createdBy:'ADMIN'
-    },
-    {
-      serialNo:2, expenseId:'EXP-2024-10002', siteId:'SITE-2024-1002',
-      siteName:'SITE B — NH8', date:'11 Jun 2024',
-      costHeadId:'CH-004', costHeadName:'Concrete & Cement', expenseType:'Material',
-      vendorId:'VEND-2024-1002', vendorName:'STEEL SUPPLIERS LTD',
-      workOrderId:'WO-2024-1002', description:'OPC Cement 50kg bags',
-      qty:200, unit:'Bags', rate:380, amount:76000, taxAmount:5320, totalAmount:81320,
-      paymentMode:'Bank Transfer', billNo:'INV-882', invoiceNo:'INV-882', expenseStatus:'Approved',
-      approvedBy:'RAJESH SHARMA', remarks:'', createdAt:'11 Jun 2024', createdBy:'ADMIN'
-    },
-  ];
-}
-
 function updateSummary(d) {
-  const total   = d.total        || allExpenses.length;
-  const amount  = d.totalAmount  || allExpenses.reduce((s,e)=>s+e.totalAmount,0);
+  const total    = d.total        || allExpenses.length;
+  const amount   = d.totalAmount  || allExpenses.reduce((s,e)=>s+e.totalAmount,0);
   const pending  = (d.byStatus && d.byStatus.Pending)  || allExpenses.filter(e=>e.expenseStatus==='Pending').length;
   const approved = (d.byStatus && d.byStatus.Approved) || allExpenses.filter(e=>e.expenseStatus==='Approved').length;
   const rejected = (d.byStatus && d.byStatus.Rejected) || allExpenses.filter(e=>e.expenseStatus==='Rejected').length;
@@ -978,15 +853,15 @@ function updateSummary(d) {
   document.getElementById('exp-nav-count').textContent= total;
 }
 
-const statusColors  = { Pending:'amber', Draft:'', Approved:'green', Rejected:'red', Posted:'blue', 'On Hold':'amber' };
-const typeColors    = { Labour:'orange', Material:'blue', Machinery:'purple', Transport:'teal', Consultancy:'green', Administration:'amber', Miscellaneous:'' };
-const pmodeColors   = { Cash:'amber', UPI:'green', 'Bank Transfer':'blue', Cheque:'purple', NEFT:'teal', RTGS:'teal' };
+const statusColors = { Pending:'amber', Draft:'', Approved:'green', Rejected:'red', Posted:'blue', 'On Hold':'amber' };
+const typeColors   = { Labour:'orange', Material:'blue', Machinery:'purple', Transport:'teal', Consultancy:'green', Administration:'amber', Miscellaneous:'' };
+const pmodeColors  = { Cash:'amber', UPI:'green', 'Bank Transfer':'blue', Cheque:'purple', NEFT:'teal', RTGS:'teal' };
 
 function renderExpenses(exps) {
   document.getElementById('exp-count-badge').textContent = exps.length + ' expenses';
   const tbody = document.getElementById('exp-tbody');
   if (!exps.length) {
-    tbody.innerHTML = `<tr><td colspan="27"><div class="empty-state"><div class="empty-icon">💸</div><div class="empty-text">No expenses yet. Add your first expense below!</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="27"><div class="empty-state"><div class="empty-icon">💸</div><div class="empty-text">No expenses found. Add your first expense below!</div></div></td></tr>`;
     return;
   }
   tbody.innerHTML = exps.map((e, i) => `
@@ -1017,9 +892,7 @@ function renderExpenses(exps) {
       <td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${e.remarks || '—'}</td>
       <td style="color:var(--text-muted);font-size:11px;">${e.createdAt || '—'}</td>
       <td style="color:var(--text-muted);font-size:11px;">${e.createdBy || '—'}</td>
-      <td>
-        <button class="btn btn-ghost btn-sm" onclick="editExpense(${i})">✏️ Edit</button>
-      </td>
+      <td><button class="btn btn-ghost btn-sm" onclick="editExpense(${i})">✏️ Edit</button></td>
     </tr>`).join('');
 }
 
@@ -1027,21 +900,19 @@ function applyFilters() {
   const q      = document.getElementById('exp-search').value.toLowerCase();
   const status = document.getElementById('filter-status').value;
   const type   = document.getElementById('filter-type').value;
-  const filtered = allExpenses.filter(e =>
+  renderExpenses(allExpenses.filter(e =>
     (!status || e.expenseStatus === status) &&
     (!type   || e.expenseType   === type) &&
     (
-      (e.expenseId   || '').toLowerCase().includes(q) ||
-      (e.siteName    || '').toLowerCase().includes(q) ||
-      (e.vendorName  || '').toLowerCase().includes(q) ||
-      (e.costHeadName|| '').toLowerCase().includes(q) ||
-      (e.description || '').toLowerCase().includes(q)
+      (e.expenseId    || '').toLowerCase().includes(q) ||
+      (e.siteName     || '').toLowerCase().includes(q) ||
+      (e.vendorName   || '').toLowerCase().includes(q) ||
+      (e.costHeadName || '').toLowerCase().includes(q) ||
+      (e.description  || '').toLowerCase().includes(q)
     )
-  );
-  renderExpenses(filtered);
+  ));
 }
 
-// ── GENERATE DISPLAY EXPENSE ID ───────────────────────────────
 function refreshExpId() {
   const yr  = new Date().getFullYear();
   const rnd = String(Math.floor(Math.random() * 90000) + 10000);
@@ -1049,14 +920,12 @@ function refreshExpId() {
   document.getElementById('exp-id-display').style.color = 'var(--green)';
 }
 
-// ── SET EDIT MODE ─────────────────────────────────────────────
 function setExpEditMode(isEdit) {
   EXP_ALL_FIELDS.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.disabled = isEdit && !EXP_EDITABLE.includes(id);
   });
-
   const existing = document.getElementById('exp-edit-lock-banner');
   if (isEdit) {
     if (!existing) {
@@ -1072,7 +941,7 @@ function setExpEditMode(isEdit) {
   }
 }
 
-// ── SUBMIT EXPENSE ────────────────────────────────────────────
+// ── SUBMIT ────────────────────────────────────────────────────
 async function submitExpense() {
   const siteName = document.getElementById('exp-site-name').value.trim();
   const siteId   = document.getElementById('exp-site-id-hidden').value.trim();
@@ -1080,13 +949,12 @@ async function submitExpense() {
   const costHead = document.getElementById('exp-cost-head').value.trim();
 
   if (!siteName || !siteId) { showToast('⚠️ Please select a site', 'error'); return; }
-  if (!date)               { showToast('⚠️ Date is required', 'error'); return; }
-  if (!costHead)           { showToast('⚠️ Please select a Cost Head', 'error'); return; }
+  if (!date)                { showToast('⚠️ Date is required', 'error'); return; }
+  if (!costHead)            { showToast('⚠️ Please select a Cost Head', 'error'); return; }
 
   const amount = parseFloat(document.getElementById('exp-amount').value) || 0;
   const tax    = parseFloat(document.getElementById('exp-tax').value)    || 0;
   const total  = amount + tax;
-
   if (total <= 0) { showToast('⚠️ Amount must be greater than 0', 'error'); return; }
 
   const expId  = document.getElementById('exp-id').value;
@@ -1095,14 +963,16 @@ async function submitExpense() {
   document.getElementById('exp-submit-text').textContent = 'Saving…';
   document.getElementById('exp-submit-icon').textContent = '⏳';
 
+  // Derive expenseType from cost head
+  const headMatch   = COST_HEADS.find(h => h.name === costHead);
+  const expenseType = headMatch ? headMatch.type : 'Miscellaneous';
+
   const data = {
     action:        isEdit ? 'updateExpense' : 'addExpense',
-    siteId,
-    siteName,
-    date,
+    siteId, siteName, date,
     costHeadName:  costHead,
     costHeadId:    document.getElementById('exp-costhead-id-hidden').value,
-    expenseType:   document.getElementById('exp-type-display').textContent,
+    expenseType,
     vendorId:      document.getElementById('exp-vendor-id-hidden').value,
     vendorName:    document.getElementById('exp-vendor-name').value,
     workOrderId:   document.getElementById('exp-wo-id-hidden').value,
@@ -1110,9 +980,7 @@ async function submitExpense() {
     qty:           document.getElementById('exp-qty').value || 1,
     unit:          document.getElementById('exp-unit').value,
     rate:          document.getElementById('exp-rate').value || 0,
-    amount:        amount,
-    taxAmount:     tax,
-    totalAmount:   total,
+    amount, taxAmount: tax, totalAmount: total,
     paymentMode:   document.getElementById('exp-payment-mode').value,
     billNo:        document.getElementById('exp-bill-no').value,
     invoiceNo:     document.getElementById('exp-invoice-no').value,
@@ -1123,58 +991,60 @@ async function submitExpense() {
   };
   if (isEdit) data.expenseId = expId;
 
-  await api(data.action, data);
+  const res = await api(data.action, data);
 
   document.getElementById('exp-submit-text').textContent = 'Save Expense';
   document.getElementById('exp-submit-icon').textContent = '💸';
-  showToast(isEdit ? '✅ Expense updated!' : '✅ Expense saved to Sheets!', 'success');
-  clearExpForm();
-  loadExpenses();
+
+  if (res && res.success) {
+    showToast(isEdit ? '✅ Expense updated!' : '✅ Expense saved to Sheets!', 'success');
+    clearExpForm();
+    loadExpenses();
+  } else {
+    showToast('❌ Save failed: ' + ((res && res.error) || 'Unknown error'), 'error');
+  }
 }
 
 // ── CLEAR FORM ────────────────────────────────────────────────
 function clearExpForm() {
-  ['exp-id', 'exp-site-id-hidden', 'exp-wo-id-hidden', 'exp-vendor-id-hidden',
-   'exp-costhead-id-hidden', 'exp-qty', 'exp-rate', 'exp-amount', 'exp-tax',
-   'exp-bill-no', 'exp-invoice-no', 'exp-description', 'exp-approved-by',
-   'exp-remarks', 'exp-created-by']
+  ['exp-id','exp-site-id-hidden','exp-wo-id-hidden','exp-vendor-id-hidden',
+   'exp-costhead-id-hidden','exp-qty','exp-rate','exp-amount','exp-tax',
+   'exp-bill-no','exp-invoice-no','exp-description','exp-approved-by',
+   'exp-remarks','exp-created-by']
     .forEach(id => { const el = document.getElementById(id); if(el) el.value = id === 'exp-qty' ? '1' : ''; });
 
-  document.getElementById('exp-site-name').value      = '';
-  document.getElementById('exp-cost-head').value      = '';
-  document.getElementById('exp-vendor-name').value    = '';
-  document.getElementById('exp-work-order').value     = '';
-  document.getElementById('exp-unit').value           = 'LS';
-  document.getElementById('exp-payment-mode').value   = 'Cash';
-  document.getElementById('exp-status').value         = 'Pending';
-  document.getElementById('exp-date').value           = new Date().toISOString().split('T')[0];
-  document.getElementById('exp-total-display').textContent     = '₹0';
-  document.getElementById('exp-site-id-display').textContent   = 'Select a site first';
-  document.getElementById('exp-costhead-id-display').textContent='—';
-  document.getElementById('exp-type-display').textContent      = '—';
-  document.getElementById('exp-vendor-id-display').textContent = '—';
-  document.getElementById('exp-wo-id-display').textContent     = '—';
-  document.getElementById('exp-form-title').textContent        = 'Add New Expense';
-  document.getElementById('exp-form-subtitle').textContent     = 'Select site → vendors & work orders auto-load';
+  document.getElementById('exp-site-name').value     = '';
+  document.getElementById('exp-cost-head').value     = '';
+  document.getElementById('exp-vendor-name').value   = '';
+  document.getElementById('exp-work-order').value    = '';
+  document.getElementById('exp-unit').value          = 'LS';
+  document.getElementById('exp-payment-mode').value  = 'Cash';
+  document.getElementById('exp-status').value        = 'Pending';
+  document.getElementById('exp-date').value          = new Date().toISOString().split('T')[0];
+  document.getElementById('exp-total-display').textContent      = '₹0';
+  document.getElementById('exp-site-id-display').textContent    = 'Select a site first';
+  document.getElementById('exp-costhead-id-display').textContent= '—';
+  document.getElementById('exp-vendor-id-display').textContent  = '—';
+  document.getElementById('exp-wo-id-display').textContent      = '—';
+  document.getElementById('exp-form-title').textContent         = 'Add New Expense';
+  document.getElementById('exp-form-subtitle').textContent      = 'Select site → vendors & work orders auto-load';
 
-  // Reset display colors
-  ['exp-site-id-display','exp-costhead-id-display','exp-type-display','exp-vendor-id-display','exp-wo-id-display']
+  ['exp-site-id-display','exp-costhead-id-display','exp-vendor-id-display','exp-wo-id-display']
     .forEach(id => { document.getElementById(id).style.color = ''; });
 
   refreshExpId();
   setExpEditMode(false);
 }
 
-// ── EDIT EXPENSE ──────────────────────────────────────────────
+// ── EDIT ──────────────────────────────────────────────────────
 async function editExpense(idx) {
   const e = allExpenses[idx];
   if (!e) return;
 
-  document.getElementById('exp-id').value           = e.expenseId || '';
+  document.getElementById('exp-id').value              = e.expenseId || '';
   document.getElementById('exp-id-display').textContent = e.expenseId || '—';
   document.getElementById('exp-id-display').style.color = 'var(--green)';
 
-  // Site
   const siteSel = document.getElementById('exp-site-name');
   let siteOpt = [...siteSel.options].find(o => o.value === e.siteName);
   if (!siteOpt) {
@@ -1183,14 +1053,12 @@ async function editExpense(idx) {
     siteSel.appendChild(opt);
   }
   siteSel.value = e.siteName || '';
-  document.getElementById('exp-site-id-hidden').value         = e.siteId || '';
-  document.getElementById('exp-site-id-display').textContent   = e.siteId || '—';
-  document.getElementById('exp-site-id-display').style.color   = 'var(--green)';
+  document.getElementById('exp-site-id-hidden').value          = e.siteId || '';
+  document.getElementById('exp-site-id-display').textContent    = e.siteId || '—';
+  document.getElementById('exp-site-id-display').style.color    = 'var(--green)';
 
-  // Load vendor / WO dropdowns for this site silently
   await onExpSiteSelect();
 
-  // Restore vendor
   const vSel = document.getElementById('exp-vendor-name');
   let vOpt = [...vSel.options].find(o => o.value === e.vendorName);
   if (!vOpt) {
@@ -1198,11 +1066,10 @@ async function editExpense(idx) {
     vSel.appendChild(opt);
   }
   vSel.value = e.vendorName || '';
-  document.getElementById('exp-vendor-id-hidden').value        = e.vendorId || '';
-  document.getElementById('exp-vendor-id-display').textContent  = e.vendorId || '—';
-  document.getElementById('exp-vendor-id-display').style.color  = 'var(--green)';
+  document.getElementById('exp-vendor-id-hidden').value         = e.vendorId || '';
+  document.getElementById('exp-vendor-id-display').textContent   = e.vendorId || '—';
+  document.getElementById('exp-vendor-id-display').style.color   = 'var(--green)';
 
-  // Restore WO
   const woSel = document.getElementById('exp-work-order');
   let woOpt = [...woSel.options].find(o => o.dataset.id === e.workOrderId);
   if (!woOpt) {
@@ -1210,36 +1077,28 @@ async function editExpense(idx) {
     woSel.appendChild(opt);
   }
   if (woOpt) woSel.value = woOpt.value;
-  document.getElementById('exp-wo-id-hidden').value        = e.workOrderId || '';
-  document.getElementById('exp-wo-id-display').textContent  = e.workOrderId || '—';
-  document.getElementById('exp-wo-id-display').style.color  = 'var(--green)';
+  document.getElementById('exp-wo-id-hidden').value         = e.workOrderId || '';
+  document.getElementById('exp-wo-id-display').textContent   = e.workOrderId || '—';
+  document.getElementById('exp-wo-id-display').style.color   = 'var(--green)';
 
-  // Cost Head
   const chSel = document.getElementById('exp-cost-head');
   const chOpt = [...chSel.options].find(o => o.value === e.costHeadName);
   if (chOpt) chSel.value = e.costHeadName;
-  document.getElementById('exp-costhead-id-hidden').value       = e.costHeadId || '';
-  document.getElementById('exp-costhead-id-display').textContent = e.costHeadId || '—';
-  document.getElementById('exp-type-display').textContent        = e.expenseType || '—';
-  document.getElementById('exp-costhead-id-display').style.color = 'var(--green)';
-  document.getElementById('exp-type-display').style.color        = 'var(--blue)';
+  document.getElementById('exp-costhead-id-hidden').value        = e.costHeadId || '';
+  document.getElementById('exp-costhead-id-display').textContent  = e.costHeadId || '—';
+  document.getElementById('exp-costhead-id-display').style.color  = 'var(--green)';
 
-  // Dates & numbers
   if (e.date && e.date !== '—') {
     try { document.getElementById('exp-date').value = new Date(e.date).toISOString().split('T')[0]; } catch(x){}
   }
-  document.getElementById('exp-qty').value         = e.qty || 1;
-  document.getElementById('exp-rate').value        = e.rate || '';
-  document.getElementById('exp-amount').value      = e.amount || '';
-  document.getElementById('exp-tax').value         = e.taxAmount || '';
+  document.getElementById('exp-qty').value        = e.qty || 1;
+  document.getElementById('exp-rate').value       = e.rate || '';
+  document.getElementById('exp-amount').value     = e.amount || '';
+  document.getElementById('exp-tax').value        = e.taxAmount || '';
   document.getElementById('exp-total-display').textContent = fmt(e.totalAmount);
-
-  // Selects
   document.getElementById('exp-unit').value         = e.unit          || 'LS';
   document.getElementById('exp-payment-mode').value = e.paymentMode   || 'Cash';
   document.getElementById('exp-status').value       = e.expenseStatus || 'Pending';
-
-  // Text fields
   document.getElementById('exp-bill-no').value      = e.billNo      || '';
   document.getElementById('exp-invoice-no').value   = e.invoiceNo   || '';
   document.getElementById('exp-description').value  = e.description || '';
