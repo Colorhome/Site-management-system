@@ -147,23 +147,22 @@
       </div>
     </div>
   </aside>
-  </div>
-  <div class="page-actions">
-    <button class="btn btn-ghost" onclick="loadAll()">Refresh</button>
-    <button class="btn btn-primary" onclick="setupSheets()">Setup Sheets</button>
-  </div>
-</div>
-<div class="page-grid">
-  <aside class="sidebar">
-    <div class="sidebar-section">Navigation</div>
-    <button class="nav-item active" id="tab-btn-clients" onclick="switchTab('clients')"><span class="nav-item-icon">👥</span>Clients</button>
-    <button class="nav-item" id="tab-btn-invoices" onclick="switchTab('invoices')"><span class="nav-item-icon">🧾</span>Invoices</button>
-    <button class="nav-item" id="tab-btn-payments" onclick="switchTab('payments')"><span class="nav-item-icon">💰</span>Payments</button>
-    <button class="nav-item" id="tab-btn-creditnotes" onclick="switchTab('creditnotes')"><span class="nav-item-icon">📄</span>Credit Notes</button>
-    <button class="nav-item" id="tab-btn-summary" onclick="switchTab('summary')"><span class="nav-item-icon">📊</span>Summary</button>
-    <button class="nav-item" id="tab-btn-aging" onclick="switchTab('aging')"><span class="nav-item-icon">⏳</span>Aging</button>
-  </aside>
-  <main class="main-content">
+
+  <div class="page-grid">
+    <aside class="sidebar">
+      <div class="sidebar-section">Navigation</div>
+      <button class="nav-item active" id="tab-btn-clients" onclick="switchTab('clients')"><span class="nav-item-icon">👥</span>Clients</button>
+      <button class="nav-item" id="tab-btn-invoices" onclick="switchTab('invoices')"><span class="nav-item-icon">🧾</span>Invoices</button>
+      <button class="nav-item" id="tab-btn-payments" onclick="switchTab('payments')"><span class="nav-item-icon">💰</span>Payments</button>
+      <button class="nav-item" id="tab-btn-creditnotes" onclick="switchTab('creditnotes')"><span class="nav-item-icon">📄</span>Credit Notes</button>
+      <button class="nav-item" id="tab-btn-summary" onclick="switchTab('summary')"><span class="nav-item-icon">📊</span>Summary</button>
+      <button class="nav-item" id="tab-btn-aging" onclick="switchTab('aging')"><span class="nav-item-icon">⏳</span>Aging</button>
+    </aside>
+    <main class="main-content">
+      <div class="page-actions" style="margin-bottom:24px; display:flex; gap:10px;">
+        <button class="btn btn-ghost" onclick="loadAll()">Refresh</button>
+        <button class="btn btn-primary" onclick="setupSheets()">Setup Sheets</button>
+      </div>
     <header class="page-header">
       <div>
         <div class="page-title">Client Receivables</div>
@@ -208,6 +207,7 @@
           <button class="tab-button" id="panel-btn-payments" onclick="switchTab('payments')">Payments</button>
           <button class="tab-button" id="panel-btn-creditnotes" onclick="switchTab('creditnotes')">Credit Notes</button>
           <button class="tab-button" id="panel-btn-summary" onclick="switchTab('summary')">Summary</button>
+          <button class="tab-button" id="panel-btn-aging" onclick="switchTab('aging')">Aging</button>
         </div>
         <div id="panel-clients" class="panel active">
           <div class="card" style="margin-bottom:16px;">
