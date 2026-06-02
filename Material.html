@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Materials — ConstructMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --white: #ffffff;
+    --off-white: #f8f7f4;
+    --surface: #f0eeea;
+    --border: #e2dfd8;
+    --text: #1a1814;
+    --text-muted: #7a7670;
+    --text-light: #b0ada8;
+    --accent: #e85d26;
+    --accent-light: #ff7a45;
+    --accent-bg: #fff3ee;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --teal: #0891b2;
+    --teal-bg: #ecfeff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.10);
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .back-btn {
+    display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+    background: var(--off-white); border: 1px solid var(--border); border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted);
+    text-decoration: none; transition: all 0.15s;
+  }
+  .back-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 36px; height: 36px; background: var(--teal); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 14px; color: white;
+  }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; }
+  .page-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); }
+  .breadcrumb-sep { opacity: 0.4; }
+  .breadcrumb-current { color: var(--text); font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .sync-pill {
+    display: flex; align-items: center; gap: 7px; background: var(--teal-bg);
+    border: 1px solid rgba(8,145,178,0.2); color: var(--teal);
+    padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  }
+  .sync-dot { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── LAYOUT ── */
+  .body-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 64px); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--white); border-right: 1px solid var(--border);
+    padding: 28px 20px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .sidebar-section { font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 10px 6px; }
+  .sidebar-section:first-child { padding-top: 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+    cursor: pointer; text-decoration: none; font-size: 13px; font-weight: 500;
+    color: var(--text-muted); transition: all 0.15s; border: 1px solid transparent;
+  }
+  .nav-item:hover { background: var(--off-white); color: var(--text); }
+  .nav-item.active { background: var(--teal-bg); color: var(--teal); border-color: rgba(8,145,178,0.15); font-weight: 600; }
+  .nav-item-icon { font-size: 16px; width: 22px; text-align: center; }
+  .nav-badge { margin-left: auto; border-radius: 100px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+  .nav-badge.teal   { background: var(--teal-bg);  color: var(--teal); }
+  .nav-badge.amber  { background: var(--amber-bg); color: var(--amber); }
+  .nav-badge.red    { background: var(--red-bg);   color: var(--red); }
+
+  /* ── MAIN ── */
+  .main-content { padding: 32px 40px; overflow-y: auto; }
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; }
+  .page-eyebrow { font-size: 11px; font-weight: 700; color: var(--teal); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .page-title { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 6px; }
+  .page-desc { font-size: 14px; color: var(--text-muted); }
+  .page-actions { display: flex; gap: 10px; align-items: center; }
+
+  /* ── TABS ── */
+  .tabs-bar {
+    display: flex; gap: 4px; background: var(--white);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 4px; margin-bottom: 24px; width: fit-content;
+  }
+  .tab-btn {
+    padding: 8px 20px; border-radius: 9px; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; background: transparent; color: var(--text-muted);
+    font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s;
+  }
+  .tab-btn.active { background: var(--teal); color: white; }
+  .tab-btn:hover:not(.active) { background: var(--off-white); color: var(--text); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+    border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s;
+  }
+  .btn-primary { background: var(--teal); color: white; }
+  .btn-primary:hover { background: #0e7490; box-shadow: 0 6px 20px rgba(8,145,178,0.3); transform: translateY(-1px); }
+  .btn-green { background: var(--green); color: white; }
+  .btn-green:hover { background: #15803d; box-shadow: 0 6px 20px rgba(22,163,74,0.3); transform: translateY(-1px); }
+  .btn-orange { background: var(--accent); color: white; }
+  .btn-orange:hover { background: #c2410c; box-shadow: 0 6px 20px rgba(232,93,38,0.3); transform: translateY(-1px); }
+  .btn-ghost { background: var(--white); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+  .btn-sm { padding: 6px 12px; font-size: 11px; }
+
+  /* ── SUMMARY STRIP ── */
+  .summary-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px; }
+  .sum-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 18px; box-shadow: var(--shadow-sm);
+  }
+  .sum-label { font-size: 10px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .sum-val { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+  .sum-val.teal   { color: var(--teal); }
+  .sum-val.green  { color: var(--green); }
+  .sum-val.orange { color: var(--accent); }
+  .sum-val.amber  { color: var(--amber); }
+  .sum-val.red    { color: var(--red); }
+  .sum-val.blue   { color: var(--blue); }
+
+  /* ── TABLE ── */
+  .table-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 28px;
+  }
+  .table-header {
+    padding: 16px 22px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .table-title { font-size: 15px; font-weight: 700; }
+  .table-count { background: var(--teal-bg); color: var(--teal); border-radius: 100px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    padding: 10px 12px; text-align: left;
+    font-size: 10px; font-weight: 700; color: var(--text-light);
+    letter-spacing: 0.8px; text-transform: uppercase;
+    background: var(--off-white); border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  tbody td {
+    padding: 11px 12px; font-size: 12px; color: var(--text);
+    border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--off-white); }
+
+  /* ── TAGS ── */
+  .tag { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 100px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+  .tag.green  { background: var(--green-bg);  color: var(--green); }
+  .tag.amber  { background: var(--amber-bg);  color: var(--amber); }
+  .tag.blue   { background: var(--blue-bg);   color: var(--blue); }
+  .tag.red    { background: var(--red-bg);    color: var(--red); }
+  .tag.orange { background: var(--accent-bg); color: var(--accent); }
+  .tag.purple { background: var(--purple-bg); color: var(--purple); }
+  .tag.teal   { background: var(--teal-bg);   color: var(--teal); }
+
+  /* ── STOCK STATUS TAGS ── */
+  .stock-ok      { background: var(--green-bg);  color: var(--green);  padding: 3px 9px; border-radius: 100px; font-size: 10px; font-weight: 700; }
+  .stock-low     { background: var(--amber-bg);  color: var(--amber);  padding: 3px 9px; border-radius: 100px; font-size: 10px; font-weight: 700; }
+  .stock-out     { background: var(--red-bg);    color: var(--red);    padding: 3px 9px; border-radius: 100px; font-size: 10px; font-weight: 700; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar { display: flex; align-items: center; gap: 8px; }
+  .filter-select {
+    padding: 6px 10px; background: var(--off-white); border: 1px solid var(--border);
+    border-radius: 8px; font-size: 12px; font-family: inherit; outline: none; color: var(--text); cursor: pointer;
+  }
+  .filter-select:focus { border-color: var(--teal); }
+
+  /* ── FORMS ── */
+  .form-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-sm);
+  }
+  .form-card-header {
+    padding: 20px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; background: var(--off-white);
+  }
+  .card-header-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .card-header-icon.teal   { background: var(--teal-bg); }
+  .card-header-icon.green  { background: var(--green-bg); }
+  .card-header-icon.orange { background: var(--accent-bg); }
+  .card-header-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .card-header-sub { font-size: 12px; color: var(--text-muted); }
+  .form-body { padding: 28px; }
+
+  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+  .fields-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .fields-grid.cols4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  .field { display: flex; flex-direction: column; gap: 7px; }
+  .field.full { grid-column: 1 / -1; }
+  .field-label { font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.8px; text-transform: uppercase; }
+  .field-label .req { color: var(--accent); margin-left: 2px; }
+
+  .input-wrap { position: relative; }
+  .field-input, .field-select, .field-textarea {
+    width: 100%; padding: 10px 14px;
+    background: var(--off-white); border: 1.5px solid var(--border);
+    border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px; color: var(--text); outline: none; transition: all 0.2s; appearance: none;
+  }
+  .field-input::placeholder { color: var(--text-light); }
+  .field-input:focus, .field-select:focus, .field-textarea:focus {
+    border-color: var(--teal); background: var(--white);
+    box-shadow: 0 0 0 4px rgba(8,145,178,0.08);
+  }
+  .field-textarea { resize: vertical; min-height: 72px; }
+  .field-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+  }
+
+  .field-auto {
+    width: 100%; padding: 10px 14px;
+    background: var(--teal-bg); border: 1.5px solid rgba(8,145,178,0.25);
+    border-radius: 10px; font-size: 12px; color: var(--teal); font-weight: 700;
+    cursor: default; user-select: all; letter-spacing: 0.3px; min-height: 40px;
+    display: flex; align-items: center;
+  }
+  .auto-badge {
+    display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px;
+    background: var(--teal-bg); color: var(--teal); border-radius: 100px;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    margin-left: 6px; vertical-align: middle;
+  }
+
+  .section-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 18px; }
+  .sd-line { flex: 1; height: 1px; background: var(--border); }
+  .sd-label { font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+
+  .form-footer {
+    padding: 18px 28px; border-top: 1px solid var(--border); background: var(--off-white);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .footer-hint { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
+
+  /* ── LEDGER ── */
+  .ledger-row-in  td { background: rgba(240,253,244,0.5); }
+  .ledger-row-out td { background: rgba(254,242,242,0.5); }
+  .ledger-balance { font-family: 'Fraunces', serif; font-weight: 700; font-size: 13px; }
+
+  /* ── STOCK SUMMARY CARDS ── */
+  .stock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .stock-card {
+    background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 18px; box-shadow: var(--shadow-sm); transition: all 0.15s; cursor: pointer;
+  }
+  .stock-card:hover { border-color: var(--teal); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .stock-card.low-stock  { border-color: var(--amber); }
+  .stock-card.out-stock  { border-color: var(--red); }
+  .sc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .sc-name { font-weight: 700; font-size: 13px; line-height: 1.3; max-width: 160px; }
+  .sc-cat  { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .sc-stock { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; }
+  .sc-stock.ok  { color: var(--teal); }
+  .sc-stock.low { color: var(--amber); }
+  .sc-stock.out { color: var(--red); }
+  .sc-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .sc-bar { height: 4px; background: var(--border); border-radius: 100px; margin-top: 8px; overflow: hidden; }
+  .sc-bar-fill { height: 100%; border-radius: 100px; transition: width 0.6s ease; }
+  .sc-bar-fill.ok  { background: var(--teal); }
+  .sc-bar-fill.low { background: var(--amber); }
+  .sc-bar-fill.out { background: var(--red); }
+
+  /* ── MODAL (Ledger) ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(26,24,20,0.5); z-index: 200;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: var(--white); border-radius: var(--radius-lg); width: 100%; max-width: 960px;
+    max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: var(--shadow-lg); transform: translateY(20px); transition: transform 0.2s;
+  }
+  .modal-overlay.show .modal-box { transform: translateY(0); }
+  .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .modal-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 900; }
+  .modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--off-white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .modal-close:hover { border-color: var(--red); color: var(--red); }
+  .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+  .modal-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .meta-pill { background: var(--off-white); border-radius: var(--radius); padding: 12px 14px; }
+  .meta-pill-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .meta-pill-val { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 900; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow-lg); transform: translateY(80px); opacity: 0;
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; min-width: 240px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--text); color: white; }
+  .toast.error   { background: var(--red); color: white; }
+  .toast.info    { background: var(--teal); color: white; }
+
+  /* ── EMPTY / LOADING ── */
+  .empty-state { text-align: center; padding: 48px 20px; }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.4; }
+  .empty-text { font-size: 13px; color: var(--text-muted); }
+
+  /* ── ALERT BANNER ── */
+  .alert-banner {
+    background: var(--amber-bg); border: 1.5px solid var(--amber);
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; color: #92400e;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .anim { opacity:0; animation: fadeUp 0.4s ease forwards; }
+  .a1{animation-delay:.05s} .a2{animation-delay:.10s} .a3{animation-delay:.15s}
+  .a4{animation-delay:.20s} .a5{animation-delay:.25s}
+
+  /* ── PANEL VISIBILITY ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .field-input:disabled, .field-select:disabled {
+    opacity: 0.42; cursor: not-allowed;
+    background: var(--border) !important; border-color: var(--border) !important;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══ -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="back-btn">← Back</a>
+    <div class="topbar-brand">
+      <div class="brand-icon">📦</div>
+      <div class="brand-name">ConstructMS</div>
+    </div>
+    <div class="page-breadcrumb">
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Materials</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="sync-pill"><span class="sync-dot"></span>Sheets Connected</div>
+    <a href="sites.html"     class="btn btn-ghost"   style="padding:8px 16px;font-size:12px;">🏗 Sites</a>
+    <a href="workorder.html" class="btn btn-ghost"   style="padding:8px 16px;font-size:12px;">📋 Work Orders</a>
+    <a href="expense.html"   class="btn btn-ghost"   style="padding:8px 16px;font-size:12px;">💸 Expenses</a>
+    <a href="dashboard.html" class="btn btn-primary" style="padding:8px 16px;font-size:12px;">📊 Dashboard</a>
+  </div>
+</div>
+
+<div class="body-wrap">
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Main Modules</div>
+    <a href="index.html"      class="nav-item"><span class="nav-item-icon">🏠</span> Home</a>
+    <a href="sites.html"      class="nav-item"><span class="nav-item-icon">🏗</span> Sites</a>
+    <a href="workorder.html"  class="nav-item"><span class="nav-item-icon">📋</span> Work Orders</a>
+    <a href="expense.html"    class="nav-item"><span class="nav-item-icon">💸</span> Expenses</a>
+    <a href="material.html"   class="nav-item active"><span class="nav-item-icon">📦</span> Materials <span class="nav-badge teal" id="mat-nav-count">0</span></a>
+    <a href="dashboard.html"  class="nav-item"><span class="nav-item-icon">📊</span> Dashboard</a>
+
+    <div style="margin-top:auto;padding-top:20px;border-top:1px solid var(--border);">
+      <div style="font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Stock Quick Stats</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total Materials</span><span style="font-weight:700;" id="qs-total">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Low Stock</span><span style="font-weight:700;color:var(--amber);" id="qs-low">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Out of Stock</span><span style="font-weight:700;color:var(--red);" id="qs-out">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total IN Value</span><span style="font-weight:700;color:var(--teal);" id="qs-value">—</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main-content">
+
+    <div class="page-header anim a1">
+      <div>
+        <div class="page-eyebrow">Module 04</div>
+        <h1 class="page-title">Materials</h1>
+        <p class="page-desc">Manage inventory, track IN/OUT transactions & monitor live stock</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-ghost" onclick="refreshAll()">⟳ Refresh</button>
+        <button class="btn btn-primary" onclick="switchTab('stock')">📊 Stock Summary</button>
+      </div>
+    </div>
+
+    <!-- ── LOW STOCK ALERT BANNER ── -->
+    <div id="alert-banner" class="alert-banner" style="display:none;">
+      ⚠️ <span id="alert-text">Checking stock levels…</span>
+    </div>
+
+    <!-- ── SUMMARY STRIP ── -->
+    <div class="summary-strip anim a2">
+      <div class="sum-card"><div class="sum-label">Total Materials</div><div class="sum-val teal"  id="sum-total-mats">—</div></div>
+      <div class="sum-card"><div class="sum-label">Total IN (All)</div><div class="sum-val green" id="sum-total-in">—</div></div>
+      <div class="sum-card"><div class="sum-label">Total OUT (All)</div><div class="sum-val orange" id="sum-total-out">—</div></div>
+      <div class="sum-card"><div class="sum-label">Low Stock Items</div><div class="sum-val amber" id="sum-low-stock">—</div></div>
+      <div class="sum-card"><div class="sum-label">Out of Stock</div><div class="sum-val red"   id="sum-out-stock">—</div></div>
+    </div>
+
+    <!-- ── TABS ── -->
+    <div class="tabs-bar anim a3">
+      <button class="tab-btn active" id="tab-master"  onclick="switchTab('master')">📋 Material Master</button>
+      <button class="tab-btn"        id="tab-in"      onclick="switchTab('in')">⬇️ Material IN</button>
+      <button class="tab-btn"        id="tab-out"     onclick="switchTab('out')">⬆️ Material OUT</button>
+      <button class="tab-btn"        id="tab-stock"   onclick="switchTab('stock')">📊 Stock Summary</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--  TAB 1: MATERIAL MASTER                               -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="panel-master" class="tab-panel active">
+
+      <!-- Master Table -->
+      <div class="table-card anim a3">
+        <div class="table-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="table-title">Material Master</span>
+            <span class="table-count" id="master-count-badge">Loading…</span>
+          </div>
+          <div class="filter-bar">
+            <select class="filter-select" id="filter-master-cat" onchange="applyMasterFilter()">
+              <option value="">All Categories</option>
+            </select>
+            <input id="master-search" type="text" placeholder="🔍 Search material…"
+              style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:200px;"
+              oninput="applyMasterFilter()"
+              onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+            <button class="btn btn-primary btn-sm" onclick="scrollToMasterForm()">+ Add Material</button>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table style="min-width:1000px;">
+            <thead>
+              <tr>
+                <th>#</th><th>Material ID</th><th>Material Name</th><th>Category</th>
+                <th>Unit</th><th>Min Stock</th><th>HSN Code</th><th>Brand / Grade</th>
+                <th>Description</th><th>Created At</th><th>Created By</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="master-tbody">
+              <tr><td colspan="12"><div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">Loading materials…</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Add Material Form -->
+      <div id="add-master-form" class="form-card anim a4">
+        <div class="form-card-header">
+          <div class="card-header-icon teal">📦</div>
+          <div>
+            <div class="card-header-title" id="master-form-title">Add New Material</div>
+            <div class="card-header-sub">Define material in master — then use it for IN/OUT transactions</div>
+          </div>
+        </div>
+        <input type="hidden" id="mat-id-hidden"/>
+        <div class="form-body">
+          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📦 Material Info</div><div class="sd-line"></div></div>
+          <div class="fields-grid cols3">
+            <div class="field">
+              <label class="field-label">Material Name <span class="req">*</span></label>
+              <input class="field-input" id="mat-name" type="text" placeholder="e.g. OPC 53 Cement"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Category <span class="req">*</span></label>
+              <select class="field-select" id="mat-category">
+                <option value="">— Select Category —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Unit <span class="req">*</span></label>
+              <select class="field-select" id="mat-unit">
+                <option value="">— Select Unit —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Min Stock Level</label>
+              <input class="field-input" id="mat-min-stock" type="number" min="0" placeholder="0 (alert threshold)"/>
+            </div>
+            <div class="field">
+              <label class="field-label">HSN Code</label>
+              <input class="field-input" id="mat-hsn" type="text" placeholder="e.g. 2523"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Brand / Grade</label>
+              <input class="field-input" id="mat-brand" type="text" placeholder="e.g. Ultratech / Fe500"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Created By</label>
+              <input class="field-input" id="mat-created-by" type="text" placeholder="Your name"/>
+            </div>
+            <div class="field full">
+              <label class="field-label">Description</label>
+              <textarea class="field-textarea" id="mat-description" placeholder="Additional details about this material…"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <div class="footer-hint"><span>ℹ️</span> Fields marked <span style="color:var(--accent);font-weight:700;">*</span> are required.</div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-ghost" onclick="clearMasterForm()">Clear</button>
+            <button class="btn btn-primary" onclick="submitMaterial()">
+              <span id="mat-submit-icon">📦</span>
+              <span id="mat-submit-text">Save Material</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--  TAB 2: MATERIAL IN                                   -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="panel-in" class="tab-panel">
+
+      <!-- IN Table -->
+      <div class="table-card">
+        <div class="table-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="table-title">Material IN — Inward Transactions</span>
+            <span class="table-count" id="in-count-badge">Loading…</span>
+          </div>
+          <div class="filter-bar">
+            <select class="filter-select" id="filter-in-site" onchange="applyINFilter()"><option value="">All Sites</option></select>
+            <select class="filter-select" id="filter-in-status" onchange="applyINFilter()">
+              <option value="">All Statuses</option>
+              <option>Received</option><option>Partial</option><option>Rejected</option><option>Pending</option>
+            </select>
+            <input id="in-search" type="text" placeholder="🔍 Search…"
+              style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:180px;"
+              oninput="applyINFilter()"
+              onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+            <button class="btn btn-green btn-sm" onclick="scrollToINForm()">+ Add IN</button>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table style="min-width:1800px;">
+            <thead>
+              <tr>
+                <th>#</th><th>Txn ID</th><th>Material ID</th><th>Material Name</th><th>Category</th><th>Unit</th>
+                <th>Site ID</th><th>Site Name</th><th>Date</th><th>Qty IN</th>
+                <th>Rate (₹)</th><th>Amount (₹)</th><th>Tax (₹)</th><th>Total (₹)</th>
+                <th>Vendor ID</th><th>Vendor Name</th><th>Bill No</th><th>Invoice No</th>
+                <th>Work Order ID</th><th>Status</th><th>Remarks</th><th>Received By</th>
+                <th>Created At</th><th>Created By</th>
+              </tr>
+            </thead>
+            <tbody id="in-tbody">
+              <tr><td colspan="24"><div class="empty-state"><div class="empty-icon">⬇️</div><div class="empty-text">Loading Material IN records…</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Add IN Form -->
+      <div id="add-in-form" class="form-card">
+        <div class="form-card-header">
+          <div class="card-header-icon green">⬇️</div>
+          <div>
+            <div class="card-header-title">Add Material IN — Inward / Purchase Receipt</div>
+            <div class="card-header-sub">Record material received at site — stock will auto-increase</div>
+          </div>
+        </div>
+        <div class="form-body">
+
+          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📦 Material & Site</div><div class="sd-line"></div></div>
+          <div class="fields-grid cols4">
+            <div class="field">
+              <label class="field-label">Material <span class="req">*</span></label>
+              <select class="field-select" id="in-material" onchange="onINMaterialSelect()">
+                <option value="">— Select Material —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Material ID <span class="auto-badge">⚡ Auto</span></label>
+              <div class="field-auto" id="in-mat-id-display">—</div>
+              <input type="hidden" id="in-mat-id-hidden"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Site Name <span class="req">*</span></label>
+              <select class="field-select" id="in-site-name" onchange="onINSiteSelect()">
+                <option value="">— Select Site —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Site ID <span class="auto-badge">⚡ Auto</span></label>
+              <div class="field-auto" id="in-site-id-display">—</div>
+              <input type="hidden" id="in-site-id-hidden"/>
+            </div>
+          </div>
+
+          <div class="fields-grid cols4">
+            <div class="field">
+              <label class="field-label">Date <span class="req">*</span></label>
+              <input class="field-input" id="in-date" type="date"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Unit</label>
+              <select class="field-select" id="in-unit"></select>
+            </div>
+            <div class="field">
+              <label class="field-label">IN Status</label>
+              <select class="field-select" id="in-status">
+                <option>Received</option><option>Partial</option><option>Rejected</option><option>Pending</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Work Order ID</label>
+              <input class="field-input" id="in-wo-id" type="text" placeholder="Optional"/>
+            </div>
+          </div>
+
+          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Quantity & Amount</div><div class="sd-line"></div></div>
+          <div class="fields-grid cols4">
+            <div class="field">
+              <label class="field-label">Qty IN <span class="req">*</span></label>
+              <input class="field-input" id="in-qty" type="number" min="0.01" step="0.01" placeholder="0" oninput="recalcIN()"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Rate (₹)</label>
+              <input class="field-input" id="in-rate" type="number" min="0" step="0.01" placeholder="0" oninput="recalcIN()"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Amount (₹)</label>
+              <input class="field-input" id="in-amount" type="number" min="0" step="0.01" placeholder="Auto-calculated" oninput="recalcINTotal()"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Tax Amount (₹)</label>
+              <input class="field-input" id="in-tax" type="number" min="0" step="0.01" placeholder="0" oninput="recalcINTotal()"/>
+            </div>
+          </div>
+          <div style="background:var(--green-bg);border:1.5px solid rgba(22,163,74,0.25);border-radius:12px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+            <div><div style="font-size:12px;font-weight:600;color:var(--text-muted);">Total Amount</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Amount + Tax</div></div>
+            <div style="font-family:'Fraunces',serif;font-size:26px;font-weight:900;color:var(--green);" id="in-total-display">₹0</div>
+          </div>
+
+          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🏪 Vendor & Bill</div><div class="sd-line"></div></div>
+          <div class="fields-grid cols4">
+            <div class="field">
+              <label class="field-label">Vendor ID</label>
+              <input class="field-input" id="in-vendor-id" type="text" placeholder="Vendor ID"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Vendor Name</label>
+              <input class="field-input" id="in-vendor-name" type="text" placeholder="Vendor / Supplier name"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Bill No</label>
+              <input class="field-input" id="in-bill-no" type="text" placeholder="Supplier bill number"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Invoice No</label>
+              <input class="field-input" id="in-invoice-no" type="text" placeholder="Invoice reference"/>
+            </div>
+          </div>
+
+          <div class="fields-grid cols3">
+            <div class="field">
+              <label class="field-label">Received By</label>
+              <input class="field-input" id="in-received-by" type="text" placeholder="Site in-charge name"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Created By</label>
+              <input class="field-input" id="in-created-by" type="text" placeholder="Your name"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Remarks</label>
+              <input class="field-input" id="in-remarks" type="text" placeholder="Optional notes"/>
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <div class="footer-hint"><span>ℹ️</span> Stock will increase automatically after saving.</div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-ghost" onclick="clearINForm()">Clear</button>
+            <button class="btn btn-green" onclick="submitMaterialIN()">
+              <span id="in-submit-icon">⬇️</span>
+              <span id="in-submit-text">Save Material IN</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--  TAB 3: MATERIAL OUT                                  -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="panel-out" class="tab-panel">
+
+      <!-- OUT Table -->
+      <div class="table-card">
+        <div class="table-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="table-title">Material OUT — Issue / Consumption</span>
+            <span class="table-count" id="out-count-badge">Loading…</span>
+          </div>
+          <div class="filter-bar">
+            <select class="filter-select" id="filter-out-site" onchange="applyOUTFilter()"><option value="">All Sites</option></select>
+            <select class="filter-select" id="filter-out-status" onchange="applyOUTFilter()">
+              <option value="">All Statuses</option>
+              <option>Issued</option><option>Returned</option><option>Wasted</option><option>Transferred</option>
+            </select>
+            <input id="out-search" type="text" placeholder="🔍 Search…"
+              style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:180px;"
+              oninput="applyOUTFilter()"
+              onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+            <button class="btn btn-orange btn-sm" onclick="scrollToOUTForm()">+ Add OUT</button>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table style="min-width:1700px;">
+            <thead>
+              <tr>
+                <th>#</th><th>Txn ID</th><th>Material ID</th><th>Material Name</th><th>Category</th><th>Unit</th>
+                <th>Site ID</th><th>Site Name</th><th>Date</th><th>Qty OUT</th>
+                <th>Rate (₹)</th><th>Amount (₹)</th><th>Purpose</th>
+                <th>Work Order ID</th><th>Issued To</th><th>Status</th>
+                <th>Remarks</th><th>Issued By</th><th>Created At</th><th>Created By</th>
+              </tr>
+            </thead>
+            <tbody id="out-tbody">
+              <tr><td colspan="20"><div class="empty-state"><div class="empty-icon">⬆️</div><div class="empty-text">Loading Material OUT records…</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Add OUT Form -->
+      <div id="add-out-form" class="form-card">
+        <div class="form-card-header">
+          <div class="card-header-icon orange">⬆️</div>
+          <div>
+            <div class="card-header-title">Add Material OUT — Issue / Consumption</div>
+            <div class="card-header-sub">Record material issued at site — stock will auto-decrease. Over-issuing is blocked.</div>
+          </div>
+        </div>
+        <div class="form-body">
+
+          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📦 Material & Site</div><div class="sd-line"></div></div>
+          <div class="fields-grid cols4">
+            <div class="field">
+              <label class="field-label">Material <span class="req">*</span></label>
+              <select class="field-select" id="out-material" onchange="onOUTMaterialSelect()">
+                <option value="">— Select Material —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Material ID <span class="auto-badge">⚡ Auto</span></label>
+              <div class="field-auto" id="out-mat-id-display">—</div>
+              <input type="hidden" id="out-mat-id-hidden"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Site Name <span class="req">*</span></label>
+              <select class="field-select" id="out-site-name" onchange="onOUTSiteSelect()">
+                <option value="">— Select Site —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Site ID <span class="auto-badge">⚡ Auto</span></label>
+              <div class="field-auto" id="out-site-id-display">—</div>
+              <input type="hidden" id="out-site-id-hidden"/>
+            </div>
+          </div>
+
+          <div class="fields-grid cols4">
+            <div class="field">
+              <label class="field-label">Date <span class="req">*</span></label>
+              <input class="field-input" id="out-date" type="date"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Unit</label>
+              <select class="field-select" id="out-unit"></select>
+            </div>
+            <div class="field">
+              <label class="field-label">OUT Status</label>
+              <select class="field-select" id="out-status">
+                <option>Issued</option><option>Returned</option><option>Wasted</option><option>Transferred</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Available Stock <span class="auto-badge">⚡ Live</span></label>
+              <div class="field-auto" id="out-stock-display" style="color:var(--teal);">Select material + site</div>
+            </div>
+          </div>
+
+          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Quantity & Amount</div><div class="sd-line"></div></div>
+          <div class="fields-grid cols3">
+            <div class="field">
+              <label class="field-label">Qty OUT <span class="req">*</span></label>
+              <input class="field-input" id="out-qty" type="number" min="0.01" step="0.01" placeholder="0" oninput="recalcOUT()"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Rate (₹)</label>
+              <input class="field-input" id="out-rate" type="number" min="0" step="0.01" placeholder="0" oninput="recalcOUT()"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Amount (₹)</label>
+              <input class="field-input" id="out-amount" type="number" min="0" step="0.01" placeholder="Auto-calculated"/>
+            </div>
+          </div>
+
+          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🔧 Usage Details</div><div class="sd-line"></div></div>
+          <div class="fields-grid cols4">
+            <div class="field">
+              <label class="field-label">Purpose</label>
+              <input class="field-input" id="out-purpose" type="text" placeholder="Work activity / usage purpose"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Work Order ID</label>
+              <input class="field-input" id="out-wo-id" type="text" placeholder="Optional"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Issued To</label>
+              <input class="field-input" id="out-issued-to" type="text" placeholder="Labour / sub-contractor name"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Issued By</label>
+              <input class="field-input" id="out-issued-by" type="text" placeholder="Site engineer / store keeper"/>
+            </div>
+          </div>
+
+          <div class="fields-grid" style="grid-template-columns:1fr 2fr;">
+            <div class="field">
+              <label class="field-label">Created By</label>
+              <input class="field-input" id="out-created-by" type="text" placeholder="Your name"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Remarks</label>
+              <input class="field-input" id="out-remarks" type="text" placeholder="Optional notes…"/>
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <div class="footer-hint"><span>⚠️</span> Over-issuing is blocked — cannot issue more than available stock.</div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-ghost" onclick="clearOUTForm()">Clear</button>
+            <button class="btn btn-orange" onclick="submitMaterialOUT()">
+              <span id="out-submit-icon">⬆️</span>
+              <span id="out-submit-text">Save Material OUT</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--  TAB 4: STOCK SUMMARY                                 -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="panel-stock" class="tab-panel">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:15px;font-weight:700;">Live Stock Summary</span>
+        </div>
+        <div class="filter-bar">
+          <select class="filter-select" id="filter-stock-site" onchange="applyStockFilter()"><option value="">All Sites</option></select>
+          <select class="filter-select" id="filter-stock-status" onchange="applyStockFilter()">
+            <option value="">All Stock Status</option>
+            <option>OK</option><option>Low Stock</option><option>Out of Stock</option>
+          </select>
+          <input id="stock-search" type="text" placeholder="🔍 Search material…"
+            style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:190px;"
+            oninput="applyStockFilter()"
+            onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+      </div>
+
+      <div id="stock-grid" class="stock-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Loading stock summary…</div>
+      </div>
+
+      <!-- Stock Summary Table -->
+      <div class="table-card" style="margin-top:4px;">
+        <div class="table-header">
+          <span class="table-title">Stock Summary Table</span>
+          <button class="btn btn-ghost btn-sm" onclick="loadStockSummary()">⟳ Refresh</button>
+        </div>
+        <div class="table-scroll">
+          <table style="min-width:900px;">
+            <thead>
+              <tr>
+                <th>Material ID</th><th>Material Name</th><th>Category</th><th>Unit</th>
+                <th>Total IN</th><th>Total OUT</th><th>Current Stock</th>
+                <th>Min Level</th><th>Stock Status</th><th>Total Value (₹)</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="stock-tbody">
+              <tr><td colspan="11"><div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text">Loading…</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ LEDGER MODAL ══ -->
+<div class="modal-overlay" id="ledger-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="ledger-title">Stock Ledger</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px;" id="ledger-subtitle">—</div>
+      </div>
+      <button class="modal-close" onclick="closeLedger()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta" id="ledger-meta"></div>
+      <div class="table-scroll">
+        <table style="min-width:900px;">
+          <thead>
+            <tr>
+              <th>Date</th><th>Txn ID</th><th>Type</th><th>Site</th>
+              <th>Qty</th><th>Rate</th><th>Amount</th>
+              <th>Vendor / Issued To</th><th>Purpose / Bill No</th>
+              <th>Status</th><th>Balance</th>
+            </tr>
+          </thead>
+          <tbody id="ledger-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast success" id="toast">
+  <span id="toast-icon">✅</span>
+  <span id="toast-msg">Saved!</span>
+</div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  CONFIG
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
+
+// ── Shared State ──────────────────────────────────────────────
+let allMaterials   = [];
+let allSites       = [];
+let allIN          = [];
+let allOUT         = [];
+let allStockSum    = [];
+
+const MAT_CATEGORIES = [
+  'Cement & Concrete','Steel & TMT','Brick & Block','Sand & Aggregate',
+  'Tiles & Flooring','Paint & Primer','Plumbing','Electrical',
+  'Waterproofing','Timber & Shuttering','Glass & Glazing',
+  'Hardware & Fasteners','Machinery & Tools','Safety Equipment','Miscellaneous'
+];
+const MAT_UNITS = [
+  'Bags','MT','Kg','Nos','Sqft','Sqm','Rmt','Cum','Ltr','Trip','Bundle','Box','Roll','LS','Other'
+];
+const CAT_COLORS = {
+  'Cement & Concrete':'teal','Steel & TMT':'blue','Brick & Block':'orange',
+  'Sand & Aggregate':'amber','Tiles & Flooring':'purple','Paint & Primer':'green',
+  'Plumbing':'blue','Electrical':'amber','Waterproofing':'teal',
+  'Timber & Shuttering':'orange','Glass & Glazing':'blue',
+  'Hardware & Fasteners':'purple','Machinery & Tools':'red',
+  'Safety Equipment':'green','Miscellaneous':''
+};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  API
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function api(action, data) {
+  try {
+    const p = new URLSearchParams({ action });
+    if (data) Object.entries(data).forEach(([k,v]) => { if (v !== null && v !== undefined && v !== '') p.set(k, String(v)); });
+    const res = await fetch(`${API_URL}?${p}`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await res.json();
+  } catch(e) { console.error('API error ['+action+']:', e); return null; }
+}
+
+const fmt   = n => '₹' + Number(n||0).toLocaleString('en-IN');
+const fmtN  = n => Number(n||0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  TABS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function switchTab(name) {
+  ['master','in','out','stock'].forEach(t => {
+    document.getElementById('panel-' + t).classList.toggle('active', t === name);
+    document.getElementById('tab-' + t).classList.toggle('active', t === name);
+  });
+  if (name === 'stock') loadStockSummary();
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  INIT DROPDOWNS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function initStaticDropdowns() {
+  // Categories
+  const catFilter = document.getElementById('filter-master-cat');
+  const catSel    = document.getElementById('mat-category');
+  MAT_CATEGORIES.forEach(c => {
+    [catFilter, catSel].forEach(el => {
+      const o = document.createElement('option'); o.value = c; o.textContent = c; el.appendChild(o);
+    });
+  });
+
+  // Units
+  ['mat-unit','in-unit','out-unit'].forEach(id => {
+    const el = document.getElementById(id);
+    el.innerHTML = '<option value="">— Unit —</option>';
+    MAT_UNITS.forEach(u => {
+      const o = document.createElement('option'); o.value = u; o.textContent = u; el.appendChild(o);
+    });
+  });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  LOAD SITES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function loadSites() {
+  const d = await api('getSites');
+  allSites = d && d.sites ? d.sites.filter(s => (s.status||'').toLowerCase() === 'active') : [];
+  ['in-site-name','out-site-name','filter-in-site','filter-out-site','filter-stock-site'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const placeholder = sel.querySelector('option[value=""]') ? '' : null;
+    if (!placeholder) sel.innerHTML = '<option value="">All Sites</option>';
+    allSites.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s.name; o.dataset.id = s.siteId;
+      o.textContent = `${s.name} [${s.siteId}]`;
+      sel.appendChild(o);
+    });
+  });
+  // Fix site selects that need "Select Site" placeholder
+  ['in-site-name','out-site-name'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (sel && sel.options[0]) sel.options[0].textContent = '— Select Site —';
+  });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  LOAD MATERIALS (Master)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function loadMaterials() {
+  document.getElementById('master-count-badge').textContent = 'Loading…';
+  const d = await api('getMaterials');
+  if (!d) { document.getElementById('master-tbody').innerHTML = errRow(12,'Could not load materials'); return; }
+
+  allMaterials = d.materials || [];
+  document.getElementById('sum-total-mats').textContent  = allMaterials.length;
+  document.getElementById('qs-total').textContent        = allMaterials.length;
+  document.getElementById('mat-nav-count').textContent   = allMaterials.length;
+
+  // Populate material dropdowns for IN/OUT forms
+  ['in-material','out-material'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '<option value="">— Select Material —</option>';
+    allMaterials.forEach(m => {
+      const o = document.createElement('option');
+      o.value = m.name; o.dataset.id = m.materialId; o.dataset.unit = m.unit;
+      o.textContent = `${m.name} [${m.materialId}]`;
+      sel.appendChild(o);
+    });
+  });
+
+  renderMasterTable(allMaterials);
+}
+
+function renderMasterTable(mats) {
+  document.getElementById('master-count-badge').textContent = mats.length + ' materials';
+  const tbody = document.getElementById('master-tbody');
+  if (!mats.length) { tbody.innerHTML = emptyRow(12,'📦','No materials in master. Add your first material below!'); return; }
+  tbody.innerHTML = mats.map((m, i) => `
+    <tr style="animation:fadeUp 0.3s ease ${i*0.04}s both;">
+      <td style="color:var(--text-muted);font-size:11px;">${i+1}</td>
+      <td><span style="font-size:11px;background:var(--teal-bg);color:var(--teal);padding:2px 7px;border-radius:6px;font-weight:600;">${m.materialId||'—'}</span></td>
+      <td style="font-weight:700;">${m.name||'—'}</td>
+      <td><span class="tag ${CAT_COLORS[m.category]||'teal'}">${m.category||'—'}</span></td>
+      <td><span class="tag blue">${m.unit||'—'}</span></td>
+      <td style="font-weight:700;text-align:right;">${fmtN(m.minStockLevel)}</td>
+      <td style="color:var(--text-muted);">${m.hsnCode||'—'}</td>
+      <td>${m.brand||'—'}</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${m.description||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${m.createdAt||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${m.createdBy||'—'}</td>
+      <td style="display:flex;gap:5px;">
+        <button class="btn btn-ghost btn-sm" onclick="openLedger('${m.materialId}','${m.name}')">📊 Ledger</button>
+      </td>
+    </tr>`).join('');
+}
+
+function applyMasterFilter() {
+  const q   = document.getElementById('master-search').value.toLowerCase();
+  const cat = document.getElementById('filter-master-cat').value;
+  renderMasterTable(allMaterials.filter(m =>
+    (!cat || m.category === cat) &&
+    ((m.name||'').toLowerCase().includes(q) || (m.materialId||'').toLowerCase().includes(q))
+  ));
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  LOAD MATERIAL IN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function loadMaterialIN() {
+  document.getElementById('in-count-badge').textContent = 'Loading…';
+  const d = await api('getMaterialIN');
+  if (!d) { document.getElementById('in-tbody').innerHTML = errRow(24,'Could not load IN records'); return; }
+  allIN = d.records || [];
+  document.getElementById('sum-total-in').textContent = allIN.reduce((s,r)=>s+r.qtyIn,0).toLocaleString('en-IN', {maximumFractionDigits:2});
+  renderINTable(allIN);
+}
+
+function renderINTable(rows) {
+  document.getElementById('in-count-badge').textContent = rows.length + ' records';
+  const tbody = document.getElementById('in-tbody');
+  if (!rows.length) { tbody.innerHTML = emptyRow(24,'⬇️','No Material IN records yet.'); return; }
+  const inStatusColor = { Received:'green', Partial:'amber', Rejected:'red', Pending:'amber' };
+  tbody.innerHTML = rows.map((r, i) => `
+    <tr style="animation:fadeUp 0.3s ease ${i*0.04}s both;">
+      <td style="color:var(--text-muted);font-size:11px;">${r.serialNo||i+1}</td>
+      <td><span style="font-size:11px;background:var(--green-bg);color:var(--green);padding:2px 7px;border-radius:6px;font-weight:600;">${r.transactionId||'—'}</span></td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.materialId||'—'}</td>
+      <td style="font-weight:700;">${r.materialName||'—'}</td>
+      <td><span class="tag ${CAT_COLORS[r.category]||'teal'}">${r.category||'—'}</span></td>
+      <td><span class="tag blue">${r.unit||'—'}</span></td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.siteId||'—'}</td>
+      <td style="font-weight:600;">${r.siteName||'—'}</td>
+      <td style="color:var(--text-muted);">${r.date||'—'}</td>
+      <td style="font-weight:700;color:var(--green);text-align:right;">+${fmtN(r.qtyIn)}</td>
+      <td style="text-align:right;">${r.rate ? fmt(r.rate) : '—'}</td>
+      <td style="text-align:right;">${fmt(r.amount)}</td>
+      <td style="color:var(--text-muted);text-align:right;">${fmt(r.taxAmount)}</td>
+      <td style="font-weight:700;color:var(--green);">${fmt(r.totalAmount)}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.vendorId||'—'}</td>
+      <td>${r.vendorName||'—'}</td>
+      <td style="color:var(--text-muted);">${r.billNo||'—'}</td>
+      <td style="color:var(--text-muted);">${r.invoiceNo||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.workOrderId||'—'}</td>
+      <td><span class="tag ${inStatusColor[r.inStatus]||'blue'}">${r.inStatus||'—'}</span></td>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${r.remarks||'—'}</td>
+      <td>${r.receivedBy||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.createdAt||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.createdBy||'—'}</td>
+    </tr>`).join('');
+}
+
+function applyINFilter() {
+  const q      = document.getElementById('in-search').value.toLowerCase();
+  const site   = document.getElementById('filter-in-site').value;
+  const status = document.getElementById('filter-in-status').value;
+  renderINTable(allIN.filter(r =>
+    (!site   || r.siteName  === site)  &&
+    (!status || r.inStatus  === status) &&
+    ((r.materialName||'').toLowerCase().includes(q) || (r.vendorName||'').toLowerCase().includes(q))
+  ));
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  LOAD MATERIAL OUT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function loadMaterialOUT() {
+  document.getElementById('out-count-badge').textContent = 'Loading…';
+  const d = await api('getMaterialOUT');
+  if (!d) { document.getElementById('out-tbody').innerHTML = errRow(20,'Could not load OUT records'); return; }
+  allOUT = d.records || [];
+  document.getElementById('sum-total-out').textContent = allOUT.reduce((s,r)=>s+r.qtyOut,0).toLocaleString('en-IN', {maximumFractionDigits:2});
+  renderOUTTable(allOUT);
+}
+
+function renderOUTTable(rows) {
+  document.getElementById('out-count-badge').textContent = rows.length + ' records';
+  const tbody = document.getElementById('out-tbody');
+  if (!rows.length) { tbody.innerHTML = emptyRow(20,'⬆️','No Material OUT records yet.'); return; }
+  const outStatusColor = { Issued:'green', Returned:'blue', Wasted:'red', Transferred:'purple' };
+  tbody.innerHTML = rows.map((r, i) => `
+    <tr style="animation:fadeUp 0.3s ease ${i*0.04}s both;">
+      <td style="color:var(--text-muted);font-size:11px;">${r.serialNo||i+1}</td>
+      <td><span style="font-size:11px;background:var(--accent-bg);color:var(--accent);padding:2px 7px;border-radius:6px;font-weight:600;">${r.transactionId||'—'}</span></td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.materialId||'—'}</td>
+      <td style="font-weight:700;">${r.materialName||'—'}</td>
+      <td><span class="tag ${CAT_COLORS[r.category]||'teal'}">${r.category||'—'}</span></td>
+      <td><span class="tag blue">${r.unit||'—'}</span></td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.siteId||'—'}</td>
+      <td style="font-weight:600;">${r.siteName||'—'}</td>
+      <td style="color:var(--text-muted);">${r.date||'—'}</td>
+      <td style="font-weight:700;color:var(--accent);text-align:right;">-${fmtN(r.qtyOut)}</td>
+      <td style="text-align:right;">${r.rate ? fmt(r.rate) : '—'}</td>
+      <td style="text-align:right;font-weight:600;">${fmt(r.amount)}</td>
+      <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${r.purpose||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.workOrderId||'—'}</td>
+      <td>${r.issuedTo||'—'}</td>
+      <td><span class="tag ${outStatusColor[r.outStatus]||'blue'}">${r.outStatus||'—'}</span></td>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${r.remarks||'—'}</td>
+      <td>${r.issuedBy||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.createdAt||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.createdBy||'—'}</td>
+    </tr>`).join('');
+}
+
+function applyOUTFilter() {
+  const q      = document.getElementById('out-search').value.toLowerCase();
+  const site   = document.getElementById('filter-out-site').value;
+  const status = document.getElementById('filter-out-status').value;
+  renderOUTTable(allOUT.filter(r =>
+    (!site   || r.siteName === site)   &&
+    (!status || r.outStatus === status) &&
+    ((r.materialName||'').toLowerCase().includes(q) || (r.purpose||'').toLowerCase().includes(q))
+  ));
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  LOAD STOCK SUMMARY
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function loadStockSummary() {
+  const siteId = document.getElementById('filter-stock-site').value;
+  const siteParam = allSites.find(s => s.name === siteId);
+  const d = await api('getStockSummary', siteParam ? { siteId: siteParam.siteId } : {});
+  if (!d) return;
+
+  allStockSum = d.summary || [];
+
+  // Update sidebar stats
+  document.getElementById('qs-low').textContent   = d.lowStock    || 0;
+  document.getElementById('qs-out').textContent   = d.outOfStock  || 0;
+  document.getElementById('qs-value').textContent = d.totalValue >= 1e7
+    ? '₹'+(d.totalValue/1e7).toFixed(1)+' Cr' : '₹'+(d.totalValue/1e5).toFixed(1)+' L';
+  document.getElementById('sum-low-stock').textContent  = d.lowStock   || 0;
+  document.getElementById('sum-out-stock').textContent  = d.outOfStock || 0;
+
+  // Low stock alert banner
+  const alerts = allStockSum.filter(s => s.stockStatus !== 'OK');
+  const banner = document.getElementById('alert-banner');
+  if (alerts.length) {
+    document.getElementById('alert-text').textContent =
+      `${alerts.length} material(s) need attention — ${d.outOfStock||0} out of stock, ${d.lowStock||0} low stock`;
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
+
+  applyStockFilter();
+}
+
+function applyStockFilter() {
+  const q      = document.getElementById('stock-search').value.toLowerCase();
+  const status = document.getElementById('filter-stock-status').value;
+  const filtered = allStockSum.filter(s =>
+    (!status || s.stockStatus === status) &&
+    ((s.name||'').toLowerCase().includes(q) || (s.category||'').toLowerCase().includes(q))
+  );
+  renderStockCards(filtered);
+  renderStockTable(filtered);
+}
+
+function renderStockCards(items) {
+  const grid = document.getElementById('stock-grid');
+  if (!items.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No materials found.</div>'; return; }
+  grid.innerHTML = items.map(s => {
+    const cls = s.stockStatus === 'OK' ? 'ok' : s.stockStatus === 'Low Stock' ? 'low' : 'out';
+    const cardCls = cls === 'low' ? 'low-stock' : cls === 'out' ? 'out-stock' : '';
+    const barPct = s.minStockLevel > 0
+      ? Math.min(100, Math.round((s.currentStock / (s.minStockLevel * 2)) * 100))
+      : (s.currentStock > 0 ? 60 : 0);
+    const statusLabel = s.stockStatus === 'OK' ? '✅ OK' : s.stockStatus === 'Low Stock' ? '⚠️ Low Stock' : '❌ Out of Stock';
+    return `
+      <div class="stock-card ${cardCls}" onclick="openLedger('${s.materialId}','${s.name}')">
+        <div class="sc-top">
+          <div>
+            <div class="sc-name">${s.name}</div>
+            <div class="sc-cat"><span class="tag ${CAT_COLORS[s.category]||'teal'}" style="font-size:9px;padding:2px 6px;">${s.category}</span></div>
+          </div>
+          <span class="stock-${cls}">${statusLabel}</span>
+        </div>
+        <div class="sc-stock ${cls}">${fmtN(s.currentStock)} <span style="font-size:12px;font-weight:400;color:var(--text-muted);">${s.unit}</span></div>
+        <div class="sc-bar"><div class="sc-bar-fill ${cls}" style="width:${barPct}%"></div></div>
+        <div class="sc-meta">
+          <span>IN: <strong>${fmtN(s.totalIn)}</strong></span>
+          <span>OUT: <strong>${fmtN(s.totalOut)}</strong></span>
+          <span>Min: <strong>${fmtN(s.minStockLevel)}</strong></span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderStockTable(items) {
+  const tbody = document.getElementById('stock-tbody');
+  if (!items.length) { tbody.innerHTML = emptyRow(11,'📊','No data.'); return; }
+  tbody.innerHTML = items.map((s, i) => {
+    const cls = s.stockStatus === 'OK' ? 'ok' : s.stockStatus === 'Low Stock' ? 'low' : 'out';
+    const tagCls = cls === 'ok' ? 'green' : cls === 'low' ? 'amber' : 'red';
+    return `
+      <tr style="animation:fadeUp 0.3s ease ${i*0.04}s both;">
+        <td style="font-size:11px;color:var(--text-muted);">${s.materialId}</td>
+        <td style="font-weight:700;">${s.name}</td>
+        <td><span class="tag ${CAT_COLORS[s.category]||'teal'}">${s.category}</span></td>
+        <td><span class="tag blue">${s.unit}</span></td>
+        <td style="color:var(--green);font-weight:600;text-align:right;">+${fmtN(s.totalIn)}</td>
+        <td style="color:var(--accent);font-weight:600;text-align:right;">-${fmtN(s.totalOut)}</td>
+        <td class="ledger-balance" style="color:var(--${cls === 'ok' ? 'teal' : cls === 'low' ? 'amber' : 'red'});text-align:right;">${fmtN(s.currentStock)}</td>
+        <td style="text-align:right;color:var(--text-muted);">${fmtN(s.minStockLevel)}</td>
+        <td><span class="tag ${tagCls}">${s.stockStatus}</span></td>
+        <td style="font-weight:600;">${fmt(s.totalValue)}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openLedger('${s.materialId}','${s.name}')">📊 Ledger</button></td>
+      </tr>`;
+  }).join('');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  LEDGER MODAL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function openLedger(materialId, name) {
+  document.getElementById('ledger-title').textContent    = '📊 Stock Ledger — ' + name;
+  document.getElementById('ledger-subtitle').textContent = materialId;
+  document.getElementById('ledger-tbody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--text-muted);">Loading…</td></tr>';
+  document.getElementById('ledger-meta').innerHTML  = '';
+  document.getElementById('ledger-modal').classList.add('show');
+
+  const d = await api('getStockLedger', { materialId });
+  if (!d || !d.ledger) {
+    document.getElementById('ledger-tbody').innerHTML = errRow(11,'Could not load ledger');
+    return;
+  }
+
+  document.getElementById('ledger-meta').innerHTML = `
+    <div class="meta-pill"><div class="meta-pill-label">Current Stock</div><div class="meta-pill-val" style="color:var(--teal)">${fmtN(d.currentStock)} ${d.unit}</div></div>
+    <div class="meta-pill"><div class="meta-pill-label">Category</div><div class="meta-pill-val" style="font-size:13px;color:var(--text-muted)">${d.category}</div></div>
+    <div class="meta-pill"><div class="meta-pill-label">Min Stock Level</div><div class="meta-pill-val" style="color:var(--amber)">${fmtN(d.minStockLevel)}</div></div>
+    <div class="meta-pill"><div class="meta-pill-label">Total Rows</div><div class="meta-pill-val">${d.totalRows}</div></div>`;
+
+  if (!d.ledger.length) { document.getElementById('ledger-tbody').innerHTML = emptyRow(11,'📊','No transactions found.'); return; }
+
+  document.getElementById('ledger-tbody').innerHTML = d.ledger.map((r, i) => `
+    <tr class="${r.type === 'IN' ? 'ledger-row-in' : 'ledger-row-out'}" style="animation:fadeUp 0.2s ease ${i*0.03}s both;">
+      <td style="color:var(--text-muted);">${r.dateDisplay||'—'}</td>
+      <td style="font-size:11px;">${r.txnId||'—'}</td>
+      <td><span class="tag ${r.type === 'IN' ? 'green' : 'red'}">${r.type === 'IN' ? '⬇️ IN' : '⬆️ OUT'}</span></td>
+      <td>${r.siteName||r.siteId||'—'}</td>
+      <td style="font-weight:700;color:${r.type==='IN'?'var(--green)':'var(--accent)'};">${r.type==='IN'?'+':'-'}${fmtN(r.qty)}</td>
+      <td>${r.rate ? fmt(r.rate) : '—'}</td>
+      <td>${fmt(r.amount)}</td>
+      <td>${r.vendorName || r.issuedTo || '—'}</td>
+      <td style="color:var(--text-muted);">${r.billNo || r.purpose || '—'}</td>
+      <td><span class="tag blue">${r.status||'—'}</span></td>
+      <td class="ledger-balance" style="color:${r.balance <= 0 ? 'var(--red)' : 'var(--teal)'};">${fmtN(r.balance)}</td>
+    </tr>`).join('');
+}
+
+function closeLedger() { document.getElementById('ledger-modal').classList.remove('show'); }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  FORM: MATERIAL MASTER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function submitMaterial() {
+  const name     = document.getElementById('mat-name').value.trim();
+  const category = document.getElementById('mat-category').value;
+  const unit     = document.getElementById('mat-unit').value;
+  if (!name)     { showToast('⚠️ Material name is required', 'error'); return; }
+  if (!category) { showToast('⚠️ Category is required', 'error'); return; }
+  if (!unit)     { showToast('⚠️ Unit is required', 'error'); return; }
+
+  document.getElementById('mat-submit-text').textContent = 'Saving…';
+  document.getElementById('mat-submit-icon').textContent = '⏳';
+
+  const res = await api('addMaterial', {
+    name, category, unit,
+    minStockLevel: document.getElementById('mat-min-stock').value || 0,
+    hsnCode:       document.getElementById('mat-hsn').value,
+    brand:         document.getElementById('mat-brand').value,
+    description:   document.getElementById('mat-description').value,
+    createdBy:     document.getElementById('mat-created-by').value || 'Admin',
+  });
+
+  document.getElementById('mat-submit-text').textContent = 'Save Material';
+  document.getElementById('mat-submit-icon').textContent = '📦';
+
+  if (res && res.success) {
+    showToast('✅ Material saved! ID: ' + res.materialId, 'success');
+    clearMasterForm();
+    loadMaterials();
+  } else {
+    showToast('❌ ' + ((res && res.error) || 'Save failed'), 'error');
+  }
+}
+
+function clearMasterForm() {
+  ['mat-name','mat-min-stock','mat-hsn','mat-brand','mat-description','mat-created-by','mat-id-hidden']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById('mat-category').value = '';
+  document.getElementById('mat-unit').value     = '';
+  document.getElementById('master-form-title').textContent = 'Add New Material';
+}
+
+function scrollToMasterForm() { document.getElementById('add-master-form').scrollIntoView({ behavior:'smooth', block:'start' }); }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  FORM: MATERIAL IN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function onINMaterialSelect() {
+  const sel = document.getElementById('in-material');
+  const opt = sel.options[sel.selectedIndex];
+  const matId = opt ? (opt.dataset.id || '') : '';
+  document.getElementById('in-mat-id-hidden').value        = matId;
+  document.getElementById('in-mat-id-display').textContent = matId || '—';
+  document.getElementById('in-mat-id-display').style.color = matId ? 'var(--teal)' : '';
+  if (opt && opt.dataset.unit) document.getElementById('in-unit').value = opt.dataset.unit;
+}
+
+function onINSiteSelect() {
+  const sel = document.getElementById('in-site-name');
+  const opt = sel.options[sel.selectedIndex];
+  const siteId = opt ? (opt.dataset.id || '') : '';
+  document.getElementById('in-site-id-hidden').value        = siteId;
+  document.getElementById('in-site-id-display').textContent = siteId || '—';
+  document.getElementById('in-site-id-display').style.color = siteId ? 'var(--teal)' : '';
+}
+
+function recalcIN() {
+  const qty  = parseFloat(document.getElementById('in-qty').value)  || 0;
+  const rate = parseFloat(document.getElementById('in-rate').value) || 0;
+  if (qty > 0 && rate > 0) document.getElementById('in-amount').value = (qty * rate).toFixed(2);
+  recalcINTotal();
+}
+
+function recalcINTotal() {
+  const amt = parseFloat(document.getElementById('in-amount').value) || 0;
+  const tax = parseFloat(document.getElementById('in-tax').value)    || 0;
+  document.getElementById('in-total-display').textContent = fmt(amt + tax);
+}
+
+async function submitMaterialIN() {
+  const matId  = document.getElementById('in-mat-id-hidden').value;
+  const siteId = document.getElementById('in-site-id-hidden').value;
+  const date   = document.getElementById('in-date').value;
+  const qtyIn  = parseFloat(document.getElementById('in-qty').value) || 0;
+  if (!matId)       { showToast('⚠️ Select a material', 'error'); return; }
+  if (!siteId)      { showToast('⚠️ Select a site', 'error'); return; }
+  if (!date)        { showToast('⚠️ Date is required', 'error'); return; }
+  if (qtyIn <= 0)   { showToast('⚠️ Qty IN must be > 0', 'error'); return; }
+
+  document.getElementById('in-submit-text').textContent = 'Saving…';
+  document.getElementById('in-submit-icon').textContent = '⏳';
+
+  const siteName = document.getElementById('in-site-name').value;
+  const amount   = parseFloat(document.getElementById('in-amount').value) || 0;
+  const taxAmt   = parseFloat(document.getElementById('in-tax').value)    || 0;
+
+  const res = await api('addMaterialIN', {
+    materialId: matId,
+    siteId, siteName, date,
+    unit:       document.getElementById('in-unit').value,
+    qtyIn,
+    rate:       parseFloat(document.getElementById('in-rate').value) || 0,
+    amount,
+    taxAmount:  taxAmt,
+    vendorId:   document.getElementById('in-vendor-id').value,
+    vendorName: document.getElementById('in-vendor-name').value,
+    billNo:     document.getElementById('in-bill-no').value,
+    invoiceNo:  document.getElementById('in-invoice-no').value,
+    workOrderId:document.getElementById('in-wo-id').value,
+    inStatus:   document.getElementById('in-status').value,
+    remarks:    document.getElementById('in-remarks').value,
+    receivedBy: document.getElementById('in-received-by').value,
+    createdBy:  document.getElementById('in-created-by').value || 'Admin',
+  });
+
+  document.getElementById('in-submit-text').textContent = 'Save Material IN';
+  document.getElementById('in-submit-icon').textContent = '⬇️';
+
+  if (res && res.success) {
+    showToast('✅ Material IN saved! Txn: ' + res.transactionId, 'success');
+    clearINForm();
+    loadMaterialIN();
+    loadStockSummary();
+  } else {
+    showToast('❌ ' + ((res && res.error) || 'Save failed'), 'error');
+  }
+}
+
+function clearINForm() {
+  ['in-qty','in-rate','in-amount','in-tax','in-vendor-id','in-vendor-name',
+   'in-bill-no','in-invoice-no','in-wo-id','in-received-by','in-created-by','in-remarks']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById('in-material').value   = '';
+  document.getElementById('in-site-name').value  = '';
+  document.getElementById('in-status').value     = 'Received';
+  document.getElementById('in-date').value       = new Date().toISOString().split('T')[0];
+  document.getElementById('in-mat-id-hidden').value        = '';
+  document.getElementById('in-site-id-hidden').value       = '';
+  document.getElementById('in-mat-id-display').textContent = '—';
+  document.getElementById('in-site-id-display').textContent= '—';
+  document.getElementById('in-total-display').textContent  = '₹0';
+}
+
+function scrollToINForm() { document.getElementById('add-in-form').scrollIntoView({ behavior:'smooth', block:'start' }); }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  FORM: MATERIAL OUT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function onOUTMaterialSelect() {
+  const sel = document.getElementById('out-material');
+  const opt = sel.options[sel.selectedIndex];
+  const matId = opt ? (opt.dataset.id || '') : '';
+  document.getElementById('out-mat-id-hidden').value        = matId;
+  document.getElementById('out-mat-id-display').textContent = matId || '—';
+  document.getElementById('out-mat-id-display').style.color = matId ? 'var(--teal)' : '';
+  if (opt && opt.dataset.unit) document.getElementById('out-unit').value = opt.dataset.unit;
+  updateOUTStockDisplay();
+}
+
+function onOUTSiteSelect() {
+  const sel = document.getElementById('out-site-name');
+  const opt = sel.options[sel.selectedIndex];
+  const siteId = opt ? (opt.dataset.id || '') : '';
+  document.getElementById('out-site-id-hidden').value        = siteId;
+  document.getElementById('out-site-id-display').textContent = siteId || '—';
+  document.getElementById('out-site-id-display').style.color = siteId ? 'var(--teal)' : '';
+  updateOUTStockDisplay();
+}
+
+function updateOUTStockDisplay() {
+  const matId  = document.getElementById('out-mat-id-hidden').value;
+  const siteId = document.getElementById('out-site-id-hidden').value;
+  if (!matId || !siteId) {
+    document.getElementById('out-stock-display').textContent = 'Select material + site';
+    document.getElementById('out-stock-display').style.color = 'var(--text-muted)';
+    return;
+  }
+  // Calculate from loaded data
+  const inQty  = allIN.filter(r => r.materialId === matId && r.siteId === siteId).reduce((s,r)=>s+r.qtyIn,0);
+  const outQty = allOUT.filter(r => r.materialId === matId && r.siteId === siteId).reduce((s,r)=>s+r.qtyOut,0);
+  const stock  = inQty - outQty;
+  const mat    = allMaterials.find(m => m.materialId === matId);
+  const unit   = mat ? mat.unit : '';
+  document.getElementById('out-stock-display').textContent = `${fmtN(stock)} ${unit}`;
+  document.getElementById('out-stock-display').style.color = stock <= 0 ? 'var(--red)' : stock <= (mat ? mat.minStockLevel : 0) ? 'var(--amber)' : 'var(--teal)';
+}
+
+function recalcOUT() {
+  const qty  = parseFloat(document.getElementById('out-qty').value)  || 0;
+  const rate = parseFloat(document.getElementById('out-rate').value) || 0;
+  if (qty > 0 && rate > 0) document.getElementById('out-amount').value = (qty * rate).toFixed(2);
+}
+
+async function submitMaterialOUT() {
+  const matId  = document.getElementById('out-mat-id-hidden').value;
+  const siteId = document.getElementById('out-site-id-hidden').value;
+  const date   = document.getElementById('out-date').value;
+  const qtyOut = parseFloat(document.getElementById('out-qty').value) || 0;
+  if (!matId)       { showToast('⚠️ Select a material', 'error'); return; }
+  if (!siteId)      { showToast('⚠️ Select a site', 'error'); return; }
+  if (!date)        { showToast('⚠️ Date is required', 'error'); return; }
+  if (qtyOut <= 0)  { showToast('⚠️ Qty OUT must be > 0', 'error'); return; }
+
+  document.getElementById('out-submit-text').textContent = 'Saving…';
+  document.getElementById('out-submit-icon').textContent = '⏳';
+
+  const siteName = document.getElementById('out-site-name').value;
+
+  const res = await api('addMaterialOUT', {
+    materialId: matId,
+    siteId, siteName, date,
+    unit:       document.getElementById('out-unit').value,
+    qtyOut,
+    rate:       parseFloat(document.getElementById('out-rate').value) || 0,
+    amount:     parseFloat(document.getElementById('out-amount').value) || 0,
+    purpose:    document.getElementById('out-purpose').value,
+    workOrderId:document.getElementById('out-wo-id').value,
+    issuedTo:   document.getElementById('out-issued-to').value,
+    outStatus:  document.getElementById('out-status').value,
+    remarks:    document.getElementById('out-remarks').value,
+    issuedBy:   document.getElementById('out-issued-by').value,
+    createdBy:  document.getElementById('out-created-by').value || 'Admin',
+  });
+
+  document.getElementById('out-submit-text').textContent = 'Save Material OUT';
+  document.getElementById('out-submit-icon').textContent = '⬆️';
+
+  if (res && res.success) {
+    showToast(`✅ Material OUT saved! Remaining stock: ${fmtN(res.remainingStock)}`, 'success');
+    clearOUTForm();
+    loadMaterialOUT();
+    loadStockSummary();
+  } else {
+    showToast('❌ ' + ((res && res.error) || 'Save failed — check stock availability'), 'error');
+  }
+}
+
+function clearOUTForm() {
+  ['out-qty','out-rate','out-amount','out-purpose','out-wo-id','out-issued-to','out-issued-by','out-created-by','out-remarks']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById('out-material').value   = '';
+  document.getElementById('out-site-name').value  = '';
+  document.getElementById('out-status').value     = 'Issued';
+  document.getElementById('out-date').value       = new Date().toISOString().split('T')[0];
+  document.getElementById('out-mat-id-hidden').value        = '';
+  document.getElementById('out-site-id-hidden').value       = '';
+  document.getElementById('out-mat-id-display').textContent = '—';
+  document.getElementById('out-site-id-display').textContent= '—';
+  document.getElementById('out-stock-display').textContent  = 'Select material + site';
+  document.getElementById('out-stock-display').style.color  = 'var(--text-muted)';
+}
+
+function scrollToOUTForm() { document.getElementById('add-out-form').scrollIntoView({ behavior:'smooth', block:'start' }); }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  UTILS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function emptyRow(cols, icon, text) {
+  return `<tr><td colspan="${cols}"><div class="empty-state"><div class="empty-icon">${icon}</div><div class="empty-text">${text}</div></div></td></tr>`;
+}
+function errRow(cols, msg) {
+  return `<tr><td colspan="${cols}"><div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">${msg}</div></div></td></tr>`;
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  const spaceIdx = msg.indexOf(' ');
+  document.getElementById('toast-icon').textContent = spaceIdx > -1 ? msg.slice(0, spaceIdx) : msg;
+  document.getElementById('toast-msg').textContent  = spaceIdx > -1 ? msg.slice(spaceIdx+1) : '';
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+async function refreshAll() {
+  await Promise.all([loadMaterials(), loadMaterialIN(), loadMaterialOUT()]);
+  loadStockSummary();
+  showToast('✅ Data refreshed', 'success');
+}
+
+// ── Close ledger on overlay click ─────────────────────────────
+document.getElementById('ledger-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeLedger();
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  INIT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+document.getElementById('in-date').value  = new Date().toISOString().split('T')[0];
+document.getElementById('out-date').value = new Date().toISOString().split('T')[0];
+initStaticDropdowns();
+
+// Load everything in parallel
+Promise.all([
+  loadSites(),
+  loadMaterials(),
+  loadMaterialIN(),
+  loadMaterialOUT(),
+]).then(() => {
+  loadStockSummary();
+});
+
+// Animation keyframes
+const s = document.createElement('style');
+s.textContent = `@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }`;
+document.head.appendChild(s);
+</script>
+</body>
+</html>
