@@ -1,1 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Client Receivables — ConstructMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --white: #ffffff;
+    --off-white: #f8f7f4;
+    --surface: #f0eeea;
+    --border: #e2dfd8;
+    --text: #1a1814;
+    --text-muted: #7a7670;
+    --text-light: #b0ada8;
+    --accent: #7c3aed;
+    --accent-light: #a855f7;
+    --accent-bg: #f5f3ff;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow: 0 4px 16px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 64px; display: flex; align-items: center;
+    justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm);
+  }
+  .brand {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .brand-icon {
+    width: 40px; height: 40px; border-radius: 14px;
+    background: var(--accent); display: flex; align-items: center; justify-content: center;
+    color: white; font-family: 'Fraunces', serif; font-size: 18px; font-weight: 900;
+  }
+  .brand-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; }
+  .page-title { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 900; letter-spacing: -1px; }
+  .page-desc { font-size: 14px; color: var(--text-muted); margin-top: 6px; }
+  .page-actions { display: flex; align-items: center; gap: 10px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #8b5cf6; }
+  .btn-ghost { background: var(--white); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .page-grid { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 64px); }
+  .sidebar { background: var(--white); border-right: 1px solid var(--border); padding: 28px 20px; display: flex; flex-direction: column; gap: 14px; }
+  .sidebar-section { font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 1.5px; text-transform: uppercase; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; text-decoration: none; color: var(--text); background: transparent; border: 1px solid transparent; cursor: pointer; transition: all 0.15s; }
+  .nav-item:hover { background: var(--off-white); }
+  .nav-item.active { background: var(--accent-bg); color: var(--accent); border-color: rgba(124,58,237,0.16); }
+  .nav-item-icon { width: 20px; text-align: center; }
+  .main-content { padding: 32px 40px; overflow-y: auto; }
+  .summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; margin-bottom: 28px; }
+  .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-sm); }
+  .stat-title { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .stat-value { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 900; line-height: 1; }
+  .stat-note { margin-top: 8px; font-size: 13px; color: var(--text-muted); }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 24px; }
+  .card-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .card-title { font-size: 15px; font-weight: 700; }
+  .card-subtitle { font-size: 12px; color: var(--text-muted); }
+  .card-body { padding: 24px; }
+  .fields-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; margin-bottom: 18px; }
+  .fields-grid.cols3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field.full { grid-column: 1 / -1; }
+  .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.8px; text-transform: uppercase; }
+  .field-label .req { color: var(--accent); }
+  .field-input, .field-select, .field-textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--off-white); color: var(--text); font-size: 13px; outline: none; }
+  .field-input:focus, .field-select:focus, .field-textarea:focus { border-color: var(--accent); background: var(--white); box-shadow: 0 0 0 4px rgba(124,58,237,0.08); }
+  .field-textarea { min-height: 80px; resize: vertical; }
+  .section-tabs { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; margin-bottom: 18px; }
+  .tab-button { padding: 12px 14px; background: var(--off-white); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text); text-align: center; }
+  .tab-button.active { background: var(--accent-bg); border-color: rgba(124,58,237,0.24); color: var(--accent); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+  thead th { padding: 12px 14px; text-align: left; font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 0.8px; text-transform: uppercase; background: var(--off-white); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 13px 14px; font-size: 12px; color: var(--text); border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--surface); }
+  .tag { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+  .tag.green { background: var(--green-bg); color: var(--green); }
+  .tag.blue { background: var(--blue-bg); color: var(--blue); }
+  .tag.purple { background: var(--accent-bg); color: var(--accent); }
+  .tag.amber { background: var(--amber-bg); color: var(--amber); }
+  .tag.red { background: var(--red-bg); color: var(--red); }
+  .toast { position: fixed; bottom: 24px; right: 24px; min-width: 240px; background: var(--text); color: white; padding: 16px 18px; border-radius: 16px; box-shadow: var(--shadow-lg); display: none; align-items: center; gap: 10px; z-index: 200; }
+  .toast.show { display: inline-flex; }
+  .toast.error { background: var(--red); }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="back-btn">← Back</a>
+    <div class="topbar-brand">
+      <div class="brand-icon">📦</div>
+      <div class="brand-name">ConstructMS</div>
+    </div>
+    <div class="page-breadcrumb">
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Materials</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="sync-pill"><span class="sync-dot"></span>Sheets Connected</div>
+    <a href="sites.html"     class="btn btn-ghost"   style="padding:8px 16px;font-size:12px;">🏗 Sites</a>
+    <a href="workorder.html" class="btn btn-ghost"   style="padding:8px 16px;font-size:12px;">📋 Work Orders</a>
+    <a href="expense.html"   class="btn btn-ghost"   style="padding:8px 16px;font-size:12px;">💸 Expenses</a>
+    <a href="dashboard.html" class="btn btn-primary" style="padding:8px 16px;font-size:12px;">📊 Dashboard</a>
+  </div>
+</div>
 
+<div class="body-wrap">
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Main Modules</div>
+    <a href="index.html"      class="nav-item"><span class="nav-item-icon">🏠</span> Home</a>
+    <a href="sites.html"      class="nav-item"><span class="nav-item-icon">🏗</span> Sites</a>
+    <a href="workorder.html"  class="nav-item"><span class="nav-item-icon">📋</span> Work Orders</a>
+    <a href="expense.html"    class="nav-item"><span class="nav-item-icon">💸</span> Expenses</a>
+    <a href="material.html"   class="nav-item active"><span class="nav-item-icon">📦</span> Materials <span class="nav-badge teal" id="mat-nav-count">0</span></a>
+    <a href="dashboard.html"  class="nav-item"><span class="nav-item-icon">📊</span> Dashboard</a>
+
+    <div style="margin-top:auto;padding-top:20px;border-top:1px solid var(--border);">
+      <div style="font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Stock Quick Stats</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total Materials</span><span style="font-weight:700;" id="qs-total">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Low Stock</span><span style="font-weight:700;color:var(--amber);" id="qs-low">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Out of Stock</span><span style="font-weight:700;color:var(--red);" id="qs-out">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total IN Value</span><span style="font-weight:700;color:var(--teal);" id="qs-value">—</span></div>
+      </div>
+    </div>
+  </aside>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-ghost" onclick="loadAll()">Refresh</button>
+    <button class="btn btn-primary" onclick="setupSheets()">Setup Sheets</button>
+  </div>
+</div>
+<div class="page-grid">
+  <aside class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <button class="nav-item active" id="tab-btn-clients" onclick="switchTab('clients')"><span class="nav-item-icon">👥</span>Clients</button>
+    <button class="nav-item" id="tab-btn-invoices" onclick="switchTab('invoices')"><span class="nav-item-icon">🧾</span>Invoices</button>
+    <button class="nav-item" id="tab-btn-payments" onclick="switchTab('payments')"><span class="nav-item-icon">💰</span>Payments</button>
+    <button class="nav-item" id="tab-btn-creditnotes" onclick="switchTab('creditnotes')"><span class="nav-item-icon">📄</span>Credit Notes</button>
+    <button class="nav-item" id="tab-btn-summary" onclick="switchTab('summary')"><span class="nav-item-icon">📊</span>Summary</button>
+    <button class="nav-item" id="tab-btn-aging" onclick="switchTab('aging')"><span class="nav-item-icon">⏳</span>Aging</button>
+  </aside>
+  <main class="main-content">
+    <header class="page-header">
+      <div>
+        <div class="page-title">Client Receivables</div>
+        <div class="page-desc">Manage clients, invoices, payments, credit notes, ledger, and aging reports from Google Sheets.</div>
+      </div>
+    </header>
+
+    <div class="summary-grid">
+      <div class="stat-card">
+        <div class="stat-title">Clients</div>
+        <div class="stat-value" id="stat-clients">—</div>
+        <div class="stat-note">Total client records loaded.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Receivable Balance</div>
+        <div class="stat-value" id="stat-balance">—</div>
+        <div class="stat-note">Open amount owed by clients.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Overdue</div>
+        <div class="stat-value" id="stat-overdue">—</div>
+        <div class="stat-note">Total overdue receivables.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Aging Buckets</div>
+        <div class="stat-value" id="stat-buckets">—</div>
+        <div class="stat-note">Aging forward from outstanding invoices.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Module Sections</div>
+          <div class="card-subtitle">Switch between Clients, Invoices, Payments, Credit Notes, Summary and Aging reports.</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section-tabs">
+          <button class="tab-button active" id="panel-btn-clients" onclick="switchTab('clients')">Clients</button>
+          <button class="tab-button" id="panel-btn-invoices" onclick="switchTab('invoices')">Invoices</button>
+          <button class="tab-button" id="panel-btn-payments" onclick="switchTab('payments')">Payments</button>
+          <button class="tab-button" id="panel-btn-creditnotes" onclick="switchTab('creditnotes')">Credit Notes</button>
+          <button class="tab-button" id="panel-btn-summary" onclick="switchTab('summary')">Summary</button>
+        </div>
+        <div id="panel-clients" class="panel active">
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><div class="card-title">Client Master</div><div class="card-subtitle">Add new clients or search existing records.</div></div>
+            <div class="card-body">
+              <div class="fields-grid cols3">
+                <div class="field"><label class="field-label">Client Name <span class="req">*</span></label><input id="client-name" class="field-input" type="text" placeholder="Client name"/></div>
+                <div class="field"><label class="field-label">Client Type</label><select id="client-type" class="field-select"><option value="Company">Company</option><option value="Individual">Individual</option><option value="Partnership">Partnership</option><option value="LLP">LLP</option><option value="Trust">Trust</option><option value="Government">Government</option><option value="NGO">NGO</option></select></div>
+                <div class="field"><label class="field-label">Status</label><select id="client-status" class="field-select"><option value="Active">Active</option><option value="Inactive">Inactive</option><option value="Blacklisted">Blacklisted</option></select></div>
+                <div class="field"><label class="field-label">Contact Person</label><input id="client-contact" class="field-input" type="text" placeholder="Contact person"/></div>
+                <div class="field"><label class="field-label">Mobile</label><input id="client-mobile" class="field-input" type="tel" placeholder="Mobile number"/></div>
+                <div class="field"><label class="field-label">Email</label><input id="client-email" class="field-input" type="email" placeholder="Email address"/></div>
+                <div class="field full"><label class="field-label">Address</label><input id="client-address" class="field-input" type="text" placeholder="Street address"/></div>
+                <div class="field"><label class="field-label">City</label><input id="client-city" class="field-input" type="text" placeholder="City"/></div>
+                <div class="field"><label class="field-label">State</label><input id="client-state" class="field-input" type="text" placeholder="State"/></div>
+                <div class="field"><label class="field-label">PAN</label><input id="client-pan" class="field-input" type="text" placeholder="PAN"/></div>
+                <div class="field"><label class="field-label">GST Number</label><input id="client-gst" class="field-input" type="text" placeholder="GST number"/></div>
+                <div class="field"><label class="field-label">Credit Limit</label><input id="client-credit-limit" class="field-input" type="number" placeholder="Credit limit"/></div>
+                <div class="field"><label class="field-label">Credit Days</label><input id="client-credit-days" class="field-input" type="number" placeholder="Credit days"/></div>
+                <div class="field full"><label class="field-label">Remarks</label><textarea id="client-remarks" class="field-textarea" placeholder="Notes or internal remarks"></textarea></div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:10px;">
+                <button class="btn btn-ghost" onclick="clearClientForm()">Clear</button>
+                <button class="btn btn-primary" onclick="submitClient()">Save Client</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Clients List</div><div class="card-subtitle">Search and review client records.</div></div>
+            <div class="card-body">
+              <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;"><input id="client-search" class="field-input" style="width:320px;" type="search" placeholder="Search clients..." oninput="filterClients()"/><div class="tag purple" id="client-count">Loading…</div></div>
+              <div class="table-scroll"><table><thead><tr><th>#</th><th>Client ID</th><th>Name</th><th>Type</th><th>Contact</th><th>City</th><th>Status</th><th>Balance</th><th>Created By</th><th>Remarks</th></tr></thead><tbody id="clients-tbody"></tbody></table></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="panel-invoices" class="panel">
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><div class="card-title">Invoices</div><div class="card-subtitle">Create invoices and view invoice balances.</div></div>
+            <div class="card-body">
+              <div class="fields-grid cols3">
+                <div class="field"><label class="field-label">Invoice No</label><input id="invoice-no" class="field-input" type="text" placeholder="Invoice number"/></div>
+                <div class="field"><label class="field-label">Invoice Type</label><select id="invoice-type" class="field-select"><option value="Tax Invoice">Tax Invoice</option><option value="Proforma">Proforma</option><option value="Progress Bill">Progress Bill</option><option value="Final Bill">Final Bill</option><option value="Retention Release">Retention Release</option><option value="Advance">Advance</option></select></div>
+                <div class="field"><label class="field-label">Invoice Status</label><select id="invoice-status" class="field-select"><option value="Sent">Sent</option><option value="Draft">Draft</option><option value="Partially Paid">Partially Paid</option><option value="Paid">Paid</option><option value="Overdue">Overdue</option><option value="Cancelled">Cancelled</option><option value="On Hold">On Hold</option></select></div>
+                <div class="field"><label class="field-label">Client</label><select id="invoice-client" class="field-select"></select></div>
+                <div class="field"><label class="field-label">Site ID</label><input id="invoice-siteid" class="field-input" type="text" placeholder="Site ID"/></div>
+                <div class="field"><label class="field-label">Site Name</label><input id="invoice-sitename" class="field-input" type="text" placeholder="Site name"/></div>
+                <div class="field"><label class="field-label">Work Order ID</label><input id="invoice-woid" class="field-input" type="text" placeholder="Work order ID"/></div>
+                <div class="field"><label class="field-label">Invoice Date <span class="req">*</span></label><input id="invoice-date" class="field-input" type="date"/></div>
+                <div class="field"><label class="field-label">Due Date</label><input id="invoice-due-date" class="field-input" type="date"/></div>
+                <div class="field"><label class="field-label">Basic Amount</label><input id="invoice-basic" class="field-input" type="number" placeholder="0"/></div>
+                <div class="field"><label class="field-label">Tax Amount</label><input id="invoice-tax" class="field-input" type="number" placeholder="0"/></div>
+                <div class="field"><label class="field-label">TDS Amount</label><input id="invoice-tds" class="field-input" type="number" placeholder="0"/></div>
+                <div class="field"><label class="field-label">Retention Amount</label><input id="invoice-retention" class="field-input" type="number" placeholder="0"/></div>
+                <div class="field full"><label class="field-label">Milestone / Description</label><textarea id="invoice-milestone" class="field-textarea" placeholder="Milestone description"></textarea></div>
+                <div class="field full"><label class="field-label">Remarks</label><textarea id="invoice-remarks" class="field-textarea" placeholder="Invoice remarks"></textarea></div>
+                <div class="field"><label class="field-label">Approved By</label><input id="invoice-approved-by" class="field-input" type="text" placeholder="Approved by"/></div>
+                <div class="field"><label class="field-label">Created By</label><input id="invoice-created-by" class="field-input" type="text" placeholder="Created by"/></div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:10px;"><button class="btn btn-ghost" onclick="clearInvoiceForm()">Clear</button><button class="btn btn-primary" onclick="submitInvoice()">Save Invoice</button></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Invoice Register</div><div class="card-subtitle">Search invoices and review outstanding balances.</div></div>
+            <div class="card-body">
+              <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;"><input id="invoice-search" class="field-input" style="width:320px;" type="search" placeholder="Search invoices..." oninput="filterInvoices()"/><div class="tag purple" id="invoice-count">Loading…</div></div>
+              <div class="table-scroll"><table><thead><tr><th>#</th><th>Invoice ID</th><th>Invoice No</th><th>Client</th><th>Site</th><th>Date</th><th>Due</th><th>Total</th><th>Received</th><th>Balance</th><th>Status</th></tr></thead><tbody id="invoices-tbody"></tbody></table></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="panel-payments" class="panel">
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><div class="card-title">Payments</div><div class="card-subtitle">Record payments against invoices.</div></div>
+            <div class="card-body">
+              <div class="fields-grid cols3">
+                <div class="field"><label class="field-label">Invoice</label><select id="payment-invoice" class="field-select"></select></div>
+                <div class="field"><label class="field-label">Client</label><select id="payment-client" class="field-select"></select></div>
+                <div class="field"><label class="field-label">Payment Date <span class="req">*</span></label><input id="payment-date" class="field-input" type="date"/></div>
+                <div class="field"><label class="field-label">Site ID</label><input id="payment-siteid" class="field-input" type="text" placeholder="Site ID"/></div>
+                <div class="field"><label class="field-label">Site Name</label><input id="payment-sitename" class="field-input" type="text" placeholder="Site name"/></div>
+                <div class="field"><label class="field-label">Amount Received <span class="req">*</span></label><input id="payment-amount" class="field-input" type="number" placeholder="0"/></div>
+                <div class="field"><label class="field-label">Payment Mode</label><select id="payment-mode" class="field-select"><option value="Cash">Cash</option><option value="Cheque">Cheque</option><option value="NEFT">NEFT</option><option value="RTGS">RTGS</option><option value="UPI">UPI</option><option value="Bank Transfer">Bank Transfer</option><option value="DD">DD</option><option value="Online">Online</option></select></div>
+                <div class="field"><label class="field-label">Bank / UPI Ref No</label><input id="payment-ref" class="field-input" type="text" placeholder="Ref number"/></div>
+                <div class="field"><label class="field-label">TDS Deducted</label><input id="payment-tds" class="field-input" type="number" placeholder="0"/></div>
+                <div class="field"><label class="field-label">Payment Status</label><select id="payment-status" class="field-select"><option value="Received">Received</option><option value="Cleared">Cleared</option><option value="Bounced">Bounced</option><option value="Pending">Pending</option><option value="Cancelled">Cancelled</option></select></div>
+                <div class="field"><label class="field-label">Received By</label><input id="payment-received-by" class="field-input" type="text" placeholder="Received by"/></div>
+                <div class="field full"><label class="field-label">Remarks</label><textarea id="payment-remarks" class="field-textarea" placeholder="Payment notes"></textarea></div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:10px;"><button class="btn btn-ghost" onclick="clearPaymentForm()">Clear</button><button class="btn btn-primary" onclick="submitPayment()">Save Payment</button></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Payment Ledger</div><div class="card-subtitle">Review received payments.</div></div>
+            <div class="card-body">
+              <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;"><input id="payment-search" class="field-input" style="width:320px;" type="search" placeholder="Search payments..." oninput="filterPayments()"/><div class="tag purple" id="payment-count">Loading…</div></div>
+              <div class="table-scroll"><table><thead><tr><th>#</th><th>Payment ID</th><th>Invoice</th><th>Client</th><th>Date</th><th>Amount</th><th>Mode</th><th>Status</th><th>Ref</th></tr></thead><tbody id="payments-tbody"></tbody></table></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="panel-creditnotes" class="panel">
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><div class="card-title">Credit Notes</div><div class="card-subtitle">Create adjustments for invoices.</div></div>
+            <div class="card-body">
+              <div class="fields-grid cols3">
+                <div class="field"><label class="field-label">Invoice</label><select id="cn-invoice" class="field-select"></select></div>
+                <div class="field"><label class="field-label">Client</label><select id="cn-client" class="field-select"></select></div>
+                <div class="field"><label class="field-label">CN Date <span class="req">*</span></label><input id="cn-date" class="field-input" type="date"/></div>
+                <div class="field"><label class="field-label">CN Amount <span class="req">*</span></label><input id="cn-amount" class="field-input" type="number" placeholder="0"/></div>
+                <div class="field"><label class="field-label">Tax Amount</label><input id="cn-tax" class="field-input" type="number" placeholder="0"/></div>
+                <div class="field"><label class="field-label">Reason</label><select id="cn-reason" class="field-select"><option value="Work Defect">Work Defect</option><option value="Price Revision">Price Revision</option><option value="Advance Adjustment">Advance Adjustment</option><option value="Discount">Discount</option><option value="Cancellation">Cancellation</option><option value="Other">Other</option></select></div>
+                <div class="field full"><label class="field-label">Description</label><textarea id="cn-description" class="field-textarea" placeholder="Credit note description"></textarea></div>
+                <div class="field"><label class="field-label">Approved By</label><input id="cn-approved-by" class="field-input" type="text" placeholder="Approved by"/></div>
+                <div class="field"><label class="field-label">Status</label><select id="cn-status" class="field-select"><option value="Approved">Approved</option><option value="Pending">Pending</option><option value="Cancelled">Cancelled</option></select></div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:10px;"><button class="btn btn-ghost" onclick="clearCNForm()">Clear</button><button class="btn btn-primary" onclick="submitCreditNote()">Save Credit Note</button></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Credit Notes</div><div class="card-subtitle">Review all adjustments and credit notes.</div></div>
+            <div class="card-body">
+              <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;"><input id="cn-search" class="field-input" style="width:320px;" type="search" placeholder="Search credit notes..." oninput="filterCreditNotes()"/><div class="tag purple" id="cn-count">Loading…</div></div>
+              <div class="table-scroll"><table><thead><tr><th>#</th><th>CN ID</th><th>Invoice</th><th>Client</th><th>Date</th><th>Amount</th><th>Status</th><th>Reason</th></tr></thead><tbody id="cn-tbody"></tbody></table></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="panel-summary" class="panel">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Receivable Summary</div><div class="card-subtitle">Client-level receivable status and overdue summary.</div></div>
+            <div class="card-body">
+              <div class="table-scroll"><table><thead><tr><th>#</th><th>Client</th><th>Total Invoiced</th><th>Received</th><th>Credit Notes</th><th>Balance</th><th>Overdue</th><th>Status</th></tr></thead><tbody id="summary-tbody"></tbody></table></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="panel-aging" class="panel">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Aging Report</div><div class="card-subtitle">Outstanding invoices by overdue bucket.</div></div>
+            <div class="card-body">
+              <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;"><div class="tag blue">Current: <span id="aging-current">0</span></div><div class="tag amber">1–30 Days: <span id="aging-30">0</span></div><div class="tag orange">31–60 Days: <span id="aging-60">0</span></div><div class="tag purple">61–90 Days: <span id="aging-90">0</span></div><div class="tag red">90+ Days: <span id="aging-90plus">0</span></div></div>
+              <div class="table-scroll"><table><thead><tr><th>#</th><th>Invoice No</th><th>Client</th><th>Site</th><th>Due Date</th><th>Balance</th><th>Days Overdue</th><th>Bucket</th><th>Status</th></tr></thead><tbody id="aging-tbody"></tbody></table></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"><span id="toast-text"></span></div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
+let clients = [];
+let invoices = [];
+let payments = [];
+let creditNotes = [];
+let agingData = [];
+let summaryData = [];
+
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast ' + (type === 'error' ? 'error' : '');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+async function api(action, data = {}) {
+  try {
+    const params = new URLSearchParams({ action });
+    Object.entries(data).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') params.set(k, v);
+    });
+    const res = await fetch(`${API_URL}?${params.toString()}`);
+    return await res.json();
+  } catch (err) {
+    console.error('API error', action, err);
+    showToast('Unable to reach API: ' + action, 'error');
+    return null;
+  }
+}
+
+function fmt(n) {
+  return '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+}
+
+function switchTab(name) {
+  ['clients','invoices','payments','creditnotes','summary','aging'].forEach(tab => {
+    document.getElementById('panel-' + tab).classList.toggle('active', tab === name);
+    document.getElementById('panel-btn-' + tab).classList.toggle('active', tab === name);
+    document.getElementById('tab-btn-' + tab).classList.toggle('active', tab === name);
+  });
+}
+
+function updateSummaryCards() {
+  document.getElementById('stat-clients').textContent = clients.length;
+  document.getElementById('stat-balance').textContent = fmt(summaryData.reduce((s, r) => s + Number(r.currentBalance || 0), 0));
+  document.getElementById('stat-overdue').textContent = fmt(summaryData.reduce((s, r) => s + Number(r.overdueAmount || 0), 0));
+  document.getElementById('stat-buckets').textContent = agingData.length ? agingData.filter(i => i.bucket !== 'Current').length + ' overdue' : 'Loading…';
+}
+
+function renderClients(list) {
+  document.getElementById('client-count').textContent = list.length + ' clients';
+  const tbody = document.getElementById('clients-tbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-muted);">No clients found.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map((c, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${c.clientId || '—'}</td>
+      <td>${c.name || '—'}</td>
+      <td>${c.clientType || '—'}</td>
+      <td>${c.contactPerson || '—'}</td>
+      <td>${c.city || '—'}</td>
+      <td><span class="tag ${c.status === 'Active' ? 'green' : c.status === 'Blacklisted' ? 'red' : 'amber'}">${c.status || '—'}</span></td>
+      <td>${fmt(c.currentBalance || 0)}</td>
+      <td>${c.createdBy || '—'}</td>
+      <td>${c.remarks || '—'}</td>
+    </tr>`).join('');
+}
+
+function renderInvoices(list) {
+  document.getElementById('invoice-count').textContent = list.length + ' invoices';
+  const tbody = document.getElementById('invoices-tbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--text-muted);">No invoices found.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map((inv, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${inv.invoiceId || '—'}</td>
+      <td>${inv.invoiceNo || '—'}</td>
+      <td>${inv.clientName || '—'}</td>
+      <td>${inv.siteName || '—'}</td>
+      <td>${inv.invoiceDate || '—'}</td>
+      <td>${inv.dueDate || '—'}</td>
+      <td>${fmt(inv.totalAmount)}</td>
+      <td>${fmt(inv.amountReceived)}</td>
+      <td>${fmt(inv.balanceDue)}</td>
+      <td><span class="tag ${inv.invoiceStatus === 'Paid' ? 'green' : inv.invoiceStatus === 'Overdue' ? 'red' : 'amber'}">${inv.invoiceStatus || '—'}</span></td>
+    </tr>`).join('');
+}
+
+function renderPayments(list) {
+  document.getElementById('payment-count').textContent = list.length + ' payments';
+  const tbody = document.getElementById('payments-tbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-muted);">No payments found.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map((p, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${p.paymentId || '—'}</td>
+      <td>${p.invoiceNo || '—'}</td>
+      <td>${p.clientName || '—'}</td>
+      <td>${p.paymentDate || '—'}</td>
+      <td>${fmt(p.netAmount)}</td>
+      <td>${p.paymentMode || '—'}</td>
+      <td><span class="tag ${p.paymentStatus === 'Received' ? 'green' : p.paymentStatus === 'Pending' ? 'amber' : 'red'}">${p.paymentStatus || '—'}</span></td>
+      <td>${p.bankRef || '—'}</td>
+    </tr>`).join('');
+}
+
+function renderCreditNotes(list) {
+  document.getElementById('cn-count').textContent = list.length + ' credit notes';
+  const tbody = document.getElementById('cn-tbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-muted);">No credit notes found.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map((cn, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${cn.creditNoteId || '—'}</td>
+      <td>${cn.invoiceNo || '—'}</td>
+      <td>${cn.clientName || '—'}</td>
+      <td>${cn.cnDate || '—'}</td>
+      <td>${fmt(cn.totalCnAmt)}</td>
+      <td><span class="tag ${cn.status === 'Approved' ? 'green' : cn.status === 'Pending' ? 'amber' : 'red'}">${cn.status || '—'}</span></td>
+      <td>${cn.reason || '—'}</td>
+    </tr>`).join('');
+}
+
+function renderSummary(list) {
+  const tbody = document.getElementById('summary-tbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-muted);">No summary available.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map((c, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${c.clientName || '—'}</td>
+      <td>${fmt(c.totalInvoiced)}</td>
+      <td>${fmt(c.totalReceived)}</td>
+      <td>${fmt(c.totalCN)}</td>
+      <td>${fmt(c.currentBalance)}</td>
+      <td>${fmt(c.overdueAmount)}</td>
+      <td><span class="tag ${c.receivableStatus === 'Overdue' ? 'red' : c.receivableStatus === 'Nil' ? 'green' : 'blue'}">${c.receivableStatus || '—'}</span></td>
+    </tr>`).join('');
+}
+
+function renderAging(list) {
+  document.getElementById('aging-current').textContent = fmt(list.filter(i => i.bucket === 'Current').reduce((s, r) => s + Number(r.balanceDue||0), 0));
+  document.getElementById('aging-30').textContent = fmt(list.filter(i => i.bucket === '1–30 Days').reduce((s, r) => s + Number(r.balanceDue||0), 0));
+  document.getElementById('aging-60').textContent = fmt(list.filter(i => i.bucket === '31–60 Days').reduce((s, r) => s + Number(r.balanceDue||0), 0));
+  document.getElementById('aging-90').textContent = fmt(list.filter(i => i.bucket === '61–90 Days').reduce((s, r) => s + Number(r.balanceDue||0), 0));
+  document.getElementById('aging-90plus').textContent = fmt(list.filter(i => i.bucket === '90+ Days').reduce((s, r) => s + Number(r.balanceDue||0), 0));
+  const tbody = document.getElementById('aging-tbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-muted);">No aging items.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map((row, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${row.invoiceNo || '—'}</td>
+      <td>${row.clientName || '—'}</td>
+      <td>${row.siteName || '—'}</td>
+      <td>${row.dueDate || '—'}</td>
+      <td>${fmt(row.balanceDue)}</td>
+      <td>${row.daysOverdue || 0}</td>
+      <td><span class="tag ${row.bucket === 'Current' ? 'blue' : row.bucket === '1–30 Days' ? 'green' : row.bucket === '31–60 Days' ? 'amber' : row.bucket === '61–90 Days' ? 'purple' : 'red'}">${row.bucket}</span></td>
+      <td>${row.invoiceStatus || '—'}</td>
+    </tr>`).join('');
+}
+
+function populateClientOptions() {
+  const selects = ['invoice-client','payment-client','cn-client'];
+  selects.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">— Select Client —</option>' + clients.map(c => `<option value="${c.clientId}">${c.name} [${c.clientId}]</option>`).join('');
+  });
+}
+
+function populateInvoiceOptions() {
+  const selects = ['payment-invoice','cn-invoice'];
+  selects.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">— Select Invoice —</option>' + invoices.map(inv => `<option value="${inv.invoiceId}" data-client="${inv.clientId}" data-clientname="${inv.clientName}" data-siteid="${inv.siteId}" data-sitename="${inv.siteName}">${inv.invoiceNo} [${inv.invoiceId}]</option>`).join('');
+  });
+}
+
+function handleInvoiceSelect() {
+  const sel = document.getElementById('payment-invoice');
+  const opt = sel.selectedOptions[0];
+  if (!opt) return;
+  document.getElementById('payment-client').value = opt.dataset.client || '';
+  document.getElementById('payment-siteid').value = opt.dataset.siteid || '';
+  document.getElementById('payment-sitename').value = opt.dataset.sitename || '';
+  const cnSel = document.getElementById('cn-invoice');
+  Array.from(cnSel.options).forEach(option => {
+    if (option.value === sel.value) {
+      option.selected = true;
+    }
+  });
+}
+
+function handleCNInvoiceSelect() {
+  const sel = document.getElementById('cn-invoice');
+  const opt = sel.selectedOptions[0];
+  if (!opt) return;
+  document.getElementById('cn-client').value = opt.dataset.client || '';
+}
+
+async function loadClients() {
+  const data = await api('getClients');
+  if (!data) return;
+  clients = data.clients || [];
+  renderClients(clients);
+  populateClientOptions();
+}
+
+async function loadInvoices() {
+  const data = await api('getInvoices');
+  if (!data) return;
+  invoices = data.records || [];
+  renderInvoices(invoices);
+  populateInvoiceOptions();
+}
+
+async function loadPayments() {
+  const data = await api('getPayments');
+  if (!data) return;
+  payments = data.records || [];
+  renderPayments(payments);
+}
+
+async function loadCreditNotes() {
+  const data = await api('getCreditNotes');
+  if (!data) return;
+  creditNotes = data.records || [];
+  renderCreditNotes(creditNotes);
+}
+
+async function loadSummary() {
+  const data = await api('getReceivableSummary');
+  if (!data) return;
+  summaryData = data.summary || [];
+  renderSummary(summaryData);
+  updateSummaryCards();
+}
+
+async function loadAging() {
+  const data = await api('getAgingReport');
+  if (!data) return;
+  agingData = data.aging || [];
+  renderAging(agingData);
+  updateSummaryCards();
+}
+
+async function loadAll() {
+  await Promise.all([loadClients(), loadInvoices(), loadPayments(), loadCreditNotes(), loadSummary(), loadAging()]);
+}
+
+async function submitClient() {
+  const payload = {
+    name: document.getElementById('client-name').value.trim(),
+    clientType: document.getElementById('client-type').value,
+    status: document.getElementById('client-status').value,
+    contactPerson: document.getElementById('client-contact').value.trim(),
+    mobile: document.getElementById('client-mobile').value.trim(),
+    email: document.getElementById('client-email').value.trim(),
+    address: document.getElementById('client-address').value.trim(),
+    city: document.getElementById('client-city').value.trim(),
+    state: document.getElementById('client-state').value.trim(),
+    pan: document.getElementById('client-pan').value.trim(),
+    gstNumber: document.getElementById('client-gst').value.trim(),
+    creditLimit: document.getElementById('client-credit-limit').value || 0,
+    creditDays: document.getElementById('client-credit-days').value || 0,
+    remarks: document.getElementById('client-remarks').value.trim(),
+    createdBy: 'WEB'
+  };
+  if (!payload.name) { showToast('Client name is required', 'error'); return; }
+  const res = await api('addClient', payload);
+  if (!res || !res.success) { showToast(res?.error || 'Could not save client', 'error'); return; }
+  showToast('Client saved');
+  clearClientForm();
+  loadClients();
+}
+
+async function submitInvoice() {
+  const clientId = document.getElementById('invoice-client').value;
+  const payload = {
+    clientId,
+    invoiceNo: document.getElementById('invoice-no').value.trim(),
+    invoiceType: document.getElementById('invoice-type').value,
+    siteId: document.getElementById('invoice-siteid').value.trim(),
+    siteName: document.getElementById('invoice-sitename').value.trim(),
+    workOrderId: document.getElementById('invoice-woid').value.trim(),
+    invoiceDate: document.getElementById('invoice-date').value,
+    dueDate: document.getElementById('invoice-due-date').value,
+    basicAmount: document.getElementById('invoice-basic').value || 0,
+    taxAmount: document.getElementById('invoice-tax').value || 0,
+    tdsAmount: document.getElementById('invoice-tds').value || 0,
+    retentionAmount: document.getElementById('invoice-retention').value || 0,
+    invoiceStatus: document.getElementById('invoice-status').value,
+    milestone: document.getElementById('invoice-milestone').value.trim(),
+    remarks: document.getElementById('invoice-remarks').value.trim(),
+    approvedBy: document.getElementById('invoice-approved-by').value.trim(),
+    createdBy: 'WEB'
+  };
+  if (!clientId || !payload.siteId || !payload.invoiceDate || Number(payload.basicAmount) <= 0) {
+    showToast('Client, Site ID, Invoice Date and Basic Amount are required', 'error'); return;
+  }
+  const res = await api('addInvoice', payload);
+  if (!res || !res.success) { showToast(res?.error || 'Could not save invoice', 'error'); return; }
+  showToast('Invoice created');
+  clearInvoiceForm();
+  loadInvoices();
+  loadSummary();
+  loadAging();
+}
+
+async function submitPayment() {
+  const invoiceId = document.getElementById('payment-invoice').value;
+  const payload = {
+    invoiceId,
+    clientId: document.getElementById('payment-client').value,
+    siteId: document.getElementById('payment-siteid').value.trim(),
+    siteName: document.getElementById('payment-sitename').value.trim(),
+    paymentDate: document.getElementById('payment-date').value,
+    amountReceived: document.getElementById('payment-amount').value || 0,
+    paymentMode: document.getElementById('payment-mode').value,
+    bankRef: document.getElementById('payment-ref').value.trim(),
+    tdsDeducted: document.getElementById('payment-tds').value || 0,
+    paymentStatus: document.getElementById('payment-status').value,
+    remarks: document.getElementById('payment-remarks').value.trim(),
+    receivedBy: document.getElementById('payment-received-by').value.trim(),
+    createdBy: 'WEB'
+  };
+  if (!invoiceId || !payload.clientId || !payload.paymentDate || Number(payload.amountReceived) <= 0) {
+    showToast('Invoice, Client, Payment Date and Amount are required', 'error'); return;
+  }
+  const res = await api('addPayment', payload);
+  if (!res || !res.success) { showToast(res?.error || 'Could not save payment', 'error'); return; }
+  showToast('Payment recorded');
+  clearPaymentForm();
+  loadPayments();
+  loadInvoices();
+  loadSummary();
+  loadAging();
+}
+
+async function submitCreditNote() {
+  const invoiceId = document.getElementById('cn-invoice').value;
+  const payload = {
+    invoiceId,
+    clientId: document.getElementById('cn-client').value,
+    cnDate: document.getElementById('cn-date').value,
+    cnAmount: document.getElementById('cn-amount').value || 0,
+    taxAmount: document.getElementById('cn-tax').value || 0,
+    reason: document.getElementById('cn-reason').value,
+    description: document.getElementById('cn-description').value.trim(),
+    status: document.getElementById('cn-status').value,
+    approvedBy: document.getElementById('cn-approved-by').value.trim(),
+    createdBy: 'WEB'
+  };
+  if (!invoiceId || !payload.clientId || !payload.cnDate || Number(payload.cnAmount) <= 0) {
+    showToast('Invoice, Client, CN Date and CN Amount are required', 'error'); return;
+  }
+  const res = await api('addCreditNote', payload);
+  if (!res || !res.success) { showToast(res?.error || 'Could not save credit note', 'error'); return; }
+  showToast('Credit note saved');
+  clearCNForm();
+  loadCreditNotes();
+  loadInvoices();
+  loadSummary();
+  loadAging();
+}
+
+function clearClientForm() {
+  ['client-name','client-contact','client-mobile','client-email','client-address','client-city','client-state','client-pan','client-gst','client-credit-limit','client-credit-days','client-remarks'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('client-type').value = 'Company';
+  document.getElementById('client-status').value = 'Active';
+}
+
+function clearInvoiceForm() {
+  ['invoice-no','invoice-siteid','invoice-sitename','invoice-woid','invoice-date','invoice-due-date','invoice-basic','invoice-tax','invoice-tds','invoice-retention','invoice-milestone','invoice-remarks','invoice-approved-by','invoice-created-by'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('invoice-type').value = 'Tax Invoice';
+  document.getElementById('invoice-status').value = 'Sent';
+}
+
+function clearPaymentForm() {
+  ['payment-date','payment-siteid','payment-sitename','payment-amount','payment-ref','payment-tds','payment-received-by','payment-remarks'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('payment-mode').value = 'Bank Transfer';
+  document.getElementById('payment-status').value = 'Received';
+}
+
+function clearCNForm() {
+  ['cn-date','cn-amount','cn-tax','cn-description','cn-approved-by'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cn-reason').value = 'Work Defect';
+  document.getElementById('cn-status').value = 'Approved';
+}
+
+function filterClients() { const q = document.getElementById('client-search').value.toLowerCase(); renderClients(clients.filter(c => (c.name||'').toLowerCase().includes(q) || (c.clientId||'').toLowerCase().includes(q) || (c.city||'').toLowerCase().includes(q))); }
+function filterInvoices() { const q = document.getElementById('invoice-search').value.toLowerCase(); renderInvoices(invoices.filter(i => (i.invoiceNo||'').toLowerCase().includes(q) || (i.clientName||'').toLowerCase().includes(q) || (i.invoiceId||'').toLowerCase().includes(q))); }
+function filterPayments() { const q = document.getElementById('payment-search').value.toLowerCase(); renderPayments(payments.filter(p => (p.paymentId||'').toLowerCase().includes(q) || (p.invoiceNo||'').toLowerCase().includes(q) || (p.clientName||'').toLowerCase().includes(q))); }
+function filterCreditNotes() { const q = document.getElementById('cn-search').value.toLowerCase(); renderCreditNotes(creditNotes.filter(cn => (cn.creditNoteId||'').toLowerCase().includes(q) || (cn.invoiceNo||'').toLowerCase().includes(q) || (cn.clientName||'').toLowerCase().includes(q))); }
+
+function setupSheets() { api('setupClientSheets').then(res => { if (res && res.success) showToast('Client sheets are ready'); else showToast(res?.error || 'Sheet setup failed', 'error'); }); }
+
+document.getElementById('payment-invoice').addEventListener('change', handleInvoiceSelect);
+document.getElementById('cn-invoice').addEventListener('change', handleCNInvoiceSelect);
+loadAll();
+</script>
+</body>
+</html>
