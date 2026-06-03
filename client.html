@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Client Payments — ConstructMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --white: #ffffff;
+    --off-white: #f8f7f4;
+    --surface: #f0eeea;
+    --border: #e2dfd8;
+    --text: #1a1814;
+    --text-muted: #7a7670;
+    --text-light: #b0ada8;
+    --accent: #e85d26;
+    --accent-light: #ff7a45;
+    --accent-bg: #fff3ee;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.10);
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
+
+  /* TOPBAR */
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .back-btn {
+    display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+    background: var(--off-white); border: 1px solid var(--border); border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted);
+    text-decoration: none; transition: all 0.15s;
+  }
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 36px; height: 36px; background: var(--accent); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 14px; color: white;
+  }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; }
+  .page-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); }
+  .breadcrumb-sep { opacity: 0.4; }
+  .breadcrumb-current { color: var(--text); font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .sync-pill {
+    display: flex; align-items: center; gap: 7px; background: var(--green-bg);
+    border: 1px solid rgba(22,163,74,0.2); color: var(--green);
+    padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  }
+  .sync-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* LAYOUT */
+  .body-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 64px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--white); border-right: 1px solid var(--border);
+    padding: 28px 20px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .sidebar-section {
+    font-size: 10px; font-weight: 700; color: var(--text-light);
+    letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 10px 6px;
+  }
+  .sidebar-section:first-child { padding-top: 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+    cursor: pointer; text-decoration: none; font-size: 13px; font-weight: 500;
+    color: var(--text-muted); transition: all 0.15s; border: 1px solid transparent;
+  }
+  .nav-item:hover { background: var(--off-white); color: var(--text); }
+  .nav-item.active { background: var(--accent-bg); color: var(--accent); border-color: rgba(232,93,38,0.15); font-weight: 600; }
+  .nav-item-icon { font-size: 16px; width: 22px; text-align: center; }
+  .nav-badge { margin-left: auto; border-radius: 100px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+  .nav-badge.green { background: var(--green-bg); color: var(--green); }
+  .nav-badge.orange { background: var(--accent-bg); color: var(--accent); }
+
+  /* MAIN */
+  .main-content { padding: 32px 40px; overflow-y: auto; }
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; }
+  .page-eyebrow { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .page-title { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 6px; }
+  .page-desc { font-size: 14px; color: var(--text-muted); }
+  .page-actions { display: flex; gap: 10px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+    border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-light); box-shadow: 0 6px 20px rgba(232,93,38,0.3); transform: translateY(-1px); }
+  .btn-ghost { background: var(--white); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* KPI CARDS */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .kpi-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px 22px; box-shadow: var(--shadow-sm);
+  }
+  .kpi-label { font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .kpi-value { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; letter-spacing: -1px; margin-bottom: 4px; }
+  .kpi-sub { font-size: 11px; color: var(--text-muted); }
+  .kpi-card.accent { background: var(--accent); border-color: var(--accent); }
+  .kpi-card.accent .kpi-label { color: rgba(255,255,255,0.7); }
+  .kpi-card.accent .kpi-value { color: white; }
+  .kpi-card.accent .kpi-sub { color: rgba(255,255,255,0.7); }
+
+  /* SITE SELECTOR CARD */
+  .site-selector-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+    margin-bottom: 24px; box-shadow: var(--shadow-sm);
+  }
+  .site-selector-header {
+    padding: 20px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; background: var(--off-white);
+  }
+  .selector-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--accent-bg); }
+  .selector-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .selector-sub { font-size: 12px; color: var(--text-muted); }
+  .site-selector-body { padding: 24px 28px; }
+  .site-select-big {
+    width: 100%; padding: 14px 18px;
+    background: var(--off-white); border: 2px solid var(--border);
+    border-radius: 12px; font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; font-weight: 600; color: var(--text); outline: none;
+    transition: all 0.2s; appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px;
+  }
+  .site-select-big:focus { border-color: var(--accent); background-color: var(--white); box-shadow: 0 0 0 4px rgba(232,93,38,0.08); }
+
+  /* AUTO-FILL PILLS */
+  .autofill-row {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px;
+    padding: 16px; background: var(--off-white); border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .autofill-pill {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--white); border: 1px solid var(--border);
+    padding: 7px 14px; border-radius: 100px; font-size: 12px;
+  }
+  .pill-label { color: var(--text-muted); font-weight: 500; }
+  .pill-value { color: var(--text); font-weight: 700; }
+  .pill-value.accent { color: var(--accent); }
+  .pill-value.green { color: var(--green); }
+  .pill-value.red { color: var(--red); }
+
+  /* PROGRESS BAR HERO */
+  .site-progress-hero {
+    margin-top: 16px; padding: 18px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-bg), var(--white));
+    border: 1px solid rgba(232,93,38,0.15);
+    display: none;
+  }
+  .hero-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .hero-label { font-size: 12px; font-weight: 700; color: var(--text-muted); }
+  .hero-value { font-size: 14px; font-weight: 800; color: var(--accent); }
+  .hero-bar { height: 10px; background: var(--border); border-radius: 100px; overflow: hidden; }
+  .hero-fill { height: 100%; border-radius: 100px; background: var(--accent); transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1); }
+
+  /* TABLE CARD */
+  .table-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+    box-shadow: var(--shadow-sm); margin-bottom: 28px;
+  }
+  .table-header {
+    padding: 18px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .table-title { font-size: 15px; font-weight: 700; }
+  .table-count { background: var(--blue-bg); color: var(--blue); border-radius: 100px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 900px; }
+  thead th {
+    padding: 11px 14px; text-align: left;
+    font-size: 10px; font-weight: 700; color: var(--text-light);
+    letter-spacing: 0.8px; text-transform: uppercase;
+    background: var(--off-white); border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 12px 14px; font-size: 12px; color: var(--text);
+    border-bottom: 1px solid var(--border); vertical-align: middle;
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--off-white); }
+
+  .tag { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 100px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+  .tag.green  { background: var(--green-bg); color: var(--green); }
+  .tag.amber  { background: var(--amber-bg); color: var(--amber); }
+  .tag.blue   { background: var(--blue-bg); color: var(--blue); }
+  .tag.orange { background: var(--accent-bg); color: var(--accent); }
+  .tag.purple { background: var(--purple-bg); color: var(--purple); }
+
+  /* FORM CARD */
+  .form-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+    margin-bottom: 24px; box-shadow: var(--shadow-sm);
+  }
+  .form-card-header {
+    padding: 20px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; background: var(--off-white);
+  }
+  .card-header-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .card-header-icon.green-bg { background: var(--green-bg); }
+  .card-header-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .card-header-sub { font-size: 12px; color: var(--text-muted); }
+  .form-body { padding: 28px; }
+
+  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+  .fields-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .fields-grid.cols4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  .field { display: flex; flex-direction: column; gap: 7px; }
+  .field.full { grid-column: 1 / -1; }
+  .field-label { font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.8px; text-transform: uppercase; }
+  .field-label .req { color: var(--accent); margin-left: 2px; }
+
+  .input-wrap { position: relative; }
+  .field-input, .field-select, .field-textarea {
+    width: 100%; padding: 10px 14px;
+    background: var(--off-white); border: 1.5px solid var(--border);
+    border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px; color: var(--text); outline: none; transition: all 0.2s; appearance: none;
+  }
+  .field-input::placeholder { color: var(--text-light); }
+  .field-input:focus, .field-select:focus, .field-textarea:focus {
+    border-color: var(--accent); background: var(--white);
+    box-shadow: 0 0 0 4px rgba(232,93,38,0.08);
+  }
+  .field-input:disabled {
+    opacity: 0.55; cursor: not-allowed;
+    background: var(--border) !important; border-color: var(--border) !important;
+  }
+  .field-textarea { resize: vertical; min-height: 72px; }
+  .field-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+  }
+  .input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; color: var(--text-muted); pointer-events: none; }
+  .has-prefix .field-input { padding-left: 28px; }
+
+  .section-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 18px; }
+  .sd-line { flex: 1; height: 1px; background: var(--border); }
+  .sd-label { font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+
+  .form-footer {
+    padding: 18px 28px; border-top: 1px solid var(--border); background: var(--off-white);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .footer-hint { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
+
+  /* EMPTY */
+  .empty-state { text-align: center; padding: 48px 20px; }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.4; }
+  .empty-text { font-size: 13px; color: var(--text-muted); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow-lg); transform: translateY(80px); opacity: 0;
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; min-width: 240px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--text); color: white; }
+  .toast.error   { background: var(--red); color: white; }
+  .toast.info    { background: var(--blue); color: white; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  .anim { opacity:0; animation: fadeUp 0.4s ease forwards; }
+  .a1{animation-delay:0.05s} .a2{animation-delay:0.1s} .a3{animation-delay:0.15s} .a4{animation-delay:0.2s} .a5{animation-delay:0.25s}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="back-btn">← Back</a>
+    <div class="topbar-brand">
+      <div class="brand-icon">CM</div>
+      <div class="brand-name">ConstructMS</div>
+    </div>
+    <div class="page-breadcrumb">
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Client Payments</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="sync-pill"><span class="sync-dot"></span>Sheets Connected</div>
+    <a href="dashboard.html" class="btn btn-ghost" style="padding:8px 16px;font-size:12px;">📊 Dashboard</a>
+    <a href="sites.html" class="btn btn-primary" style="padding:8px 16px;font-size:12px;">🏗 Sites</a>
+  </div>
+</div>
+
+<div class="body-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Main Modules</div>
+    <a href="index.html"          class="nav-item"><span class="nav-item-icon">🏠</span> Home</a>
+    <a href="sites.html"          class="nav-item"><span class="nav-item-icon">🏗</span> Sites</a>
+    <a href="workorder.html"      class="nav-item"><span class="nav-item-icon">📋</span> Work Orders</a>
+    <a href="expense.html"        class="nav-item"><span class="nav-item-icon">💸</span> Expenses</a>
+    <a href="material.html"       class="nav-item"><span class="nav-item-icon">📦</span> Material</a>
+    <a href="client.html"         class="nav-item active"><span class="nav-item-icon">💰</span> Client Payments<span class="nav-badge green" id="nav-count">0</span></a>
+    <a href="dashboard.html"      class="nav-item"><span class="nav-item-icon">📊</span> Dashboard</a>
+
+    <!-- Quick Stats -->
+    <div style="margin-top:auto;padding-top:20px;border-top:1px solid var(--border);">
+      <div style="font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Quick Stats</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total Payments</span><span style="font-weight:700;" id="qs-total">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total Received</span><span style="font-weight:700;color:var(--green);" id="qs-received">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total Pending</span><span style="font-weight:700;color:var(--red);" id="qs-pending">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Active Sites</span><span style="font-weight:700;color:var(--accent);" id="qs-sites">—</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header anim a1">
+      <div>
+        <div class="page-eyebrow">Module 06</div>
+        <h1 class="page-title">Client Payments</h1>
+        <p class="page-desc">Track client payments received per site against budget</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-ghost" onclick="loadAll()">⟳ Refresh</button>
+        <button class="btn btn-primary" onclick="scrollToForm()">+ Record Payment</button>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-row anim a2">
+      <div class="kpi-card accent">
+        <div class="kpi-label">Total Received</div>
+        <div class="kpi-value" id="kpi-received">₹0</div>
+        <div class="kpi-sub">Across all sites</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Budget</div>
+        <div class="kpi-value" id="kpi-budget">₹0</div>
+        <div class="kpi-sub">Sum of all site budgets</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Pending Amount</div>
+        <div class="kpi-value" id="kpi-pending" style="color:var(--red);">₹0</div>
+        <div class="kpi-sub">Balance to be collected</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Payments</div>
+        <div class="kpi-value" id="kpi-count">0</div>
+        <div class="kpi-sub">Number of transactions</div>
+      </div>
+    </div>
+
+    <!-- SITE SUMMARY TABLE -->
+    <div class="table-card anim a3">
+      <div class="table-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="table-title">Site-wise Collection Summary</span>
+          <span class="table-count" id="summary-count-badge">Loading…</span>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Site ID</th>
+              <th>Site Name</th>
+              <th>Client Name</th>
+              <th>Contact</th>
+              <th>Budget</th>
+              <th>Received</th>
+              <th>Pending</th>
+              <th>Collection %</th>
+              <th>Payments</th>
+              <th>Last Payment</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="summary-tbody">
+            <tr><td colspan="12"><div class="empty-state"><div class="empty-icon">💰</div><div class="empty-text">Loading…</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SITE SELECTOR + ADD PAYMENT FORM -->
+    <div class="site-selector-card anim a4">
+      <div class="site-selector-header">
+        <div class="selector-icon">🏗</div>
+        <div>
+          <div class="selector-title">Select Site</div>
+          <div class="selector-sub">Site select karo — baaki details auto-fill ho jaayengi</div>
+        </div>
+      </div>
+      <div class="site-selector-body">
+        <select class="site-select-big" id="site-select" onchange="onSiteSelect()">
+          <option value="">— Site Select Karo —</option>
+        </select>
+
+        <!-- Auto-fill info pills -->
+        <div class="autofill-row" id="autofill-pills" style="display:none;">
+          <div class="autofill-pill">
+            <span class="pill-label">Site ID</span>
+            <span class="pill-value" id="pill-siteid">—</span>
+          </div>
+          <div class="autofill-pill">
+            <span class="pill-label">Client</span>
+            <span class="pill-value" id="pill-client">—</span>
+          </div>
+          <div class="autofill-pill">
+            <span class="pill-label">Contact</span>
+            <span class="pill-value" id="pill-contact">—</span>
+          </div>
+          <div class="autofill-pill">
+            <span class="pill-label">Budget</span>
+            <span class="pill-value accent" id="pill-budget">—</span>
+          </div>
+          <div class="autofill-pill">
+            <span class="pill-label">Received</span>
+            <span class="pill-value green" id="pill-received">—</span>
+          </div>
+          <div class="autofill-pill">
+            <span class="pill-label">Pending</span>
+            <span class="pill-value red" id="pill-pending">—</span>
+          </div>
+          <div class="autofill-pill">
+            <span class="pill-label">Status</span>
+            <span class="pill-value" id="pill-status">—</span>
+          </div>
+          <div class="autofill-pill">
+            <span class="pill-label">City</span>
+            <span class="pill-value" id="pill-city">—</span>
+          </div>
+        </div>
+
+        <!-- Progress Hero Bar -->
+        <div class="site-progress-hero" id="progress-hero">
+          <div class="hero-row">
+            <span class="hero-label">💰 Collection Progress</span>
+            <span class="hero-value" id="hero-pct">0%</span>
+          </div>
+          <div class="hero-bar">
+            <div class="hero-fill" id="hero-fill" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD PAYMENT FORM -->
+    <div id="payment-form" class="form-card anim a5">
+      <div class="form-card-header">
+        <div class="card-header-icon green-bg">💳</div>
+        <div>
+          <div class="card-header-title">Record New Payment</div>
+          <div class="card-header-sub">Site select karne ke baad payment details bharo</div>
+        </div>
+      </div>
+
+      <div class="form-body">
+
+        <!-- Auto-filled hidden fields -->
+        <input type="hidden" id="f-siteid"/>
+        <input type="hidden" id="f-sitename"/>
+        <input type="hidden" id="f-clientname"/>
+        <input type="hidden" id="f-contact"/>
+        <input type="hidden" id="f-budget"/>
+
+        <!-- Read-only info row -->
+        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🏗 Auto-filled Site Details (Read Only)</div><div class="sd-line"></div></div>
+        <div class="fields-grid cols4">
+          <div class="field">
+            <label class="field-label">Site ID</label>
+            <input class="field-input" id="disp-siteid" type="text" disabled placeholder="—"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Site Name</label>
+            <input class="field-input" id="disp-sitename" type="text" disabled placeholder="—"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Client Name</label>
+            <input class="field-input" id="disp-clientname" type="text" disabled placeholder="—"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Client Contact</label>
+            <input class="field-input" id="disp-contact" type="text" disabled placeholder="—"/>
+          </div>
+        </div>
+
+        <!-- Payment Details -->
+        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Payment Details</div><div class="sd-line"></div></div>
+        <div class="fields-grid cols3">
+          <div class="field">
+            <label class="field-label">Amount Received (₹) <span class="req">*</span></label>
+            <div class="input-wrap has-prefix">
+              <span class="input-prefix">₹</span>
+              <input class="field-input" id="f-amount" type="number" placeholder="0" min="0"/>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Payment Date <span class="req">*</span></label>
+            <input class="field-input" id="f-date" type="date"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Payment Mode <span class="req">*</span></label>
+            <select class="field-select" id="f-mode">
+              <option>Cash</option>
+              <option>NEFT</option>
+              <option>RTGS</option>
+              <option>Cheque</option>
+              <option>UPI</option>
+              <option>IMPS</option>
+              <option>DD</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Created By</label>
+            <input class="field-input" id="f-created-by" type="text" placeholder="Your name"/>
+          </div>
+          <div class="field" style="grid-column:2/-1;">
+            <label class="field-label">Remarks / Reference No.</label>
+            <input class="field-input" id="f-remarks" type="text" placeholder="e.g. UTR No., Cheque No., Invoice ref…"/>
+          </div>
+        </div>
+
+      </div>
+      <div class="form-footer">
+        <div class="footer-hint"><span>ℹ️</span> Pehle upar se site select karo — fields auto-fill ho jaayengi</div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost" onclick="clearPaymentForm()">Clear</button>
+          <button class="btn btn-primary" onclick="submitPayment()">
+            <span id="submit-icon">💳</span>
+            <span id="submit-text">Save Payment</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALL PAYMENTS TABLE -->
+    <div class="table-card anim a5">
+      <div class="table-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="table-title" id="payments-table-title">All Payments</span>
+          <span class="table-count" id="payments-count-badge">Loading…</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="payment-search" type="text" placeholder="🔍  Search site, client…"
+            style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:220px;"
+            oninput="filterPayments()"
+            onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+          <button class="btn btn-ghost" style="padding:7px 14px;font-size:12px;" onclick="showAllPayments()">Show All</button>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Payment ID</th>
+              <th>Site ID</th>
+              <th>Site Name</th>
+              <th>Client Name</th>
+              <th>Contact</th>
+              <th>Budget</th>
+              <th>Amount Received</th>
+              <th>Payment Date</th>
+              <th>Mode</th>
+              <th>Remarks</th>
+              <th>Created At</th>
+              <th>Created By</th>
+            </tr>
+          </thead>
+          <tbody id="payments-tbody">
+            <tr><td colspan="13"><div class="empty-state"><div class="empty-icon">💳</div><div class="empty-text">Loading payments…</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast success" id="toast">
+  <span id="toast-icon">✅</span>
+  <span id="toast-msg">Saved!</span>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
+
+let allSites    = [];
+let allPayments = [];
+let summaryData = [];
+
+// ── API HELPER ─────────────────────────────────────────────────
+async function api(action, data = {}) {
+  try {
+    const params = new URLSearchParams({ action, ...data });
+    const res = await fetch(`${API_URL}?${params}`);
+    return await res.json();
+  } catch(e) {
+    console.error('API Error:', e);
+    return {};
+  }
+}
+
+// ── FORMAT ─────────────────────────────────────────────────────
+const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
+const fmtCr = n => {
+  n = Number(n||0);
+  if (n >= 1e7) return '₹' + (n/1e7).toFixed(2) + ' Cr';
+  if (n >= 1e5) return '₹' + (n/1e5).toFixed(1) + ' L';
+  return '₹' + n.toLocaleString('en-IN');
+};
+
+// ── LOAD ALL DATA ──────────────────────────────────────────────
+async function loadAll() {
+  try {
+    // Load sites + payments in parallel
+    const [sitesRes, paymentsRes, summaryRes] = await Promise.all([
+      api('getSites'),
+      api('getClientPayments'),
+      api('getClientPaymentSummary'),
+    ]);
+
+    allSites    = sitesRes.sites    || [];
+    allPayments = paymentsRes.payments || [];
+    summaryData = summaryRes.summary || [];
+
+    // Populate site selector
+    populateSiteDropdown();
+
+    // Render tables
+    renderSummaryTable(summaryData);
+    renderPaymentsTable(allPayments);
+
+    // Update KPIs
+    updateKPIs(summaryRes);
+    updateSidebarStats(paymentsRes, summaryRes);
+
+    // Nav count
+    document.getElementById('nav-count').textContent = allPayments.length;
+
+  } catch(e) {
+    console.error('loadAll error:', e);
+    showToast('⚠️ Data load mein error aaya', 'error');
+  }
+}
+
+// ── POPULATE SITE DROPDOWN ─────────────────────────────────────
+function populateSiteDropdown() {
+  const select = document.getElementById('site-select');
+  const current = select.value;
+
+  // Keep first placeholder option
+  select.innerHTML = '<option value="">— Site Select Karo —</option>';
+
+  allSites.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.siteId;
+    opt.textContent = `${s.siteId} — ${s.name} (${s.clientName || '—'})`;
+    select.appendChild(opt);
+  });
+
+  if (current) select.value = current;
+}
+
+// ── ON SITE SELECT (AUTO-FILL) ─────────────────────────────────
+function onSiteSelect() {
+  const siteId = document.getElementById('site-select').value;
+  if (!siteId) {
+    hidePills();
+    clearPaymentFormFields();
+    return;
+  }
+
+  const site = allSites.find(s => s.siteId === siteId);
+  if (!site) return;
+
+  // Get existing payments for this site
+  const sitePayments = allPayments.filter(p => p.siteId === siteId);
+  const totalReceived = sitePayments.reduce((s, p) => s + Number(p.amountReceived||0), 0);
+  const pending = Math.max(0, Number(site.budget||0) - totalReceived);
+  const pct = site.budget > 0 ? Math.round(totalReceived / site.budget * 100) : 0;
+
+  // Show pills
+  document.getElementById('autofill-pills').style.display = 'flex';
+  document.getElementById('pill-siteid').textContent   = site.siteId;
+  document.getElementById('pill-client').textContent   = site.clientName || '—';
+  document.getElementById('pill-contact').textContent  = site.clientContact || '—';
+  document.getElementById('pill-budget').textContent   = fmtCr(site.budget);
+  document.getElementById('pill-received').textContent = fmtCr(totalReceived);
+  document.getElementById('pill-pending').textContent  = fmtCr(pending);
+  document.getElementById('pill-status').textContent   = site.status || '—';
+  document.getElementById('pill-city').textContent     = site.city || '—';
+
+  // Progress bar
+  const hero = document.getElementById('progress-hero');
+  hero.style.display = 'block';
+  document.getElementById('hero-pct').textContent = pct + '%';
+  setTimeout(() => {
+    document.getElementById('hero-fill').style.width = pct + '%';
+  }, 100);
+
+  // Auto-fill form hidden + display fields
+  document.getElementById('f-siteid').value      = site.siteId;
+  document.getElementById('f-sitename').value    = site.name;
+  document.getElementById('f-clientname').value  = site.clientName || '';
+  document.getElementById('f-contact').value     = site.clientContact || '';
+  document.getElementById('f-budget').value      = site.budget || 0;
+
+  document.getElementById('disp-siteid').value    = site.siteId;
+  document.getElementById('disp-sitename').value  = site.name;
+  document.getElementById('disp-clientname').value = site.clientName || '—';
+  document.getElementById('disp-contact').value   = site.clientContact || '—';
+
+  // Filter payments table to this site
+  const filtered = allPayments.filter(p => p.siteId === siteId);
+  renderPaymentsTable(filtered, `Payments — ${site.name}`);
+
+  // Scroll to form
+  document.getElementById('payment-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function hidePills() {
+  document.getElementById('autofill-pills').style.display = 'none';
+  document.getElementById('progress-hero').style.display = 'none';
+}
+
+// ── RENDER SUMMARY TABLE ───────────────────────────────────────
+function renderSummaryTable(summary) {
+  document.getElementById('summary-count-badge').textContent = summary.length + ' sites';
+  const tbody = document.getElementById('summary-tbody');
+  if (!summary.length) {
+    tbody.innerHTML = `<tr><td colspan="12"><div class="empty-state"><div class="empty-icon">💰</div><div class="empty-text">Koi payment nahi mili abhi tak</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = summary.map((s, i) => {
+    const pct = Math.min(100, s.receivedPct || 0);
+    const barColor = pct >= 90 ? '#16a34a' : pct >= 60 ? '#e85d26' : pct >= 30 ? '#2563eb' : '#dc2626';
+    const pendingColor = s.pending > 0 ? 'color:var(--red);font-weight:700;' : 'color:var(--green);font-weight:700;';
+    return `
+      <tr style="animation:fadeUp 0.3s ease ${i*0.04}s both;">
+        <td style="color:var(--text-muted);font-size:11px;">${i+1}</td>
+        <td><span style="font-size:11px;background:var(--off-white);padding:2px 7px;border-radius:6px;font-weight:600;">${s.siteId}</span></td>
+        <td style="font-weight:700;">${s.siteName}</td>
+        <td>${s.clientName || '—'}</td>
+        <td style="color:var(--text-muted);">${s.clientContact || '—'}</td>
+        <td style="font-weight:700;">${fmt(s.budget)}</td>
+        <td style="color:var(--green);font-weight:700;">${fmt(s.totalReceived)}</td>
+        <td style="${pendingColor}">${fmt(s.pending)}</td>
+        <td style="min-width:110px;">
+          <div style="font-size:11px;font-weight:700;margin-bottom:4px;">${pct}%</div>
+          <div style="background:var(--border);border-radius:100px;height:6px;overflow:hidden;">
+            <div style="width:${pct}%;height:100%;border-radius:100px;background:${barColor};transition:width 0.6s ease;"></div>
+          </div>
+        </td>
+        <td><span class="tag blue">${s.paymentCount}</span></td>
+        <td style="color:var(--text-muted);">${s.lastPayment || '—'}</td>
+        <td>
+          <button class="btn btn-ghost" style="padding:5px 10px;font-size:11px;" onclick="filterBySite('${s.siteId}')">View</button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+// ── RENDER PAYMENTS TABLE ──────────────────────────────────────
+function renderPaymentsTable(payments, title) {
+  document.getElementById('payments-table-title').textContent = title || 'All Payments';
+  document.getElementById('payments-count-badge').textContent = payments.length + ' entries';
+  const tbody = document.getElementById('payments-tbody');
+
+  if (!payments.length) {
+    tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state"><div class="empty-icon">💳</div><div class="empty-text">Is site ke liye koi payment record nahi hai abhi</div></div></td></tr>`;
+    return;
+  }
+
+  const modeColors = { Cash:'amber', NEFT:'blue', RTGS:'purple', Cheque:'orange', UPI:'green', IMPS:'green', DD:'blue', Other:'' };
+
+  tbody.innerHTML = payments.map((p, i) => `
+    <tr style="animation:fadeUp 0.3s ease ${i*0.04}s both;">
+      <td style="color:var(--text-muted);font-size:11px;">${p.serialNo || i+1}</td>
+      <td><span style="font-size:11px;background:var(--off-white);padding:2px 7px;border-radius:6px;font-weight:600;">${p.paymentId}</span></td>
+      <td style="color:var(--text-muted);font-size:11px;">${p.siteId}</td>
+      <td style="font-weight:700;">${p.siteName}</td>
+      <td>${p.clientName || '—'}</td>
+      <td style="color:var(--text-muted);">${p.clientContact || '—'}</td>
+      <td style="color:var(--text-muted);">${fmt(p.budget)}</td>
+      <td style="font-weight:700;color:var(--green);">${fmt(p.amountReceived)}</td>
+      <td style="color:var(--text-muted);">${p.paymentDate || '—'}</td>
+      <td><span class="tag ${modeColors[p.paymentMode] || 'blue'}">${p.paymentMode || '—'}</span></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${p.remarks || '—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${p.createdAt || '—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${p.createdBy || '—'}</td>
+    </tr>
+  `).join('');
+}
+
+// ── FILTER ─────────────────────────────────────────────────────
+function filterPayments() {
+  const q = document.getElementById('payment-search').value.toLowerCase();
+  const filtered = allPayments.filter(p =>
+    (p.siteName||'').toLowerCase().includes(q) ||
+    (p.clientName||'').toLowerCase().includes(q) ||
+    (p.siteId||'').toLowerCase().includes(q) ||
+    (p.paymentId||'').toLowerCase().includes(q)
+  );
+  renderPaymentsTable(filtered);
+}
+
+function filterBySite(siteId) {
+  document.getElementById('site-select').value = siteId;
+  onSiteSelect();
+}
+
+function showAllPayments() {
+  renderPaymentsTable(allPayments, 'All Payments');
+  document.getElementById('site-select').value = '';
+  hidePills();
+  clearPaymentFormFields();
+}
+
+// ── UPDATE KPIs ────────────────────────────────────────────────
+function updateKPIs(summaryRes) {
+  document.getElementById('kpi-received').textContent = fmtCr(summaryRes.grandTotal  || 0);
+  document.getElementById('kpi-budget').textContent   = fmtCr(summaryRes.grandBudget || 0);
+  document.getElementById('kpi-pending').textContent  = fmtCr(summaryRes.grandPending|| 0);
+  document.getElementById('kpi-count').textContent    = allPayments.length;
+}
+
+function updateSidebarStats(paymentsRes, summaryRes) {
+  document.getElementById('qs-total').textContent    = allPayments.length;
+  document.getElementById('qs-received').textContent = fmtCr(summaryRes.grandTotal  || 0);
+  document.getElementById('qs-pending').textContent  = fmtCr(summaryRes.grandPending|| 0);
+  document.getElementById('qs-sites').textContent    = (summaryRes.summary || []).length;
+}
+
+// ── SUBMIT PAYMENT ─────────────────────────────────────────────
+async function submitPayment() {
+  const siteId = document.getElementById('f-siteid').value;
+  const amount = document.getElementById('f-amount').value;
+  const date   = document.getElementById('f-date').value;
+
+  if (!siteId) {
+    showToast('⚠️ Pehle site select karo', 'error'); return;
+  }
+  if (!amount || Number(amount) <= 0) {
+    showToast('⚠️ Amount bharo', 'error'); return;
+  }
+  if (!date) {
+    showToast('⚠️ Payment date select karo', 'error'); return;
+  }
+
+  document.getElementById('submit-text').textContent = 'Saving…';
+  document.getElementById('submit-icon').textContent = '⏳';
+
+  const data = {
+    siteId:         document.getElementById('f-siteid').value,
+    siteName:       document.getElementById('f-sitename').value,
+    clientName:     document.getElementById('f-clientname').value,
+    clientContact:  document.getElementById('f-contact').value,
+    budget:         document.getElementById('f-budget').value,
+    amountReceived: amount,
+    paymentDate:    date,
+    paymentMode:    document.getElementById('f-mode').value,
+    remarks:        document.getElementById('f-remarks').value.trim(),
+    createdBy:      document.getElementById('f-created-by').value.trim() || 'ADMIN',
+  };
+
+  const result = await api('addClientPayment', data);
+
+  document.getElementById('submit-text').textContent = 'Save Payment';
+  document.getElementById('submit-icon').textContent = '💳';
+
+  if (result.success || result.paymentId) {
+    showToast('✅ Payment saved to Google Sheets!', 'success');
+    clearPaymentForm();
+    loadAll();
+  } else {
+    showToast('❌ Error: ' + (result.error || 'Unknown'), 'error');
+  }
+}
+
+// ── CLEAR FORM ─────────────────────────────────────────────────
+function clearPaymentFormFields() {
+  ['f-siteid','f-sitename','f-clientname','f-contact','f-budget',
+   'disp-siteid','disp-sitename','disp-clientname','disp-contact',
+   'f-amount','f-remarks','f-created-by'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('f-mode').value = 'Cash';
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+}
+
+function clearPaymentForm() {
+  clearPaymentFormFields();
+  document.getElementById('site-select').value = '';
+  hidePills();
+}
+
+function scrollToForm() {
+  document.getElementById('payment-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── TOAST ──────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  const parts = msg.split(' ');
+  document.getElementById('toast-icon').textContent = parts[0];
+  document.getElementById('toast-msg').textContent  = parts.slice(1).join(' ');
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ── INIT ───────────────────────────────────────────────────────
+document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+loadAll();
+
+const fadeStyle = document.createElement('style');
+fadeStyle.textContent = `@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }`;
+document.head.appendChild(fadeStyle);
+</script>
+</body>
+</html>
