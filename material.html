@@ -212,7 +212,7 @@
   .card-header-icon.orange { background: var(--accent-bg); }
   .card-header-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
   .card-header-sub { font-size: 12px; color: var(--text-muted); }
-  .form-body { padding: 28px; }
+  .form-body { padding: 28px; max-height: 60vh; overflow-y: auto; }
 
   .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
   .fields-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
@@ -292,7 +292,7 @@
   .sc-bar-fill.low { background: var(--amber); }
   .sc-bar-fill.out { background: var(--red); }
 
-  /* ── MODAL (Ledger) ── */
+  /* ── MODAL (GENERIC) ── */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(26,24,20,0.5); z-index: 200;
     display: flex; align-items: center; justify-content: center; padding: 20px;
@@ -353,6 +353,10 @@
     opacity: 0.42; cursor: not-allowed;
     background: var(--border) !important; border-color: var(--border) !important;
   }
+
+  /* ── FORM MODAL SIZING ── */
+  .modal-form .modal-box { max-width: 780px; }
+  .form-modal-body { padding: 28px; }
 </style>
 </head>
 <body>
@@ -460,7 +464,7 @@
               style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:200px;"
               oninput="applyMasterFilter()"
               onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
-            <button class="btn btn-primary btn-sm" onclick="scrollToMasterForm()">+ Add Material</button>
+            <button class="btn btn-primary btn-sm" onclick="openMasterModal()">+ Add Material</button>
           </div>
         </div>
         <div class="table-scroll">
@@ -476,69 +480,6 @@
               <tr><td colspan="12"><div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">Loading materials…</div></div></td></tr>
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <!-- Add Material Form -->
-      <div id="add-master-form" class="form-card anim a4">
-        <div class="form-card-header">
-          <div class="card-header-icon teal">📦</div>
-          <div>
-            <div class="card-header-title" id="master-form-title">Add New Material</div>
-            <div class="card-header-sub">Define material in master — then use it for IN/OUT transactions</div>
-          </div>
-        </div>
-        <input type="hidden" id="mat-id-hidden"/>
-        <div class="form-body">
-          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📦 Material Info</div><div class="sd-line"></div></div>
-          <div class="fields-grid cols3">
-            <div class="field">
-              <label class="field-label">Material Name <span class="req">*</span></label>
-              <input class="field-input" id="mat-name" type="text" placeholder="e.g. OPC 53 Cement"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Category <span class="req">*</span></label>
-              <select class="field-select" id="mat-category">
-                <option value="">— Select Category —</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field-label">Unit <span class="req">*</span></label>
-              <select class="field-select" id="mat-unit">
-                <option value="">— Select Unit —</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field-label">Min Stock Level</label>
-              <input class="field-input" id="mat-min-stock" type="number" min="0" placeholder="0 (alert threshold)"/>
-            </div>
-            <div class="field">
-              <label class="field-label">HSN Code</label>
-              <input class="field-input" id="mat-hsn" type="text" placeholder="e.g. 2523"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Brand / Grade</label>
-              <input class="field-input" id="mat-brand" type="text" placeholder="e.g. Ultratech / Fe500"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Created By</label>
-              <input class="field-input" id="mat-created-by" type="text" placeholder="Your name"/>
-            </div>
-            <div class="field full">
-              <label class="field-label">Description</label>
-              <textarea class="field-textarea" id="mat-description" placeholder="Additional details about this material…"></textarea>
-            </div>
-          </div>
-        </div>
-        <div class="form-footer">
-          <div class="footer-hint"><span>ℹ️</span> Fields marked <span style="color:var(--accent);font-weight:700;">*</span> are required.</div>
-          <div style="display:flex;gap:10px;">
-            <button class="btn btn-ghost" onclick="clearMasterForm()">Clear</button>
-            <button class="btn btn-primary" onclick="submitMaterial()">
-              <span id="mat-submit-icon">📦</span>
-              <span id="mat-submit-text">Save Material</span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -565,7 +506,7 @@
               style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:180px;"
               oninput="applyINFilter()"
               onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
-            <button class="btn btn-green btn-sm" onclick="scrollToINForm()">+ Add IN</button>
+            <button class="btn btn-green btn-sm" onclick="openINModal()">+ Add IN</button>
           </div>
         </div>
         <div class="table-scroll">
@@ -584,135 +525,6 @@
               <tr><td colspan="24"><div class="empty-state"><div class="empty-icon">⬇️</div><div class="empty-text">Loading Material IN records…</div></div></td></tr>
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <!-- Add IN Form -->
-      <div id="add-in-form" class="form-card">
-        <div class="form-card-header">
-          <div class="card-header-icon green">⬇️</div>
-          <div>
-            <div class="card-header-title">Add Material IN — Inward / Purchase Receipt</div>
-            <div class="card-header-sub">Record material received at site — stock will auto-increase</div>
-          </div>
-        </div>
-        <div class="form-body">
-
-          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📦 Material & Site</div><div class="sd-line"></div></div>
-          <div class="fields-grid cols4">
-            <div class="field">
-              <label class="field-label">Material <span class="req">*</span></label>
-              <select class="field-select" id="in-material" onchange="onINMaterialSelect()">
-                <option value="">— Select Material —</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field-label">Material ID <span class="auto-badge">⚡ Auto</span></label>
-              <div class="field-auto" id="in-mat-id-display">—</div>
-              <input type="hidden" id="in-mat-id-hidden"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Site Name <span class="req">*</span></label>
-              <select class="field-select" id="in-site-name" onchange="onINSiteSelect()">
-                <option value="">— Select Site —</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field-label">Site ID <span class="auto-badge">⚡ Auto</span></label>
-              <div class="field-auto" id="in-site-id-display">—</div>
-              <input type="hidden" id="in-site-id-hidden"/>
-            </div>
-          </div>
-
-          <div class="fields-grid cols4">
-            <div class="field">
-              <label class="field-label">Date <span class="req">*</span></label>
-              <input class="field-input" id="in-date" type="date"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Unit</label>
-              <select class="field-select" id="in-unit"></select>
-            </div>
-            <div class="field">
-              <label class="field-label">IN Status</label>
-              <select class="field-select" id="in-status">
-                <option>Received</option><option>Partial</option><option>Rejected</option><option>Pending</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field-label">Work Order ID</label>
-              <input class="field-input" id="in-wo-id" type="text" placeholder="Optional"/>
-            </div>
-          </div>
-
-          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Quantity & Amount</div><div class="sd-line"></div></div>
-          <div class="fields-grid cols4">
-            <div class="field">
-              <label class="field-label">Qty IN <span class="req">*</span></label>
-              <input class="field-input" id="in-qty" type="number" min="0.01" step="0.01" placeholder="0" oninput="recalcIN()"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Rate (₹)</label>
-              <input class="field-input" id="in-rate" type="number" min="0" step="0.01" placeholder="0" oninput="recalcIN()"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Amount (₹)</label>
-              <input class="field-input" id="in-amount" type="number" min="0" step="0.01" placeholder="Auto-calculated" oninput="recalcINTotal()"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Tax Amount (₹)</label>
-              <input class="field-input" id="in-tax" type="number" min="0" step="0.01" placeholder="0" oninput="recalcINTotal()"/>
-            </div>
-          </div>
-          <div style="background:var(--green-bg);border:1.5px solid rgba(22,163,74,0.25);border-radius:12px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-            <div><div style="font-size:12px;font-weight:600;color:var(--text-muted);">Total Amount</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Amount + Tax</div></div>
-            <div style="font-family:'Fraunces',serif;font-size:26px;font-weight:900;color:var(--green);" id="in-total-display">₹0</div>
-          </div>
-
-          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🏪 Vendor & Bill</div><div class="sd-line"></div></div>
-          <div class="fields-grid cols4">
-            <div class="field">
-              <label class="field-label">Vendor ID</label>
-              <input class="field-input" id="in-vendor-id" type="text" placeholder="Vendor ID"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Vendor Name</label>
-              <input class="field-input" id="in-vendor-name" type="text" placeholder="Vendor / Supplier name"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Bill No</label>
-              <input class="field-input" id="in-bill-no" type="text" placeholder="Supplier bill number"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Invoice No</label>
-              <input class="field-input" id="in-invoice-no" type="text" placeholder="Invoice reference"/>
-            </div>
-          </div>
-
-          <div class="fields-grid cols3">
-            <div class="field">
-              <label class="field-label">Received By</label>
-              <input class="field-input" id="in-received-by" type="text" placeholder="Site in-charge name"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Created By</label>
-              <input class="field-input" id="in-created-by" type="text" placeholder="Your name"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Remarks</label>
-              <input class="field-input" id="in-remarks" type="text" placeholder="Optional notes"/>
-            </div>
-          </div>
-        </div>
-        <div class="form-footer">
-          <div class="footer-hint"><span>ℹ️</span> Stock will increase automatically after saving.</div>
-          <div style="display:flex;gap:10px;">
-            <button class="btn btn-ghost" onclick="clearINForm()">Clear</button>
-            <button class="btn btn-green" onclick="submitMaterialIN()">
-              <span id="in-submit-icon">⬇️</span>
-              <span id="in-submit-text">Save Material IN</span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -739,7 +551,7 @@
               style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:180px;"
               oninput="applyOUTFilter()"
               onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
-            <button class="btn btn-orange btn-sm" onclick="scrollToOUTForm()">+ Add OUT</button>
+            <button class="btn btn-orange btn-sm" onclick="openOUTModal()">+ Add OUT</button>
           </div>
         </div>
         <div class="table-scroll">
@@ -757,123 +569,6 @@
               <tr><td colspan="20"><div class="empty-state"><div class="empty-icon">⬆️</div><div class="empty-text">Loading Material OUT records…</div></div></td></tr>
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <!-- Add OUT Form -->
-      <div id="add-out-form" class="form-card">
-        <div class="form-card-header">
-          <div class="card-header-icon orange">⬆️</div>
-          <div>
-            <div class="card-header-title">Add Material OUT — Issue / Consumption</div>
-            <div class="card-header-sub">Record material issued at site — stock will auto-decrease. Over-issuing is blocked.</div>
-          </div>
-        </div>
-        <div class="form-body">
-
-          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📦 Material & Site</div><div class="sd-line"></div></div>
-          <div class="fields-grid cols4">
-            <div class="field">
-              <label class="field-label">Material <span class="req">*</span></label>
-              <select class="field-select" id="out-material" onchange="onOUTMaterialSelect()">
-                <option value="">— Select Material —</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field-label">Material ID <span class="auto-badge">⚡ Auto</span></label>
-              <div class="field-auto" id="out-mat-id-display">—</div>
-              <input type="hidden" id="out-mat-id-hidden"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Site Name <span class="req">*</span></label>
-              <select class="field-select" id="out-site-name" onchange="onOUTSiteSelect()">
-                <option value="">— Select Site —</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field-label">Site ID <span class="auto-badge">⚡ Auto</span></label>
-              <div class="field-auto" id="out-site-id-display">—</div>
-              <input type="hidden" id="out-site-id-hidden"/>
-            </div>
-          </div>
-
-          <div class="fields-grid cols4">
-            <div class="field">
-              <label class="field-label">Date <span class="req">*</span></label>
-              <input class="field-input" id="out-date" type="date"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Unit</label>
-              <select class="field-select" id="out-unit"></select>
-            </div>
-            <div class="field">
-              <label class="field-label">OUT Status</label>
-              <select class="field-select" id="out-status">
-                <option>Issued</option><option>Returned</option><option>Wasted</option><option>Transferred</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field-label">Available Stock <span class="auto-badge">⚡ Live</span></label>
-              <div class="field-auto" id="out-stock-display" style="color:var(--teal);">Select material + site</div>
-            </div>
-          </div>
-
-          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Quantity & Amount</div><div class="sd-line"></div></div>
-          <div class="fields-grid cols3">
-            <div class="field">
-              <label class="field-label">Qty OUT <span class="req">*</span></label>
-              <input class="field-input" id="out-qty" type="number" min="0.01" step="0.01" placeholder="0" oninput="recalcOUT()"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Rate (₹)</label>
-              <input class="field-input" id="out-rate" type="number" min="0" step="0.01" placeholder="0" oninput="recalcOUT()"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Amount (₹)</label>
-              <input class="field-input" id="out-amount" type="number" min="0" step="0.01" placeholder="Auto-calculated"/>
-            </div>
-          </div>
-
-          <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🔧 Usage Details</div><div class="sd-line"></div></div>
-          <div class="fields-grid cols4">
-            <div class="field">
-              <label class="field-label">Purpose</label>
-              <input class="field-input" id="out-purpose" type="text" placeholder="Work activity / usage purpose"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Work Order ID</label>
-              <input class="field-input" id="out-wo-id" type="text" placeholder="Optional"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Issued To</label>
-              <input class="field-input" id="out-issued-to" type="text" placeholder="Labour / sub-contractor name"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Issued By</label>
-              <input class="field-input" id="out-issued-by" type="text" placeholder="Site engineer / store keeper"/>
-            </div>
-          </div>
-
-          <div class="fields-grid" style="grid-template-columns:1fr 2fr;">
-            <div class="field">
-              <label class="field-label">Created By</label>
-              <input class="field-input" id="out-created-by" type="text" placeholder="Your name"/>
-            </div>
-            <div class="field">
-              <label class="field-label">Remarks</label>
-              <input class="field-input" id="out-remarks" type="text" placeholder="Optional notes…"/>
-            </div>
-          </div>
-        </div>
-        <div class="form-footer">
-          <div class="footer-hint"><span>⚠️</span> Over-issuing is blocked — cannot issue more than available stock.</div>
-          <div style="display:flex;gap:10px;">
-            <button class="btn btn-ghost" onclick="clearOUTForm()">Clear</button>
-            <button class="btn btn-orange" onclick="submitMaterialOUT()">
-              <span id="out-submit-icon">⬆️</span>
-              <span id="out-submit-text">Save Material OUT</span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -928,6 +623,302 @@
     </div>
 
   </main>
+</div>
+
+<!-- ══ MATERIAL MASTER MODAL ══ -->
+<div class="modal-overlay modal-form" id="master-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">📦 Add New Material</div>
+      <button class="modal-close" onclick="closeMasterModal()">✕</button>
+    </div>
+    <div class="form-modal-body">
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📦 Material Info</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols3">
+        <div class="field">
+          <label class="field-label">Material Name <span class="req">*</span></label>
+          <input class="field-input" id="mat-name" type="text" placeholder="e.g. OPC 53 Cement"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Category <span class="req">*</span></label>
+          <select class="field-select" id="mat-category">
+            <option value="">— Select Category —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Unit <span class="req">*</span></label>
+          <select class="field-select" id="mat-unit">
+            <option value="">— Select Unit —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Min Stock Level</label>
+          <input class="field-input" id="mat-min-stock" type="number" min="0" placeholder="0 (alert threshold)"/>
+        </div>
+        <div class="field">
+          <label class="field-label">HSN Code</label>
+          <input class="field-input" id="mat-hsn" type="text" placeholder="e.g. 2523"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Brand / Grade</label>
+          <input class="field-input" id="mat-brand" type="text" placeholder="e.g. Ultratech / Fe500"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Created By</label>
+          <input class="field-input" id="mat-created-by" type="text" placeholder="Your name"/>
+        </div>
+        <div class="field full">
+          <label class="field-label">Description</label>
+          <textarea class="field-textarea" id="mat-description" placeholder="Additional details about this material…"></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button class="btn btn-ghost" onclick="clearMasterForm()">Clear</button>
+        <button class="btn btn-primary" onclick="submitMaterial()">
+          <span id="mat-submit-icon">📦</span>
+          <span id="mat-submit-text">Save Material</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MATERIAL IN MODAL ══ -->
+<div class="modal-overlay modal-form" id="in-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">⬇️ Material IN — Inward / Purchase</div>
+      <button class="modal-close" onclick="closeINModal()">✕</button>
+    </div>
+    <div class="form-modal-body">
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📦 Material & Site</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols4">
+        <div class="field">
+          <label class="field-label">Material <span class="req">*</span></label>
+          <select class="field-select" id="in-material" onchange="onINMaterialSelect()">
+            <option value="">— Select Material —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Material ID <span class="auto-badge">⚡ Auto</span></label>
+          <div class="field-auto" id="in-mat-id-display">—</div>
+          <input type="hidden" id="in-mat-id-hidden"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Site Name <span class="req">*</span></label>
+          <select class="field-select" id="in-site-name" onchange="onINSiteSelect()">
+            <option value="">— Select Site —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Site ID <span class="auto-badge">⚡ Auto</span></label>
+          <div class="field-auto" id="in-site-id-display">—</div>
+          <input type="hidden" id="in-site-id-hidden"/>
+        </div>
+      </div>
+
+      <div class="fields-grid cols4">
+        <div class="field">
+          <label class="field-label">Date <span class="req">*</span></label>
+          <input class="field-input" id="in-date" type="date"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Unit</label>
+          <select class="field-select" id="in-unit"></select>
+        </div>
+        <div class="field">
+          <label class="field-label">IN Status</label>
+          <select class="field-select" id="in-status">
+            <option>Received</option><option>Partial</option><option>Rejected</option><option>Pending</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Work Order ID</label>
+          <input class="field-input" id="in-wo-id" type="text" placeholder="Optional"/>
+        </div>
+      </div>
+
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Quantity & Amount</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols4">
+        <div class="field">
+          <label class="field-label">Qty IN <span class="req">*</span></label>
+          <input class="field-input" id="in-qty" type="number" min="0.01" step="0.01" placeholder="0" oninput="recalcIN()"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Rate (₹)</label>
+          <input class="field-input" id="in-rate" type="number" min="0" step="0.01" placeholder="0" oninput="recalcIN()"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Amount (₹)</label>
+          <input class="field-input" id="in-amount" type="number" min="0" step="0.01" placeholder="Auto-calculated" oninput="recalcINTotal()"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Tax Amount (₹)</label>
+          <input class="field-input" id="in-tax" type="number" min="0" step="0.01" placeholder="0" oninput="recalcINTotal()"/>
+        </div>
+      </div>
+      <div style="background:var(--green-bg);border:1.5px solid rgba(22,163,74,0.25);border-radius:12px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div><div style="font-size:12px;font-weight:600;color:var(--text-muted);">Total Amount</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Amount + Tax</div></div>
+        <div style="font-family:'Fraunces',serif;font-size:26px;font-weight:900;color:var(--green);" id="in-total-display">₹0</div>
+      </div>
+
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🏪 Vendor & Bill</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols4">
+        <div class="field">
+          <label class="field-label">Vendor ID</label>
+          <input class="field-input" id="in-vendor-id" type="text" placeholder="Vendor ID"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Vendor Name</label>
+          <input class="field-input" id="in-vendor-name" type="text" placeholder="Vendor / Supplier name"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Bill No</label>
+          <input class="field-input" id="in-bill-no" type="text" placeholder="Supplier bill number"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Invoice No</label>
+          <input class="field-input" id="in-invoice-no" type="text" placeholder="Invoice reference"/>
+        </div>
+      </div>
+
+      <div class="fields-grid cols3">
+        <div class="field">
+          <label class="field-label">Received By</label>
+          <input class="field-input" id="in-received-by" type="text" placeholder="Site in-charge name"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Created By</label>
+          <input class="field-input" id="in-created-by" type="text" placeholder="Your name"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Remarks</label>
+          <input class="field-input" id="in-remarks" type="text" placeholder="Optional notes"/>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button class="btn btn-ghost" onclick="clearINForm()">Clear</button>
+        <button class="btn btn-green" onclick="submitMaterialIN()">
+          <span id="in-submit-icon">⬇️</span>
+          <span id="in-submit-text">Save Material IN</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MATERIAL OUT MODAL ══ -->
+<div class="modal-overlay modal-form" id="out-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">⬆️ Material OUT — Issue / Consumption</div>
+      <button class="modal-close" onclick="closeOUTModal()">✕</button>
+    </div>
+    <div class="form-modal-body">
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📦 Material & Site</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols4">
+        <div class="field">
+          <label class="field-label">Material <span class="req">*</span></label>
+          <select class="field-select" id="out-material" onchange="onOUTMaterialSelect()">
+            <option value="">— Select Material —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Material ID <span class="auto-badge">⚡ Auto</span></label>
+          <div class="field-auto" id="out-mat-id-display">—</div>
+          <input type="hidden" id="out-mat-id-hidden"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Site Name <span class="req">*</span></label>
+          <select class="field-select" id="out-site-name" onchange="onOUTSiteSelect()">
+            <option value="">— Select Site —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Site ID <span class="auto-badge">⚡ Auto</span></label>
+          <div class="field-auto" id="out-site-id-display">—</div>
+          <input type="hidden" id="out-site-id-hidden"/>
+        </div>
+      </div>
+
+      <div class="fields-grid cols4">
+        <div class="field">
+          <label class="field-label">Date <span class="req">*</span></label>
+          <input class="field-input" id="out-date" type="date"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Unit</label>
+          <select class="field-select" id="out-unit"></select>
+        </div>
+        <div class="field">
+          <label class="field-label">OUT Status</label>
+          <select class="field-select" id="out-status">
+            <option>Issued</option><option>Returned</option><option>Wasted</option><option>Transferred</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Available Stock <span class="auto-badge">⚡ Live</span></label>
+          <div class="field-auto" id="out-stock-display" style="color:var(--teal);">Select material + site</div>
+        </div>
+      </div>
+
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Quantity & Amount</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols3">
+        <div class="field">
+          <label class="field-label">Qty OUT <span class="req">*</span></label>
+          <input class="field-input" id="out-qty" type="number" min="0.01" step="0.01" placeholder="0" oninput="recalcOUT()"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Rate (₹)</label>
+          <input class="field-input" id="out-rate" type="number" min="0" step="0.01" placeholder="0" oninput="recalcOUT()"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Amount (₹)</label>
+          <input class="field-input" id="out-amount" type="number" min="0" step="0.01" placeholder="Auto-calculated"/>
+        </div>
+      </div>
+
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🔧 Usage Details</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols4">
+        <div class="field">
+          <label class="field-label">Purpose</label>
+          <input class="field-input" id="out-purpose" type="text" placeholder="Work activity / usage purpose"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Work Order ID</label>
+          <input class="field-input" id="out-wo-id" type="text" placeholder="Optional"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Issued To</label>
+          <input class="field-input" id="out-issued-to" type="text" placeholder="Labour / sub-contractor name"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Issued By</label>
+          <input class="field-input" id="out-issued-by" type="text" placeholder="Site engineer / store keeper"/>
+        </div>
+      </div>
+
+      <div class="fields-grid" style="grid-template-columns:1fr 2fr;">
+        <div class="field">
+          <label class="field-label">Created By</label>
+          <input class="field-input" id="out-created-by" type="text" placeholder="Your name"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Remarks</label>
+          <input class="field-input" id="out-remarks" type="text" placeholder="Optional notes…"/>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button class="btn btn-ghost" onclick="clearOUTForm()">Clear</button>
+        <button class="btn btn-orange" onclick="submitMaterialOUT()">
+          <span id="out-submit-icon">⬆️</span>
+          <span id="out-submit-text">Save Material OUT</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ══ LEDGER MODAL ══ -->
@@ -1010,6 +1001,25 @@ async function api(action, data) {
 
 const fmt   = n => '₹' + Number(n||0).toLocaleString('en-IN');
 const fmtN  = n => Number(n||0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  MODAL HANDLERS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function openMasterModal() { document.getElementById('master-modal').classList.add('show'); }
+function closeMasterModal() { document.getElementById('master-modal').classList.remove('show'); }
+function openINModal() { document.getElementById('in-modal').classList.add('show'); }
+function closeINModal() { document.getElementById('in-modal').classList.remove('show'); }
+function openOUTModal() { document.getElementById('out-modal').classList.add('show'); }
+function closeOUTModal() { document.getElementById('out-modal').classList.remove('show'); }
+
+// Close modal on overlay click
+['master-modal','in-modal','out-modal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('show');
+    }
+  });
+});
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  TABS
@@ -1408,6 +1418,7 @@ async function submitMaterial() {
   if (res && res.success) {
     showToast('✅ Material saved! ID: ' + res.materialId, 'success');
     clearMasterForm();
+    closeMasterModal();
     loadMaterials();
   } else {
     showToast('❌ ' + ((res && res.error) || 'Save failed'), 'error');
@@ -1419,10 +1430,7 @@ function clearMasterForm() {
     .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
   document.getElementById('mat-category').value = '';
   document.getElementById('mat-unit').value     = '';
-  document.getElementById('master-form-title').textContent = 'Add New Material';
 }
-
-function scrollToMasterForm() { document.getElementById('add-master-form').scrollIntoView({ behavior:'smooth', block:'start' }); }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  FORM: MATERIAL IN
@@ -1501,6 +1509,7 @@ async function submitMaterialIN() {
   if (res && res.success) {
     showToast('✅ Material IN saved! Txn: ' + res.transactionId, 'success');
     clearINForm();
+    closeINModal();
     loadMaterialIN();
     loadStockSummary();
   } else {
@@ -1522,8 +1531,6 @@ function clearINForm() {
   document.getElementById('in-site-id-display').textContent= '—';
   document.getElementById('in-total-display').textContent  = '₹0';
 }
-
-function scrollToINForm() { document.getElementById('add-in-form').scrollIntoView({ behavior:'smooth', block:'start' }); }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  FORM: MATERIAL OUT
@@ -1610,6 +1617,7 @@ async function submitMaterialOUT() {
   if (res && res.success) {
     showToast(`✅ Material OUT saved! Remaining stock: ${fmtN(res.remainingStock)}`, 'success');
     clearOUTForm();
+    closeOUTModal();
     loadMaterialOUT();
     loadStockSummary();
   } else {
@@ -1631,8 +1639,6 @@ function clearOUTForm() {
   document.getElementById('out-stock-display').textContent  = 'Select material + site';
   document.getElementById('out-stock-display').style.color  = 'var(--text-muted)';
 }
-
-function scrollToOUTForm() { document.getElementById('add-out-form').scrollIntoView({ behavior:'smooth', block:'start' }); }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  UTILS
