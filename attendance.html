@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Attendance — ConstructMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --white:#ffffff; --off-white:#f8f7f4; --surface:#f0eeea; --border:#e2dfd8;
+    --text:#1a1814; --text-muted:#7a7670; --text-light:#b0ada8;
+    --accent:#e85d26; --accent-light:#ff7a45; --accent-bg:#fff3ee;
+    --blue:#2563eb; --blue-bg:#eff6ff;
+    --green:#16a34a; --green-bg:#f0fdf4;
+    --amber:#d97706; --amber-bg:#fffbeb;
+    --purple:#7c3aed; --purple-bg:#f5f3ff;
+    --red:#dc2626; --red-bg:#fef2f2;
+    --teal:#0d9488; --teal-bg:#f0fdfa;
+    --shadow-sm:0 1px 3px rgba(0,0,0,.06); --shadow:0 4px 16px rgba(0,0,0,.08);
+    --shadow-lg:0 20px 60px rgba(0,0,0,.10);
+    --radius:12px; --radius-lg:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--off-white);color:var(--text);min-height:100vh;}
+
+  /* TOPBAR */
+  .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+  .topbar-left{display:flex;align-items:center;gap:20px;}
+  .back-btn{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-muted);text-decoration:none;transition:all .15s;}
+  .back-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .topbar-brand{display:flex;align-items:center;gap:10px;}
+  .brand-icon{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:900;font-size:14px;color:white;}
+  .brand-name{font-family:'Fraunces',serif;font-weight:700;font-size:16px;}
+  .page-breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);}
+  .breadcrumb-current{color:var(--text);font-weight:600;}
+  .topbar-right{display:flex;align-items:center;gap:12px;}
+  .sync-pill{display:flex;align-items:center;gap:7px;background:var(--green-bg);border:1px solid rgba(22,163,74,.2);color:var(--green);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:600;}
+  .sync-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  /* LAYOUT */
+  .body-wrap{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 64px);}
+
+  /* SIDEBAR */
+  .sidebar{background:var(--white);border-right:1px solid var(--border);padding:28px 20px;display:flex;flex-direction:column;gap:4px;}
+  .sidebar-section{font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:1.5px;text-transform:uppercase;padding:14px 10px 6px;}
+  .sidebar-section:first-child{padding-top:4px;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;text-decoration:none;font-size:13px;font-weight:500;color:var(--text-muted);transition:all .15s;border:1px solid transparent;}
+  .nav-item:hover{background:var(--off-white);color:var(--text);}
+  .nav-item.active{background:var(--accent-bg);color:var(--accent);border-color:rgba(232,93,38,.15);font-weight:600;}
+  .nav-item-icon{font-size:16px;width:22px;text-align:center;}
+  .nav-badge{margin-left:auto;border-radius:100px;padding:2px 8px;font-size:10px;font-weight:700;}
+  .nav-badge.green{background:var(--green-bg);color:var(--green);}
+  .nav-badge.orange{background:var(--accent-bg);color:var(--accent);}
+  .nav-badge.teal{background:var(--teal-bg);color:var(--teal);}
+
+  /* MAIN */
+  .main-content{padding:32px 40px;overflow-y:auto;}
+  .page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;}
+  .page-eyebrow{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+  .page-title{font-family:'Fraunces',serif;font-size:32px;font-weight:900;letter-spacing:-1px;margin-bottom:6px;}
+  .page-desc{font-size:14px;color:var(--text-muted);}
+  .page-actions{display:flex;gap:10px;}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-light);box-shadow:0 6px 20px rgba(232,93,38,.3);transform:translateY(-1px);}
+  .btn-ghost{background:var(--white);color:var(--text);border:1.5px solid var(--border);}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+  .btn-teal{background:var(--teal);color:white;}
+  .btn-teal:hover{background:#0f766e;box-shadow:0 6px 20px rgba(13,148,136,.3);transform:translateY(-1px);}
+  .btn-danger{background:var(--red);color:white;padding:6px 12px;font-size:11px;}
+  .btn-danger:hover{opacity:.85;}
+
+  /* KPI CARDS */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+  .kpi-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow-sm);}
+  .kpi-label{font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .kpi-value{font-family:'Fraunces',serif;font-size:26px;font-weight:900;letter-spacing:-1px;margin-bottom:4px;}
+  .kpi-sub{font-size:11px;color:var(--text-muted);}
+  .kpi-card.accent{background:var(--accent);border-color:var(--accent);}
+  .kpi-card.accent .kpi-label{color:rgba(255,255,255,.7);}
+  .kpi-card.accent .kpi-value{color:white;}
+  .kpi-card.accent .kpi-sub{color:rgba(255,255,255,.7);}
+
+  /* SITE + DATE SELECTOR */
+  .selector-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-sm);}
+  .selector-header{padding:20px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--off-white);}
+  .selector-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .selector-icon.teal{background:var(--teal-bg);}
+  .selector-title{font-size:15px;font-weight:700;margin-bottom:2px;}
+  .selector-sub{font-size:12px;color:var(--text-muted);}
+  .selector-body{padding:24px 28px;}
+  .selector-row{display:grid;grid-template-columns:1fr 200px auto;gap:16px;align-items:end;margin-bottom:18px;}
+  .sel-field{display:flex;flex-direction:column;gap:7px;}
+  .sel-label{font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;}
+  .sel-input,.sel-select{width:100%;padding:11px 14px;background:var(--off-white);border:1.5px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none;transition:all .2s;appearance:none;}
+  .sel-input:focus,.sel-select:focus{border-color:var(--accent);background:var(--white);box-shadow:0 0 0 4px rgba(232,93,38,.08);}
+  .sel-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
+
+  /* INFO PILLS */
+  .info-pills{display:flex;flex-wrap:wrap;gap:10px;padding:14px;background:var(--off-white);border-radius:10px;border:1px solid var(--border);margin-bottom:18px;}
+  .info-pill{display:flex;align-items:center;gap:7px;background:var(--white);border:1px solid var(--border);padding:6px 12px;border-radius:100px;font-size:12px;}
+  .pill-lbl{color:var(--text-muted);font-weight:500;}
+  .pill-val{color:var(--text);font-weight:700;}
+  .pill-val.accent{color:var(--accent);}
+  .pill-val.green{color:var(--green);}
+  .pill-val.teal{color:var(--teal);}
+
+  /* ── ATTENDANCE ENTRY TABLE ── */
+  .entry-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-sm);}
+  .entry-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--off-white);}
+  .entry-title{font-size:15px;font-weight:700;}
+  .entry-date-badge{background:var(--accent);color:white;padding:5px 14px;border-radius:100px;font-size:12px;font-weight:700;}
+
+  /* Attendance input table */
+  .att-table-wrap{overflow-x:auto;}
+  .att-table{width:100%;border-collapse:collapse;min-width:900px;}
+  .att-table thead th{padding:10px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:.8px;text-transform:uppercase;background:var(--off-white);border-bottom:1px solid var(--border);white-space:nowrap;}
+  .att-table tbody td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .att-table tbody tr:last-child td{border-bottom:none;}
+  .att-table tbody tr:hover td{background:#fafaf9;}
+
+  .cell-input{width:100%;padding:7px 10px;background:var(--off-white);border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text);outline:none;transition:all .15s;}
+  .cell-input:focus{border-color:var(--accent);background:var(--white);box-shadow:0 0 0 3px rgba(232,93,38,.07);}
+  .cell-select{width:100%;padding:7px 10px;background:var(--off-white);border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text);outline:none;transition:all .15s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px;}
+  .cell-select:focus{border-color:var(--accent);background-color:var(--white);}
+  .cell-amt{font-weight:700;color:var(--green);font-size:12px;min-width:90px;text-align:right;padding-right:4px;}
+  .row-num{font-size:11px;color:var(--text-light);width:30px;text-align:center;}
+
+  .add-row-btn{display:flex;align-items:center;gap:8px;padding:10px 20px;background:var(--off-white);border:2px dashed var(--border);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);transition:all .15s;width:100%;justify-content:center;margin-top:2px;}
+  .add-row-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg);}
+
+  .entry-footer{padding:18px 24px;border-top:1px solid var(--border);background:var(--off-white);display:flex;align-items:center;justify-content:space-between;}
+  .total-row{display:flex;align-items:center;gap:16px;}
+  .total-chip{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:700;}
+  .total-chip.green{background:var(--green-bg);color:var(--green);}
+  .total-chip.teal{background:var(--teal-bg);color:var(--teal);}
+  .total-chip.amber{background:var(--amber-bg);color:var(--amber);}
+
+  /* TABLE CARD (for history) */
+  .table-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:28px;}
+  .table-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .table-title{font-size:15px;font-weight:700;}
+  .table-count{background:var(--blue-bg);color:var(--blue);border-radius:100px;padding:3px 10px;font-size:11px;font-weight:700;}
+  .table-scroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;min-width:900px;}
+  thead th{padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:.8px;text-transform:uppercase;background:var(--off-white);border-bottom:1px solid var(--border);white-space:nowrap;}
+  tbody td{padding:12px 14px;font-size:12px;color:var(--text);border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover td{background:var(--off-white);}
+
+  .tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;white-space:nowrap;}
+  .tag.green{background:var(--green-bg);color:var(--green);}
+  .tag.amber{background:var(--amber-bg);color:var(--amber);}
+  .tag.blue{background:var(--blue-bg);color:var(--blue);}
+  .tag.orange{background:var(--accent-bg);color:var(--accent);}
+  .tag.purple{background:var(--purple-bg);color:var(--purple);}
+  .tag.teal{background:var(--teal-bg);color:var(--teal);}
+  .tag.red{background:var(--red-bg);color:var(--red);}
+
+  /* DAILY SUMMARY TABLE */
+  .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
+
+  /* TABS */
+  .tabs{display:flex;gap:4px;background:var(--off-white);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:24px;}
+  .tab-btn{flex:1;padding:9px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;}
+  .tab-btn.active{background:var(--white);color:var(--accent);box-shadow:var(--shadow-sm);}
+
+  /* EMPTY */
+  .empty-state{text-align:center;padding:48px 20px;}
+  .empty-icon{font-size:36px;margin-bottom:10px;opacity:.4;}
+  .empty-text{font-size:13px;color:var(--text-muted);}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:28px;right:28px;padding:14px 20px;border-radius:var(--radius);font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-lg);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:999;min-width:240px;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.success{background:var(--text);color:white;}
+  .toast.error{background:var(--red);color:white;}
+  .toast.info{background:var(--blue);color:white;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .anim{opacity:0;animation:fadeUp .4s ease forwards;}
+  .a1{animation-delay:.05s}.a2{animation-delay:.1s}.a3{animation-delay:.15s}.a4{animation-delay:.2s}.a5{animation-delay:.25s}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="back-btn">← Back</a>
+    <div class="topbar-brand">
+      <div class="brand-icon">CM</div>
+      <div class="brand-name">ConstructMS</div>
+    </div>
+    <div class="page-breadcrumb">
+      <span style="opacity:.4;">/</span>
+      <span class="breadcrumb-current">Attendance</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="sync-pill"><span class="sync-dot"></span>Sheets Connected</div>
+    <a href="dashboard.html" class="btn btn-ghost" style="padding:8px 16px;font-size:12px;">📊 Dashboard</a>
+    <a href="sites.html" class="btn btn-primary" style="padding:8px 16px;font-size:12px;">🏗 Sites</a>
+  </div>
+</div>
+
+<div class="body-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Main Modules</div>
+    <a href="index.html"      class="nav-item"><span class="nav-item-icon">🏠</span> Home</a>
+    <a href="sites.html"      class="nav-item"><span class="nav-item-icon">🏗</span> Sites</a>
+    <a href="workorder.html"  class="nav-item"><span class="nav-item-icon">📋</span> Work Orders</a>
+    <a href="expense.html"    class="nav-item"><span class="nav-item-icon">💸</span> Expenses</a>
+    <a href="material.html"   class="nav-item"><span class="nav-item-icon">📦</span> Material</a>
+    <a href="client.html"     class="nav-item"><span class="nav-item-icon">💰</span> Client Payments</a>
+    <a href="attendance.html" class="nav-item active"><span class="nav-item-icon">👷</span> Attendance<span class="nav-badge teal" id="nav-count">0</span></a>
+    <a href="dashboard.html"  class="nav-item"><span class="nav-item-icon">📊</span> Dashboard</a>
+
+    <!-- Quick Stats -->
+    <div style="margin-top:auto;padding-top:20px;border-top:1px solid var(--border);">
+      <div style="font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Quick Stats</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total Entries</span><span style="font-weight:700;" id="qs-total">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total Present</span><span style="font-weight:700;color:var(--green);" id="qs-present">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Total Wages</span><span style="font-weight:700;color:var(--accent);" id="qs-wages">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">Today's Wages</span><span style="font-weight:700;color:var(--teal);" id="qs-today">—</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header anim a1">
+      <div>
+        <div class="page-eyebrow">Module 07</div>
+        <h1 class="page-title">Attendance & Wages</h1>
+        <p class="page-desc">Daily labour attendance aur wages tracking — site-wise</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-ghost" onclick="loadAll()">⟳ Refresh</button>
+        <button class="btn btn-teal" onclick="scrollToEntry()">+ Mark Attendance</button>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-row anim a2">
+      <div class="kpi-card accent">
+        <div class="kpi-label">Total Wages Paid</div>
+        <div class="kpi-value" id="kpi-wages">₹0</div>
+        <div class="kpi-sub">Sabhi sites, sabhi din</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Today's Wages</div>
+        <div class="kpi-value" id="kpi-today" style="color:var(--teal);">₹0</div>
+        <div class="kpi-sub" id="kpi-today-date">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Present</div>
+        <div class="kpi-value" id="kpi-present" style="color:var(--green);">0</div>
+        <div class="kpi-sub">Worker-days logged</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Absent</div>
+        <div class="kpi-value" id="kpi-absent" style="color:var(--red);">0</div>
+        <div class="kpi-sub">Worker-days missed</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs anim a3">
+      <button class="tab-btn active" onclick="switchTab('mark')">👷 Mark Attendance</button>
+      <button class="tab-btn" onclick="switchTab('history')">📋 Attendance History</button>
+      <button class="tab-btn" onclick="switchTab('daily')">📅 Daily Summary</button>
+      <button class="tab-btn" onclick="switchTab('workertype')">🔧 Worker Type Summary</button>
+    </div>
+
+    <!-- ══ TAB: MARK ATTENDANCE ══════════════════════════════ -->
+    <div id="tab-mark">
+
+      <!-- SITE + DATE SELECTOR -->
+      <div class="selector-card anim a4">
+        <div class="selector-header">
+          <div class="selector-icon teal">📅</div>
+          <div>
+            <div class="selector-title">Site aur Date Select Karo</div>
+            <div class="selector-sub">Site select karne par info auto-fill ho jaayegi</div>
+          </div>
+        </div>
+        <div class="selector-body">
+          <div class="selector-row">
+            <div class="sel-field">
+              <label class="sel-label">Site Select Karo <span style="color:var(--accent);">*</span></label>
+              <select class="sel-select" id="sel-site" onchange="onSiteChange()">
+                <option value="">— Site Select Karo —</option>
+              </select>
+            </div>
+            <div class="sel-field">
+              <label class="sel-label">Date <span style="color:var(--accent);">*</span></label>
+              <input class="sel-input" type="date" id="sel-date" onchange="onDateChange()"/>
+            </div>
+            <div class="sel-field">
+              <label class="sel-label">Created By</label>
+              <input class="sel-input" type="text" id="sel-createdby" placeholder="Your name"/>
+            </div>
+          </div>
+
+          <!-- Auto-filled site info -->
+          <div class="info-pills" id="site-info-pills" style="display:none;">
+            <div class="info-pill"><span class="pill-lbl">Site ID</span><span class="pill-val" id="pill-sid">—</span></div>
+            <div class="info-pill"><span class="pill-lbl">Client</span><span class="pill-val" id="pill-client">—</span></div>
+            <div class="info-pill"><span class="pill-lbl">City</span><span class="pill-val" id="pill-city">—</span></div>
+            <div class="info-pill"><span class="pill-lbl">Status</span><span class="pill-val teal" id="pill-status">—</span></div>
+            <div class="info-pill"><span class="pill-lbl">Manager</span><span class="pill-val" id="pill-manager">—</span></div>
+            <div class="info-pill"><span class="pill-lbl">Budget</span><span class="pill-val accent" id="pill-budget">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATTENDANCE ENTRY TABLE -->
+      <div class="entry-card anim a5" id="entry-card">
+        <div class="entry-header">
+          <div>
+            <div class="entry-title">👷 Worker Attendance Entry</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Har row ek worker type hai — present + half day + daily rate bharo</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="entry-date-badge" id="entry-date-badge">— Date —</span>
+          </div>
+        </div>
+
+        <div class="att-table-wrap">
+          <table class="att-table">
+            <thead>
+              <tr>
+                <th style="width:36px;">#</th>
+                <th style="min-width:130px;">Worker Type <span style="color:var(--accent);">*</span></th>
+                <th style="min-width:160px;">Worker Name / Group</th>
+                <th style="width:80px;">Present <span style="color:var(--accent);">*</span></th>
+                <th style="width:80px;">Absent</th>
+                <th style="width:80px;">Half Day</th>
+                <th style="width:110px;">Daily Rate (₹) <span style="color:var(--accent);">*</span></th>
+                <th style="width:110px;">Total Amount</th>
+                <th style="min-width:180px;">Remarks</th>
+                <th style="width:40px;"></th>
+              </tr>
+            </thead>
+            <tbody id="att-rows">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <button class="add-row-btn" onclick="addAttRow()">+ Row Add Karo</button>
+
+        <div class="entry-footer">
+          <div class="total-row">
+            <div class="total-chip teal">👷 Present: <span id="foot-present">0</span></div>
+            <div class="total-chip amber">🕐 Half Day: <span id="foot-half">0</span></div>
+            <div class="total-chip green">💰 Total Wages: <span id="foot-wages">₹0</span></div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-ghost" onclick="resetEntryForm()">🗑 Clear</button>
+            <button class="btn btn-teal" onclick="saveAttendance()">
+              <span id="save-icon">💾</span>
+              <span id="save-text">Save Attendance</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-mark -->
+
+    <!-- ══ TAB: HISTORY ══════════════════════════════════════ -->
+    <div id="tab-history" style="display:none;">
+      <div class="table-card anim a3">
+        <div class="table-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="table-title">All Attendance Records</span>
+            <span class="table-count" id="hist-count-badge">—</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input id="hist-search" type="text" placeholder="🔍  Site, worker type…"
+              style="padding:7px 14px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:220px;"
+              oninput="filterHistory()"
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+            <select id="hist-site-filter" onchange="filterHistory()"
+              style="padding:7px 12px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;appearance:none;width:180px;">
+              <option value="">All Sites</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Att. ID</th>
+                <th>Date</th>
+                <th>Site ID</th>
+                <th>Site Name</th>
+                <th>Worker Type</th>
+                <th>Worker Name</th>
+                <th>Present</th>
+                <th>Absent</th>
+                <th>Half Day</th>
+                <th>Daily Rate</th>
+                <th>Total Wages</th>
+                <th>Remarks</th>
+                <th>Created By</th>
+              </tr>
+            </thead>
+            <tbody id="hist-tbody">
+              <tr><td colspan="14"><div class="empty-state"><div class="empty-icon">👷</div><div class="empty-text">Loading…</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: DAILY SUMMARY ════════════════════════════════ -->
+    <div id="tab-daily" style="display:none;">
+      <div class="table-card anim a3">
+        <div class="table-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="table-title">Daily Wages Summary</span>
+            <span class="table-count" id="daily-count-badge">—</span>
+          </div>
+          <select id="daily-site-filter" onchange="loadDailySummary()"
+            style="padding:7px 12px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;appearance:none;width:220px;">
+            <option value="">All Sites</option>
+          </select>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Site Name</th>
+                <th>Total Present</th>
+                <th>Total Absent</th>
+                <th>Half Day</th>
+                <th>Total Wages</th>
+                <th>Worker Breakdown</th>
+              </tr>
+            </thead>
+            <tbody id="daily-tbody">
+              <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">Loading…</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: WORKER TYPE SUMMARY ═════════════════════════ -->
+    <div id="tab-workertype" style="display:none;">
+      <div class="table-card anim a3">
+        <div class="table-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="table-title">Worker Type Summary</span>
+          </div>
+          <select id="wt-site-filter" onchange="loadWorkerTypeSummary()"
+            style="padding:7px 12px;background:var(--off-white);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;appearance:none;width:220px;">
+            <option value="">All Sites</option>
+          </select>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Worker Type</th>
+                <th>Total Present</th>
+                <th>Total Absent</th>
+                <th>Half Days</th>
+                <th>Total Wages</th>
+                <th>Attendance Days Logged</th>
+              </tr>
+            </thead>
+            <tbody id="wt-tbody">
+              <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🔧</div><div class="empty-text">Loading…</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast success" id="toast">
+  <span id="toast-icon">✅</span>
+  <span id="toast-msg">Saved!</span>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
+
+let allSites     = [];
+let allRecords   = [];
+let rowCount     = 0;
+
+const WORKER_TYPES = [
+  'Labour','Mason','Carpenter','Plumber','Electrician',
+  'Bar Bender','Painter','Welder','Supervisor','Helper','Operator','Other'
+];
+
+const WORKER_TAG_COLOR = {
+  Labour:'orange', Mason:'blue', Carpenter:'amber', Plumber:'teal',
+  Electrician:'purple', 'Bar Bender':'orange', Painter:'green',
+  Welder:'red', Supervisor:'teal', Helper:'', Operator:'blue', Other:''
+};
+
+// ── API ────────────────────────────────────────────────────────
+async function api(action, data = {}) {
+  try {
+    const params = new URLSearchParams({ action, ...data });
+    const res = await fetch(`${API_URL}?${params}`);
+    return await res.json();
+  } catch(e) { console.error('API:', e); return {}; }
+}
+
+const fmt  = n => '₹' + Number(n||0).toLocaleString('en-IN');
+const fmtC = n => {
+  n = Number(n||0);
+  if (n >= 1e7) return '₹'+(n/1e7).toFixed(2)+' Cr';
+  if (n >= 1e5) return '₹'+(n/1e5).toFixed(1)+' L';
+  return '₹'+n.toLocaleString('en-IN');
+};
+const today = () => new Date().toISOString().split('T')[0];
+const dispDate = d => new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+
+// ── LOAD ALL ───────────────────────────────────────────────────
+async function loadAll() {
+  const [sitesRes, attRes] = await Promise.all([
+    api('getSites'),
+    api('getAttendance'),
+  ]);
+
+  allSites   = sitesRes.sites   || [];
+  allRecords = attRes.records   || [];
+
+  populateSiteDropdowns();
+  updateKPIs(attRes);
+  renderHistory(allRecords);
+  document.getElementById('nav-count').textContent = allRecords.length;
+  updateSidebarStats(attRes);
+}
+
+// ── POPULATE DROPDOWNS ─────────────────────────────────────────
+function populateSiteDropdowns() {
+  const dropdowns = ['sel-site','hist-site-filter','daily-site-filter','wt-site-filter'];
+  dropdowns.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const val = el.value;
+    // Keep first option
+    while (el.options.length > 1) el.remove(1);
+    allSites.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s.siteId;
+      o.textContent = `${s.siteId} — ${s.name}`;
+      el.appendChild(o);
+    });
+    if (val) el.value = val;
+  });
+}
+
+// ── ON SITE CHANGE (auto-fill) ─────────────────────────────────
+function onSiteChange() {
+  const siteId = document.getElementById('sel-site').value;
+  if (!siteId) {
+    document.getElementById('site-info-pills').style.display = 'none';
+    document.getElementById('entry-date-badge').textContent = '— Date —';
+    return;
+  }
+  const site = allSites.find(s => s.siteId === siteId);
+  if (!site) return;
+
+  document.getElementById('site-info-pills').style.display = 'flex';
+  document.getElementById('pill-sid').textContent     = site.siteId;
+  document.getElementById('pill-client').textContent  = site.clientName   || '—';
+  document.getElementById('pill-city').textContent    = site.city         || '—';
+  document.getElementById('pill-status').textContent  = site.status       || '—';
+  document.getElementById('pill-manager').textContent = site.siteManager  || '—';
+  document.getElementById('pill-budget').textContent  = fmtC(site.budget);
+
+  onDateChange();
+}
+
+function onDateChange() {
+  const d = document.getElementById('sel-date').value;
+  document.getElementById('entry-date-badge').textContent = d ? dispDate(d) : '— Date —';
+}
+
+// ── ATTENDANCE ROW BUILDER ─────────────────────────────────────
+function makeWorkerTypeOptions(selected) {
+  return WORKER_TYPES.map(t =>
+    `<option value="${t}" ${t === selected ? 'selected' : ''}>${t}</option>`
+  ).join('');
+}
+
+function addAttRow(defaults = {}) {
+  rowCount++;
+  const rn = rowCount;
+  const tbody = document.getElementById('att-rows');
+  const tr = document.createElement('tr');
+  tr.id = 'att-row-' + rn;
+  tr.innerHTML = `
+    <td class="row-num">${rn}</td>
+    <td>
+      <select class="cell-select" id="wtype-${rn}" onchange="recalcRow(${rn})">
+        ${makeWorkerTypeOptions(defaults.workerType || 'Labour')}
+      </select>
+    </td>
+    <td><input class="cell-input" id="wname-${rn}" type="text" placeholder="e.g. Ramesh / Group A" value="${defaults.workerName || ''}"/></td>
+    <td><input class="cell-input" id="wpresent-${rn}" type="number" min="0" value="${defaults.present || 0}" oninput="recalcRow(${rn})"/></td>
+    <td><input class="cell-input" id="wabsent-${rn}" type="number" min="0" value="${defaults.absent || 0}" oninput="recalcRow(${rn})"/></td>
+    <td><input class="cell-input" id="whalf-${rn}" type="number" min="0" value="${defaults.halfDay || 0}" oninput="recalcRow(${rn})"/></td>
+    <td>
+      <div style="position:relative;">
+        <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:var(--text-muted);">₹</span>
+        <input class="cell-input" id="wrate-${rn}" type="number" min="0" value="${defaults.dailyRate || ''}" placeholder="500" style="padding-left:22px;" oninput="recalcRow(${rn})"/>
+      </div>
+    </td>
+    <td><div class="cell-amt" id="wamt-${rn}">₹0</div></td>
+    <td><input class="cell-input" id="wremarks-${rn}" type="text" placeholder="Optional remarks…" value="${defaults.remarks || ''}"/></td>
+    <td><button class="btn btn-danger" onclick="removeRow(${rn})">✕</button></td>
+  `;
+  tbody.appendChild(tr);
+  recalcRow(rn);
+  recalcFooter();
+}
+
+function removeRow(rn) {
+  const row = document.getElementById('att-row-' + rn);
+  if (row) row.remove();
+  recalcFooter();
+}
+
+function recalcRow(rn) {
+  const present  = Number(document.getElementById('wpresent-' + rn)?.value || 0);
+  const halfDay  = Number(document.getElementById('whalf-'    + rn)?.value || 0);
+  const rate     = Number(document.getElementById('wrate-'    + rn)?.value || 0);
+  const total    = (present + halfDay * 0.5) * rate;
+  const el = document.getElementById('wamt-' + rn);
+  if (el) el.textContent = fmt(total);
+  recalcFooter();
+}
+
+function recalcFooter() {
+  const rows = document.querySelectorAll('#att-rows tr');
+  let totalPresent = 0, totalHalf = 0, totalWages = 0;
+  rows.forEach(tr => {
+    const rn = tr.id.replace('att-row-', '');
+    const present = Number(document.getElementById('wpresent-' + rn)?.value || 0);
+    const half    = Number(document.getElementById('whalf-'    + rn)?.value || 0);
+    const rate    = Number(document.getElementById('wrate-'    + rn)?.value || 0);
+    totalPresent += present;
+    totalHalf    += half;
+    totalWages   += (present + half * 0.5) * rate;
+  });
+  document.getElementById('foot-present').textContent = totalPresent;
+  document.getElementById('foot-half').textContent    = totalHalf;
+  document.getElementById('foot-wages').textContent   = fmt(totalWages);
+}
+
+function resetEntryForm() {
+  document.getElementById('att-rows').innerHTML = '';
+  rowCount = 0;
+  recalcFooter();
+  // Add 3 default rows
+  addAttRow({ workerType: 'Labour' });
+  addAttRow({ workerType: 'Mason' });
+  addAttRow({ workerType: 'Helper' });
+}
+
+// ── SAVE ATTENDANCE (Bulk) ─────────────────────────────────────
+async function saveAttendance() {
+  const siteId  = document.getElementById('sel-site').value;
+  const date    = document.getElementById('sel-date').value;
+  const createdBy = document.getElementById('sel-createdby').value.trim() || 'ADMIN';
+
+  if (!siteId) { showToast('⚠️ Pehle site select karo', 'error'); return; }
+  if (!date)   { showToast('⚠️ Date select karo', 'error'); return; }
+
+  const site = allSites.find(s => s.siteId === siteId);
+  const siteName = site ? site.name : siteId;
+
+  // Collect rows
+  const rows = document.querySelectorAll('#att-rows tr');
+  const entries = [];
+  let valid = true;
+
+  rows.forEach(tr => {
+    const rn      = tr.id.replace('att-row-','');
+    const wtype   = document.getElementById('wtype-'    + rn)?.value || 'Labour';
+    const wname   = document.getElementById('wname-'    + rn)?.value || '';
+    const present = Number(document.getElementById('wpresent-' + rn)?.value || 0);
+    const absent  = Number(document.getElementById('wabsent-'  + rn)?.value || 0);
+    const half    = Number(document.getElementById('whalf-'    + rn)?.value || 0);
+    const rate    = Number(document.getElementById('wrate-'    + rn)?.value || 0);
+    const remarks = document.getElementById('wremarks-' + rn)?.value || '';
+
+    if (rate <= 0) { showToast('⚠️ Sabhi rows mein daily rate bharo', 'error'); valid = false; return; }
+
+    entries.push({ workerType: wtype, workerName: wname, present, absent, halfDay: half, dailyRate: rate, remarks });
+  });
+
+  if (!valid) return;
+  if (entries.length === 0) { showToast('⚠️ Koi row nahi hai', 'error'); return; }
+
+  document.getElementById('save-text').textContent = 'Saving…';
+  document.getElementById('save-icon').textContent = '⏳';
+
+  const result = await api('addBulkAttendance', {
+    siteId,
+    siteName,
+    date,
+    createdBy,
+    entries: JSON.stringify(entries),
+  });
+
+  document.getElementById('save-text').textContent = 'Save Attendance';
+  document.getElementById('save-icon').textContent = '💾';
+
+  if (result.success) {
+    showToast(`✅ ${result.saved} entries saved! Total: ${fmt(result.grandTotal)}`, 'success');
+    loadAll();
+  } else {
+    showToast('❌ ' + (result.error || 'Error saving'), 'error');
+  }
+}
+
+// ── UPDATE KPIs ────────────────────────────────────────────────
+function updateKPIs(attRes) {
+  document.getElementById('kpi-wages').textContent   = fmtC(attRes.totalAmount  || 0);
+  document.getElementById('kpi-present').textContent = attRes.totalPresent || 0;
+  document.getElementById('kpi-absent').textContent  = attRes.totalAbsent  || 0;
+
+  const todayStr = today();
+  const todayRecs = (attRes.records || []).filter(r =>
+    String(r.rawDate || '').startsWith(todayStr)
+  );
+  const todayWages = todayRecs.reduce((s, r) => s + r.totalAmount, 0);
+  document.getElementById('kpi-today').textContent     = fmt(todayWages);
+  document.getElementById('kpi-today-date').textContent = dispDate(todayStr);
+}
+
+function updateSidebarStats(attRes) {
+  document.getElementById('qs-total').textContent   = (attRes.records || []).length;
+  document.getElementById('qs-present').textContent = attRes.totalPresent || 0;
+  document.getElementById('qs-wages').textContent   = fmtC(attRes.totalAmount || 0);
+  const todayRecs = (attRes.records || []).filter(r => String(r.rawDate||'').startsWith(today()));
+  document.getElementById('qs-today').textContent   = fmt(todayRecs.reduce((s,r)=>s+r.totalAmount,0));
+}
+
+// ── RENDER HISTORY ─────────────────────────────────────────────
+function renderHistory(records) {
+  document.getElementById('hist-count-badge').textContent = records.length + ' records';
+  const tbody = document.getElementById('hist-tbody');
+  if (!records.length) {
+    tbody.innerHTML = `<tr><td colspan="14"><div class="empty-state"><div class="empty-icon">👷</div><div class="empty-text">Koi attendance record nahi</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = records.slice().reverse().map((r, i) => `
+    <tr style="animation:fadeUp .3s ease ${i*.03}s both;">
+      <td style="color:var(--text-muted);font-size:11px;">${r.serialNo || i+1}</td>
+      <td><span style="font-size:10px;background:var(--off-white);padding:2px 7px;border-radius:6px;font-weight:600;">${r.attendanceId}</span></td>
+      <td style="font-weight:600;">${r.date}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.siteId}</td>
+      <td style="font-weight:600;">${r.siteName}</td>
+      <td><span class="tag ${WORKER_TAG_COLOR[r.workerType]||'blue'}">${r.workerType}</span></td>
+      <td>${r.workerName || '—'}</td>
+      <td><span class="tag green">${r.present}</span></td>
+      <td><span class="tag red">${r.absent}</span></td>
+      <td><span class="tag amber">${r.halfDay}</span></td>
+      <td style="color:var(--text-muted);">${fmt(r.dailyRate)}</td>
+      <td style="font-weight:700;color:var(--green);">${fmt(r.totalAmount)}</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${r.remarks||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${r.createdBy||'—'}</td>
+    </tr>
+  `).join('');
+}
+
+function filterHistory() {
+  const q      = document.getElementById('hist-search').value.toLowerCase();
+  const siteId = document.getElementById('hist-site-filter').value;
+  let filtered = allRecords;
+  if (siteId) filtered = filtered.filter(r => r.siteId === siteId);
+  if (q)      filtered = filtered.filter(r =>
+    (r.siteName||'').toLowerCase().includes(q) ||
+    (r.workerType||'').toLowerCase().includes(q) ||
+    (r.workerName||'').toLowerCase().includes(q) ||
+    (r.siteId||'').toLowerCase().includes(q)
+  );
+  renderHistory(filtered);
+}
+
+// ── DAILY SUMMARY ──────────────────────────────────────────────
+async function loadDailySummary() {
+  const siteId = document.getElementById('daily-site-filter').value;
+  const res = await api('getAttendanceDailySummary', siteId ? { siteId } : {});
+  const summary = res.summary || [];
+  document.getElementById('daily-count-badge').textContent = summary.length + ' days';
+  const tbody = document.getElementById('daily-tbody');
+  if (!summary.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">Koi data nahi</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = summary.map((s, i) => {
+    const breakdown = Object.entries(s.workerBreakdown || {})
+      .map(([t, d]) => `<span class="tag ${WORKER_TAG_COLOR[t]||'blue'}" style="margin:1px;">${t}: ${d.present}</span>`)
+      .join(' ');
+    return `
+      <tr style="animation:fadeUp .3s ease ${i*.04}s both;">
+        <td style="color:var(--text-muted);font-size:11px;">${i+1}</td>
+        <td style="font-weight:700;">${s.date}</td>
+        <td>${s.siteName || '—'}</td>
+        <td><span class="tag green">${s.totalPresent}</span></td>
+        <td><span class="tag red">${s.totalAbsent}</span></td>
+        <td><span class="tag amber">${s.totalHalfDay}</span></td>
+        <td style="font-weight:700;color:var(--green);">${fmt(s.totalWages)}</td>
+        <td style="max-width:240px;white-space:normal;">${breakdown || '—'}</td>
+      </tr>`;
+  }).join('');
+}
+
+// ── WORKER TYPE SUMMARY ────────────────────────────────────────
+async function loadWorkerTypeSummary() {
+  const siteId = document.getElementById('wt-site-filter').value;
+  const res = await api('getWorkerTypeSummary', siteId ? { siteId } : {});
+  const summary = res.summary || [];
+  const tbody = document.getElementById('wt-tbody');
+  if (!summary.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🔧</div><div class="empty-text">Koi data nahi</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = summary.map((s, i) => `
+    <tr style="animation:fadeUp .3s ease ${i*.04}s both;">
+      <td style="color:var(--text-muted);font-size:11px;">${i+1}</td>
+      <td><span class="tag ${WORKER_TAG_COLOR[s.workerType]||'blue'}">${s.workerType}</span></td>
+      <td><span class="tag green">${s.totalPresent}</span></td>
+      <td><span class="tag red">${s.totalAbsent}</span></td>
+      <td><span class="tag amber">${s.totalHalfDay}</span></td>
+      <td style="font-weight:700;color:var(--green);">${fmt(s.totalWages)}</td>
+      <td style="color:var(--text-muted);">${s.days} rows</td>
+    </tr>
+  `).join('');
+}
+
+// ── TABS ───────────────────────────────────────────────────────
+function switchTab(tab) {
+  ['mark','history','daily','workertype'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['mark','history','daily','workertype'][i] === tab);
+  });
+  if (tab === 'daily')      loadDailySummary();
+  if (tab === 'workertype') loadWorkerTypeSummary();
+}
+
+function scrollToEntry() {
+  switchTab('mark');
+  document.getElementById('entry-card').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ── TOAST ──────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  const parts = msg.split(' ');
+  document.getElementById('toast-icon').textContent = parts[0];
+  document.getElementById('toast-msg').textContent  = parts.slice(1).join(' ');
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── INIT ───────────────────────────────────────────────────────
+document.getElementById('sel-date').value = today();
+onDateChange();
+resetEntryForm(); // 3 default rows
+loadAll();
+
+const fadeStyle = document.createElement('style');
+fadeStyle.textContent = `@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}`;
+document.head.appendChild(fadeStyle);
+</script>
+</body>
+</html>
