@@ -9,13 +9,11 @@
   :root {
     --white: #ffffff;
     --off-white: #f8f7f4;
-    --surface: #f0eeea;
     --border: #e2dfd8;
     --text: #1a1814;
     --text-muted: #7a7670;
     --text-light: #b0ada8;
     --accent: #e85d26;
-    --accent-light: #ff7a45;
     --accent-bg: #fff3ee;
     --blue: #2563eb;
     --blue-bg: #eff6ff;
@@ -30,14 +28,14 @@
     --teal: #0891b2;
     --teal-bg: #ecfeff;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-    --shadow: 0 4px 16px rgba(0,0,0,0.08);
-    --shadow-lg: 0 20px 60px rgba(0,0,0,0.10);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.15);
     --radius: 12px;
     --radius-lg: 20px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
 
+  /* TOPBAR */
   .topbar {
     background: var(--white); border-bottom: 1px solid var(--border);
     padding: 0 32px; height: 64px;
@@ -71,8 +69,10 @@
   .sync-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
+  /* LAYOUT */
   .body-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 64px); }
 
+  /* SIDEBAR */
   .sidebar {
     background: var(--white); border-right: 1px solid var(--border);
     padding: 28px 20px; display: flex; flex-direction: column; gap: 4px;
@@ -88,15 +88,15 @@
   .nav-item.active { background: var(--green-bg); color: var(--green); border-color: rgba(22,163,74,0.15); font-weight: 600; }
   .nav-item-icon { font-size: 16px; width: 22px; text-align: center; }
   .nav-badge { margin-left: auto; border-radius: 100px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
-  .nav-badge.green  { background: var(--green-bg); color: var(--green); }
-  .nav-badge.amber  { background: var(--amber-bg); color: var(--amber); }
+  .nav-badge.amber { background: var(--accent-bg); color: var(--accent); }
 
+  /* MAIN */
   .main-content { padding: 32px 40px; overflow-y: auto; }
   .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; }
   .page-eyebrow { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
   .page-title { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 6px; }
   .page-desc { font-size: 14px; color: var(--text-muted); }
-  .page-actions { display: flex; gap: 10px; align-items: center; }
+  .page-actions { display: flex; gap: 10px; }
 
   .btn {
     display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
@@ -107,43 +107,27 @@
   .btn-primary:hover { background: #15803d; box-shadow: 0 6px 20px rgba(22,163,74,0.3); transform: translateY(-1px); }
   .btn-ghost { background: var(--white); color: var(--text); border: 1.5px solid var(--border); }
   .btn-ghost:hover { border-color: var(--green); color: var(--green); }
-  .btn-sm { padding: 6px 12px; font-size: 11px; }
+  .btn-sm { padding: 5px 10px; font-size: 11px; }
 
+  /* SUMMARY STRIP */
   .summary-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px; }
-  .sum-card {
-    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 16px 18px; box-shadow: var(--shadow-sm);
-  }
+  .sum-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow-sm); }
   .sum-label { font-size: 10px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
   .sum-val { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
-  .sum-val.green  { color: var(--green); }
-  .sum-val.orange { color: var(--accent); }
-  .sum-val.amber  { color: var(--amber); }
-  .sum-val.red    { color: var(--red); }
-  .sum-val.blue   { color: var(--blue); }
+  .sum-val.green { color: var(--green); }
+  .sum-val.amber { color: var(--amber); }
+  .sum-val.red   { color: var(--red); }
+  .sum-val.blue  { color: var(--blue); }
 
-  .table-card {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 28px;
-  }
-  .table-header {
-    padding: 16px 22px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-  }
+  /* TABLE CARD */
+  .table-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 28px; }
+  .table-header { padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .table-title { font-size: 15px; font-weight: 700; }
   .table-count { background: var(--green-bg); color: var(--green); border-radius: 100px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
   .table-scroll { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; min-width: 2200px; }
-  thead th {
-    padding: 10px 12px; text-align: left;
-    font-size: 10px; font-weight: 700; color: var(--text-light);
-    letter-spacing: 0.8px; text-transform: uppercase;
-    background: var(--off-white); border-bottom: 1px solid var(--border); white-space: nowrap;
-  }
-  tbody td {
-    padding: 11px 12px; font-size: 12px; color: var(--text);
-    border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap;
-  }
+  thead th { padding: 10px 12px; text-align: left; font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 0.8px; text-transform: uppercase; background: var(--off-white); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 11px 12px; font-size: 12px; color: var(--text); border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; }
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover td { background: var(--off-white); }
 
@@ -157,27 +141,63 @@
   .tag.teal   { background: var(--teal-bg);   color: var(--teal); }
 
   .filter-bar { display: flex; align-items: center; gap: 8px; }
-  .filter-select {
-    padding: 6px 10px; background: var(--off-white); border: 1px solid var(--border);
-    border-radius: 8px; font-size: 12px; font-family: inherit; outline: none; color: var(--text); cursor: pointer;
-  }
+  .filter-select { padding: 6px 10px; background: var(--off-white); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-family: inherit; outline: none; color: var(--text); cursor: pointer; }
   .filter-select:focus { border-color: var(--green); }
 
-  .form-card {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-sm);
+  /* ══════════════════════════════════════════
+     MODAL OVERLAY
+  ══════════════════════════════════════════ */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(26,24,20,0.55);
+    backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.22s ease;
   }
-  .form-card-header {
-    padding: 20px 28px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 12px; background: var(--off-white);
-  }
-  .card-header-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .card-header-icon.green { background: var(--green-bg); }
-  .card-header-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
-  .card-header-sub { font-size: 12px; color: var(--text-muted); }
-  .form-body { padding: 28px; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
 
-  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+  .modal-box {
+    background: var(--white); border-radius: var(--radius-lg);
+    width: 100%; max-width: 920px; max-height: 92vh;
+    display: flex; flex-direction: column;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(24px) scale(0.98);
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    overflow: hidden;
+  }
+  .modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
+
+  .modal-head {
+    padding: 20px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--off-white); flex-shrink: 0;
+  }
+  .modal-head-left { display: flex; align-items: center; gap: 14px; }
+  .modal-head-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--green-bg); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .modal-head-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+  .modal-head-sub { font-size: 12px; color: var(--text-muted); }
+  .modal-close {
+    width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: var(--white); cursor: pointer; font-size: 16px; color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0;
+  }
+  .modal-close:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
+
+  .modal-body { overflow-y: auto; padding: 28px; flex: 1; }
+  .modal-body::-webkit-scrollbar { width: 5px; }
+  .modal-body::-webkit-scrollbar-track { background: transparent; }
+  .modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+  .modal-foot {
+    padding: 16px 28px; border-top: 1px solid var(--border); background: var(--off-white);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0;
+  }
+  .footer-hint { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
+
+  /* FORM FIELDS */
+  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
   .fields-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
   .fields-grid.cols4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
   .fields-grid.cols5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
@@ -188,10 +208,9 @@
 
   .input-wrap { position: relative; }
   .field-input, .field-select, .field-textarea {
-    width: 100%; padding: 10px 14px;
-    background: var(--off-white); border: 1.5px solid var(--border);
-    border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px; color: var(--text); outline: none; transition: all 0.2s; appearance: none;
+    width: 100%; padding: 10px 14px; background: var(--off-white); border: 1.5px solid var(--border);
+    border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; color: var(--text);
+    outline: none; transition: all 0.2s; appearance: none;
   }
   .field-input::placeholder { color: var(--text-light); }
   .field-input:focus, .field-select:focus, .field-textarea:focus {
@@ -206,9 +225,9 @@
   .input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; color: var(--text-muted); pointer-events: none; }
   .has-prefix .field-input { padding-left: 28px; }
 
+  /* AUTO DISPLAY FIELDS */
   .field-auto {
-    width: 100%; padding: 10px 14px;
-    background: var(--green-bg); border: 1.5px solid rgba(22,163,74,0.25);
+    width: 100%; padding: 10px 14px; background: var(--green-bg); border: 1.5px solid rgba(22,163,74,0.25);
     border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 12px; color: var(--green); font-weight: 700; cursor: default;
     user-select: all; letter-spacing: 0.3px; min-height: 40px;
@@ -221,38 +240,39 @@
     margin-left: 6px; vertical-align: middle;
   }
 
+  /* AMOUNT PREVIEW */
   .amount-preview {
-    background: linear-gradient(135deg, var(--green-bg), rgba(22,163,74,0.05));
-    border: 1.5px solid rgba(22,163,74,0.25); border-radius: 12px; padding: 16px 20px;
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;
+    background: var(--green-bg); border: 1.5px solid rgba(22,163,74,0.25);
+    border-radius: 12px; padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
   }
   .ap-label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
   .ap-val { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; color: var(--green); letter-spacing: -0.5px; }
 
-  .section-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 18px; }
+  .section-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0 16px; }
   .sd-line { flex: 1; height: 1px; background: var(--border); }
   .sd-label { font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
 
-  .form-footer {
-    padding: 18px 28px; border-top: 1px solid var(--border); background: var(--off-white);
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  }
-  .footer-hint { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
-
+  /* LOCKED FIELDS */
   .field-input:disabled, .field-select:disabled, .field-textarea:disabled {
     opacity: 0.42; cursor: not-allowed;
     background: var(--border) !important; border-color: var(--border) !important; box-shadow: none !important;
   }
-  #exp-edit-lock-banner {
-    background: var(--amber-bg); border: 1.5px solid var(--amber); color: #92400e;
-    padding: 12px 16px; border-radius: 10px; font-size: 12px; font-weight: 600;
-    margin-bottom: 20px; display: flex; align-items: center; gap: 10px; line-height: 1.5;
+
+  /* EDIT LOCK BANNER */
+  .edit-lock-banner {
+    background: var(--amber-bg); border: 1.5px solid rgba(217,119,6,0.4);
+    color: #92400e; padding: 11px 16px; border-radius: 10px;
+    font-size: 12px; font-weight: 600; margin-bottom: 18px;
+    display: flex; align-items: flex-start; gap: 10px; line-height: 1.6;
   }
 
+  /* EMPTY */
   .empty-state { text-align: center; padding: 48px 20px; }
   .empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.4; }
   .empty-text { font-size: 13px; color: var(--text-muted); }
 
+  /* TOAST */
   .toast {
     position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: var(--radius);
     font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
@@ -264,9 +284,11 @@
   .toast.error   { background: var(--red); color: white; }
   .toast.info    { background: var(--blue); color: white; }
 
-  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
   .anim { opacity:0; animation: fadeUp 0.4s ease forwards; }
   .a1{animation-delay:.05s} .a2{animation-delay:.10s} .a3{animation-delay:.15s} .a4{animation-delay:.20s}
+
+  body.modal-open { overflow: hidden; }
 </style>
 </head>
 <body>
@@ -285,12 +307,8 @@
   </div>
   <div class="topbar-right">
     <div class="sync-pill"><span class="sync-dot"></span>Sheets Connected</div>
-    <a href="index.html"      class="nav-item"><span class="nav-item-icon">🏠</span> Home</a>
-    <a href="sites.html"      class="nav-item"><span class="nav-item-icon">🏗</span> Sites</a>
-    <a href="workorder.html"  class="nav-item"><span class="nav-item-icon">📋</span> Work Orders</a>
-    <a href="expense.html"    class="nav-item active"><span class="nav-item-icon">💸</span> Expenses<span class="nav-badge amber" id="exp-nav-count">0</span></a>
-    <a href="material.html"    class="nav-item"><span class="nav-item-icon">📦</span> Material</a>
-    <a href="dashboard.html"  class="nav-item"><span class="nav-item-icon">📊</span> Dashboard</a>
+    <a href="sites.html"     class="btn btn-ghost"   style="padding:8px 16px;font-size:12px;">🏗 Sites</a>
+    <a href="dashboard.html" class="btn btn-primary" style="padding:8px 16px;font-size:12px;">📊 Dashboard</a>
   </div>
 </div>
 
@@ -301,9 +319,9 @@
     <a href="sites.html"      class="nav-item"><span class="nav-item-icon">🏗</span> Sites</a>
     <a href="workorder.html"  class="nav-item"><span class="nav-item-icon">📋</span> Work Orders</a>
     <a href="expense.html"    class="nav-item active"><span class="nav-item-icon">💸</span> Expenses <span class="nav-badge amber" id="exp-nav-count">0</span></a>
-    <a href="material.html"    class="nav-item"><span class="nav-item-icon">📦</span> Material</a>
-    <a href="client.html" class="nav-item"><span class="nav-item-icon">👥</span> Client Receivables</a>
-    <a href="attendance.html"     class="nav-item"><span class="nav-item-icon">👷</span> Attendance</a>
+    <a href="material.html"   class="nav-item"><span class="nav-item-icon">📦</span> Material</a>
+    <a href="client.html"     class="nav-item"><span class="nav-item-icon">👥</span> Client Receivables</a>
+    <a href="attendance.html" class="nav-item"><span class="nav-item-icon">👷</span> Attendance</a>
     <a href="dashboard.html"  class="nav-item"><span class="nav-item-icon">📊</span> Dashboard</a>
 
     <div style="margin-top:auto;padding-top:20px;border-top:1px solid var(--border);">
@@ -328,10 +346,11 @@
       </div>
       <div class="page-actions">
         <button class="btn btn-ghost" onclick="loadExpenses()">⟳ Refresh</button>
-        <button class="btn btn-primary" onclick="scrollToForm()">+ Add Expense</button>
+        <button class="btn btn-primary" onclick="openNewExpModal()">+ Add Expense</button>
       </div>
     </div>
 
+    <!-- SUMMARY STRIP -->
     <div class="summary-strip anim a2">
       <div class="sum-card"><div class="sum-label">Total Entries</div><div class="sum-val green" id="sum-total">—</div></div>
       <div class="sum-card"><div class="sum-label">Total Amount</div><div class="sum-val green" id="sum-amount">—</div></div>
@@ -340,6 +359,7 @@
       <div class="sum-card"><div class="sum-label">Rejected</div><div class="sum-val red" id="sum-rejected">—</div></div>
     </div>
 
+    <!-- EXPENSES TABLE -->
     <div class="table-card anim a3">
       <div class="table-header">
         <div style="display:flex;align-items:center;gap:10px;">
@@ -383,216 +403,234 @@
       </div>
     </div>
 
-    <!-- ADD / EDIT EXPENSE FORM -->
-    <div id="add-exp-form" class="form-card anim a4">
-      <div class="form-card-header">
-        <div class="card-header-icon green">💸</div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODAL POPUP FORM
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="exp-modal" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="exp-modal-box">
+
+    <div class="modal-head">
+      <div class="modal-head-left">
+        <div class="modal-head-icon">💸</div>
         <div>
-          <div class="card-header-title" id="exp-form-title">Add New Expense</div>
-          <div class="card-header-sub" id="exp-form-subtitle">Select site → vendors & work orders auto-load from Work Orders sheet</div>
+          <div class="modal-head-title" id="exp-form-title">Add New Expense</div>
+          <div class="modal-head-sub" id="exp-form-subtitle">Select site → vendors & work orders auto-load</div>
         </div>
       </div>
+      <button class="modal-close" onclick="closeModal()" title="Close">✕</button>
+    </div>
 
+    <div class="modal-body" id="exp-modal-body">
+
+      <!-- Hidden fields -->
       <input type="hidden" id="exp-id"/>
       <input type="hidden" id="exp-site-id-hidden"/>
       <input type="hidden" id="exp-wo-id-hidden"/>
       <input type="hidden" id="exp-vendor-id-hidden"/>
       <input type="hidden" id="exp-costhead-id-hidden"/>
 
-      <div class="form-body">
-
-        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🏗 Site Details</div><div class="sd-line"></div></div>
-        <div class="fields-grid cols3">
-          <div class="field">
-            <label class="field-label">Site Name <span class="req">*</span></label>
-            <select class="field-select" id="exp-site-name" onchange="onExpSiteSelect()">
-              <option value="">— Select Site —</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Site ID <span class="auto-badge">⚡ Auto</span></label>
-            <div class="field-auto" id="exp-site-id-display">Select a site first</div>
-          </div>
-          <div class="field">
-            <label class="field-label">Expense ID <span class="auto-badge">⚡ Auto</span></label>
-            <div class="field-auto" id="exp-id-display">Will be generated on save</div>
-          </div>
-        </div>
-
-        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📋 Cost Classification</div><div class="sd-line"></div></div>
-        <div class="fields-grid cols3">
-          <div class="field">
-            <label class="field-label">Cost Head <span class="req">*</span></label>
-            <select class="field-select" id="exp-cost-head" onchange="onCostHeadSelect()">
-              <option value="">— Select Cost Head —</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Cost Head ID <span class="auto-badge">⚡ Auto</span></label>
-            <div class="field-auto" id="exp-costhead-id-display">—</div>
-          </div>
-          <div class="field">
-            <label class="field-label">Date <span class="req">*</span></label>
-            <input class="field-input" id="exp-date" type="date"/>
-          </div>
-        </div>
-
-        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">👔 Vendor & Work Order</div><div class="sd-line"></div></div>
-        <div class="fields-grid cols4">
-          <div class="field">
-            <label class="field-label">Work Order No</label>
-            <!-- ✅ FIX: WO pehle select karo → vendor auto-fill hoga -->
-            <select class="field-select" id="exp-work-order" onchange="onWOSelect()">
-              <option value="">— Select Work Order (after site) —</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Work Order ID <span class="auto-badge">⚡ Auto</span></label>
-            <div class="field-auto" id="exp-wo-id-display">—</div>
-          </div>
-          <div class="field">
-            <label class="field-label">Vendor Name</label>
-            <!-- ✅ FIX: Vendor dropdown — WO select ke baad auto-fill, ya manually bhi select kar sakte hain -->
-            <select class="field-select" id="exp-vendor-name" onchange="onVendorSelect()">
-              <option value="">— Select Vendor (after site) —</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Vendor ID <span class="auto-badge">⚡ Auto</span></label>
-            <div class="field-auto" id="exp-vendor-id-display">—</div>
-          </div>
-        </div>
-
-        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Amount Details</div><div class="sd-line"></div></div>
-        <div class="fields-grid cols5">
-          <div class="field">
-            <label class="field-label">Qty</label>
-            <input class="field-input" id="exp-qty" type="number" min="0" step="0.01" placeholder="1" value="1" oninput="recalcAmount()"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Unit</label>
-            <select class="field-select" id="exp-unit">
-              <option>LS</option><option>Nos</option><option>Sqft</option><option>Sqm</option>
-              <option>Rmt</option><option>MT</option><option>Kg</option><option>Bags</option>
-              <option>Cum</option><option>Ltr</option><option>Trip</option><option>Day</option>
-              <option>Month</option><option>Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Rate (₹)</label>
-            <div class="input-wrap has-prefix">
-              <span class="input-prefix">₹</span>
-              <input class="field-input" id="exp-rate" type="number" min="0" step="0.01" placeholder="0" oninput="recalcAmount()"/>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">Amount (₹)</label>
-            <div class="input-wrap has-prefix">
-              <span class="input-prefix">₹</span>
-              <input class="field-input" id="exp-amount" type="number" min="0" step="0.01" placeholder="0" oninput="recalcTotal()"/>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">Tax Amount (₹)</label>
-            <div class="input-wrap has-prefix">
-              <span class="input-prefix">₹</span>
-              <input class="field-input" id="exp-tax" type="number" min="0" step="0.01" placeholder="0" oninput="recalcTotal()"/>
-            </div>
-          </div>
-        </div>
-
-        <div class="amount-preview">
-          <div>
-            <div class="ap-label">Total Amount (incl. tax)</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Amount + Tax Amount</div>
-          </div>
-          <div class="ap-val" id="exp-total-display">₹0</div>
-        </div>
-
-        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💳 Payment & Status</div><div class="sd-line"></div></div>
-        <div class="fields-grid cols4">
-          <div class="field">
-            <label class="field-label">Payment Mode</label>
-            <select class="field-select" id="exp-payment-mode">
-              <option>Cash</option><option>Bank Transfer</option><option>UPI</option>
-              <option>Cheque</option><option>NEFT</option><option>RTGS</option>
-              <option>Credit Card</option><option>Debit Card</option><option>Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Expense Status</label>
-            <select class="field-select" id="exp-status">
-              <option value="Pending">⏳ Pending</option>
-              <option value="Draft">📝 Draft</option>
-              <option value="Approved">✅ Approved</option>
-              <option value="Rejected">❌ Rejected</option>
-              <option value="Posted">📒 Posted</option>
-              <option value="On Hold">⏸ On Hold</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Bill No</label>
-            <input class="field-input" id="exp-bill-no" type="text" placeholder="Supplier bill number"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Invoice No</label>
-            <input class="field-input" id="exp-invoice-no" type="text" placeholder="Invoice reference"/>
-          </div>
-        </div>
-
-        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📝 Notes & Approval</div><div class="sd-line"></div></div>
-        <div class="fields-grid cols3">
-          <div class="field">
-            <label class="field-label">Description</label>
-            <input class="field-input" id="exp-description" type="text" placeholder="Brief description of expense…"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Approved By</label>
-            <input class="field-input" id="exp-approved-by" type="text" placeholder="Manager / approver name"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Created By</label>
-            <input class="field-input" id="exp-created-by" type="text" placeholder="Your name"/>
-          </div>
-          <div class="field full">
-            <label class="field-label">Remarks</label>
-            <textarea class="field-textarea" id="exp-remarks" placeholder="Additional notes…"></textarea>
-          </div>
-        </div>
-
+      <!-- Edit lock banner -->
+      <div id="exp-edit-lock-banner" class="edit-lock-banner" style="display:none;">
+        ⚠️&nbsp; <span><strong>Edit Mode:</strong> Site, Date &amp; Cost Head are locked. You can update: <strong>Qty, Unit, Rate, Amount, Tax, Status, Approved By, Payment Mode, Bill No, Invoice No, Description</strong> and <strong>Remarks</strong>.</span>
       </div>
-      <div class="form-footer">
-        <div class="footer-hint"><span>ℹ️</span> Fields marked <span style="color:var(--accent);font-weight:700;">*</span> are required. All data saved to Google Sheets.</div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn btn-ghost" onclick="clearExpForm()">Clear</button>
-          <button class="btn btn-primary" onclick="submitExpense()">
-            <span id="exp-submit-icon">💸</span>
-            <span id="exp-submit-text">Save Expense</span>
-          </button>
+
+      <!-- SECTION 1: Site -->
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">🏗 Site Details</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols3">
+        <div class="field">
+          <label class="field-label">Site Name <span class="req">*</span></label>
+          <select class="field-select" id="exp-site-name" onchange="onExpSiteSelect()">
+            <option value="">— Select Site —</option>
+          </select>
         </div>
+        <div class="field">
+          <label class="field-label">Site ID <span class="auto-badge">⚡ Auto</span></label>
+          <div class="field-auto" id="exp-site-id-display">Select a site first</div>
+        </div>
+        <div class="field">
+          <label class="field-label">Expense ID <span class="auto-badge">⚡ Auto</span></label>
+          <div class="field-auto" id="exp-id-display">Will be generated on save</div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Cost Classification -->
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📋 Cost Classification</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols3">
+        <div class="field">
+          <label class="field-label">Cost Head <span class="req">*</span></label>
+          <select class="field-select" id="exp-cost-head" onchange="onCostHeadSelect()">
+            <option value="">— Select Cost Head —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Cost Head ID <span class="auto-badge">⚡ Auto</span></label>
+          <div class="field-auto" id="exp-costhead-id-display">—</div>
+        </div>
+        <div class="field">
+          <label class="field-label">Date <span class="req">*</span></label>
+          <input class="field-input" id="exp-date" type="date"/>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Vendor & WO -->
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">👔 Vendor & Work Order</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols4">
+        <div class="field">
+          <label class="field-label">Work Order No</label>
+          <select class="field-select" id="exp-work-order" onchange="onWOSelect()">
+            <option value="">— Select Work Order (after site) —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Work Order ID <span class="auto-badge">⚡ Auto</span></label>
+          <div class="field-auto" id="exp-wo-id-display">—</div>
+        </div>
+        <div class="field">
+          <label class="field-label">Vendor Name</label>
+          <select class="field-select" id="exp-vendor-name" onchange="onVendorSelect()">
+            <option value="">— Select Vendor (after site) —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Vendor ID <span class="auto-badge">⚡ Auto</span></label>
+          <div class="field-auto" id="exp-vendor-id-display">—</div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: Amounts -->
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Amount Details</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols5">
+        <div class="field">
+          <label class="field-label">Qty</label>
+          <input class="field-input" id="exp-qty" type="number" min="0" step="0.01" placeholder="1" value="1" oninput="recalcAmount()"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Unit</label>
+          <select class="field-select" id="exp-unit">
+            <option>LS</option><option>Nos</option><option>Sqft</option><option>Sqm</option>
+            <option>Rmt</option><option>MT</option><option>Kg</option><option>Bags</option>
+            <option>Cum</option><option>Ltr</option><option>Trip</option><option>Day</option>
+            <option>Month</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Rate (₹)</label>
+          <div class="input-wrap has-prefix">
+            <span class="input-prefix">₹</span>
+            <input class="field-input" id="exp-rate" type="number" min="0" step="0.01" placeholder="0" oninput="recalcAmount()"/>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Amount (₹)</label>
+          <div class="input-wrap has-prefix">
+            <span class="input-prefix">₹</span>
+            <input class="field-input" id="exp-amount" type="number" min="0" step="0.01" placeholder="0" oninput="recalcTotal()"/>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Tax Amount (₹)</label>
+          <div class="input-wrap has-prefix">
+            <span class="input-prefix">₹</span>
+            <input class="field-input" id="exp-tax" type="number" min="0" step="0.01" placeholder="0" oninput="recalcTotal()"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="amount-preview">
+        <div>
+          <div class="ap-label">Total Amount (incl. tax)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Amount + Tax Amount</div>
+        </div>
+        <div class="ap-val" id="exp-total-display">₹0</div>
+      </div>
+
+      <!-- SECTION 5: Payment & Status -->
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💳 Payment & Status</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols4">
+        <div class="field">
+          <label class="field-label">Payment Mode</label>
+          <select class="field-select" id="exp-payment-mode">
+            <option>Cash</option><option>Bank Transfer</option><option>UPI</option>
+            <option>Cheque</option><option>NEFT</option><option>RTGS</option>
+            <option>Credit Card</option><option>Debit Card</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Expense Status</label>
+          <select class="field-select" id="exp-status">
+            <option value="Pending">⏳ Pending</option>
+            <option value="Draft">📝 Draft</option>
+            <option value="Approved">✅ Approved</option>
+            <option value="Rejected">❌ Rejected</option>
+            <option value="Posted">📒 Posted</option>
+            <option value="On Hold">⏸ On Hold</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Bill No</label>
+          <input class="field-input" id="exp-bill-no" type="text" placeholder="Supplier bill number"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Invoice No</label>
+          <input class="field-input" id="exp-invoice-no" type="text" placeholder="Invoice reference"/>
+        </div>
+      </div>
+
+      <!-- SECTION 6: Notes & Approval -->
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📝 Notes & Approval</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols3">
+        <div class="field">
+          <label class="field-label">Description</label>
+          <input class="field-input" id="exp-description" type="text" placeholder="Brief description…"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Approved By</label>
+          <input class="field-input" id="exp-approved-by" type="text" placeholder="Manager / approver name"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Created By</label>
+          <input class="field-input" id="exp-created-by" type="text" placeholder="Your name"/>
+        </div>
+        <div class="field full">
+          <label class="field-label">Remarks</label>
+          <textarea class="field-textarea" id="exp-remarks" placeholder="Additional notes…"></textarea>
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+
+    <div class="modal-foot">
+      <div class="footer-hint"><span>ℹ️</span> Fields marked <span style="color:var(--accent);font-weight:700;">*</span> are required. Saves to Google Sheets.</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" onclick="clearExpForm()">Clear</button>
+        <button class="btn btn-primary" onclick="submitExpense()">
+          <span id="exp-submit-icon">💸</span>
+          <span id="exp-submit-text">Save Expense</span>
+        </button>
       </div>
     </div>
 
-  </main>
-</div>
+  </div><!-- /modal-box -->
+</div><!-- /modal-overlay -->
 
+<!-- TOAST -->
 <div class="toast success" id="toast">
   <span id="toast-icon">✅</span>
   <span id="toast-msg">Saved!</span>
 </div>
 
 <script>
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  CONFIG
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
 
 let allExpenses = [];
 let allSites    = [];
-let siteVendors = [];   // ✅ Work Orders se nikale unique vendors
-let siteWOs     = [];   // ✅ Work Orders list
+let siteVendors = [];
+let siteWOs     = [];
 
-// ── Cost Heads master ─────────────────────────────────────────
+/* ── Cost Heads master ── */
 const COST_HEADS = [
   { id:'CH-001', name:'Civil Labour',          type:'Labour' },
   { id:'CH-002', name:'Finishing Labour',       type:'Labour' },
@@ -619,53 +657,46 @@ const COST_HEADS = [
   { id:'CH-023', name:'Miscellaneous',          type:'Miscellaneous' },
 ];
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  EDIT MODE: kon se fields lock rahenge
-//  ✅ FIX: qty, unit, rate ab bhi editable hain
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/* ── Editable in edit mode ── */
 const EXP_EDITABLE = [
-  'exp-status', 'exp-approved-by', 'exp-remarks',
-  'exp-payment-mode', 'exp-bill-no', 'exp-invoice-no',
-  'exp-description', 'exp-tax', 'exp-amount',
-  'exp-qty', 'exp-unit', 'exp-rate'   // ✅ Amount section fully editable
+  'exp-status','exp-approved-by','exp-remarks',
+  'exp-payment-mode','exp-bill-no','exp-invoice-no',
+  'exp-description','exp-tax','exp-amount',
+  'exp-qty','exp-unit','exp-rate'
 ];
-
 const EXP_ALL_FIELDS = [
-  'exp-site-name', 'exp-date', 'exp-cost-head',
-  'exp-vendor-name', 'exp-work-order',
-  'exp-qty', 'exp-unit', 'exp-rate', 'exp-amount', 'exp-tax',
-  'exp-payment-mode', 'exp-status', 'exp-bill-no', 'exp-invoice-no',
-  'exp-description', 'exp-approved-by', 'exp-remarks', 'exp-created-by'
+  'exp-site-name','exp-date','exp-cost-head',
+  'exp-vendor-name','exp-work-order',
+  'exp-qty','exp-unit','exp-rate','exp-amount','exp-tax',
+  'exp-payment-mode','exp-status','exp-bill-no','exp-invoice-no',
+  'exp-description','exp-approved-by','exp-remarks','exp-created-by'
 ];
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  API HELPER
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/* ══════════════════════════════
+   API — with 8s timeout
+══════════════════════════════ */
 async function api(action, data) {
   try {
     const params = new URLSearchParams();
     params.set('action', action);
-    if (data) {
-      Object.entries(data).forEach(([k, v]) => {
-        if (v !== null && v !== undefined && v !== '') {
-          params.set(k, String(v));
-        }
-      });
-    }
-    const res = await fetch(`${API_URL}?${params.toString()}`);
+    if (data) Object.entries(data).forEach(([k,v]) => { if (v !== null && v !== undefined && v !== '') params.set(k, String(v)); });
+    const ctrl  = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const res   = await fetch(`${API_URL}?${params}`, { signal: ctrl.signal });
+    clearTimeout(timer);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return await res.json();
   } catch(e) {
-    console.error('API error [' + action + ']:', e);
+    console.warn('API [' + action + ']:', e.message);
     return null;
   }
 }
 
-const fmt = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
 
-// ── INIT COST HEADS dropdown ──────────────────────────────────
+/* ── INIT COST HEADS ── */
 function initCostHeads() {
-  const sel = document.getElementById('exp-cost-head');
+  const sel   = document.getElementById('exp-cost-head');
   const types = [...new Set(COST_HEADS.map(h => h.type))];
   sel.innerHTML = '<option value="">— Select Cost Head —</option>';
   types.forEach(t => {
@@ -673,262 +704,59 @@ function initCostHeads() {
     grp.label = t;
     COST_HEADS.filter(h => h.type === t).forEach(h => {
       const opt = document.createElement('option');
-      opt.value        = h.name;
-      opt.dataset.id   = h.id;
-      opt.dataset.type = h.type;
-      opt.textContent  = h.name;
+      opt.value = h.name; opt.dataset.id = h.id; opt.dataset.type = h.type;
+      opt.textContent = h.name;
       grp.appendChild(opt);
     });
     sel.appendChild(grp);
   });
 }
 
-// ── LOAD SITES ────────────────────────────────────────────────
+/* ══════════════════════════════
+   LOAD SITES (parallel)
+══════════════════════════════ */
 async function loadSites() {
   const d = await api('getSites');
-  if (!d || !d.sites || !d.sites.length) {
-    showToast('⚠️ Could not load sites from sheet', 'error');
-    return;
-  }
-  allSites = d.sites.filter(s => (s.status || '').toLowerCase() === 'active');
-const sel = document.getElementById('exp-site-name');
-sel.innerHTML = '<option value="">— Select Site —</option>';
-allSites.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value       = s.name;
-    opt.dataset.id  = s.siteId;
-    opt.textContent = `${s.name}  [${s.siteId}]`;
-    sel.appendChild(opt);
+  allSites = (d && Array.isArray(d.sites)) ? d.sites.filter(s => (s.status||'').toLowerCase() !== 'completed' && (s.status||'').toLowerCase() !== 'cancelled') : getDemoSites();
+  const sel = document.getElementById('exp-site-name');
+  sel.innerHTML = '<option value="">— Select Site —</option>';
+  allSites.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.name; o.dataset.id = s.siteId;
+    o.textContent = `${s.name}  [${s.siteId}]`;
+    sel.appendChild(o);
   });
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  SITE SELECT → Work Orders fetch karo
-//  ✅ KEY FIX: Vendors alag API se nahi, Work Orders se nikalo
-//  WO sheet headers: WorkOrderID, SiteID, SiteName,
-//  "Work Order No", "Vendor ID", "Vendor Name", WorkType etc.
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-async function onExpSiteSelect() {
-  const sel         = document.getElementById('exp-site-name');
-  const selectedOpt = sel.options[sel.selectedIndex];
-  const siteId      = selectedOpt ? (selectedOpt.dataset.id || '') : '';
-
-  document.getElementById('exp-site-id-hidden').value = siteId;
-  document.getElementById('exp-site-id-display').textContent = siteId || 'Select a site first';
-  document.getElementById('exp-site-id-display').style.color = siteId ? 'var(--green)' : '';
-
-  if (!siteId) {
-    resetVendorDropdown();
-    resetWODropdown();
-    return;
-  }
-
-  showLoadingInDropdown('exp-work-order',  'Loading work orders…');
-  showLoadingInDropdown('exp-vendor-name', 'Loading vendors…');
-
-  // Work Orders fetch karo site ke liye
-  const woRes = await api('getExpenseWOBySite', { siteId });
-
-  // ✅ FIX: WO data se vendors nikaalo — WO sheet mein Vendor ID + Vendor Name hote hain
-  siteWOs = (woRes && woRes.workOrders) ? woRes.workOrders : [];
-
-  // ── Work Order Dropdown build karo ───────────────────────
-  const woSel = document.getElementById('exp-work-order');
-  woSel.innerHTML = '<option value="">— Select Work Order (optional) —</option>';
-
-  if (siteWOs.length) {
-    siteWOs.forEach(w => {
-      const opt = document.createElement('option');
-
-      // ✅ FIX: Sheet header "Work Order No" → Apps Script mein property name
-      // Common mappings: workOrderNo / workOrderNo / "Work Order No"
-      // Saare possible keys try karo
-      const woNo = w.workOrderNo || w['Work Order No'] || w.workorderNo || w.WorkOrderNo || w.workOrderID || w.workOrderId || '';
-      const woId = w.workOrderId || w.workOrderID || w.WorkOrderID || '';
-
-      opt.value           = woId;          // value = WorkOrderID (unique key)
-      opt.dataset.id      = woId;
-      opt.dataset.woNo    = woNo;
-      opt.dataset.vendorId   = w.vendorId   || w['Vendor ID']   || w.VendorID   || '';
-      opt.dataset.vendorName = w.vendorName || w['Vendor Name'] || w.VendorName || '';
-      opt.dataset.workType   = w.workType   || w['Work Type']   || w.WorkType   || '';
-
-      // Display: WO No | Work Type | Vendor Name
-      const displayVendor = opt.dataset.vendorName || 'No Vendor';
-      const displayWoNo   = woNo || woId;
-      const displayType   = opt.dataset.workType || '';
-      opt.textContent = `${displayWoNo}  |  ${displayType}  |  ${displayVendor}`;
-
-      woSel.appendChild(opt);
-    });
-  } else {
-    woSel.innerHTML = '<option value="">No work orders found for this site</option>';
-  }
-
-  // ✅ FIX: Vendors — WO list se unique vendors extract karo
-  const vendorMap = new Map();
-  siteWOs.forEach(w => {
-    const vId   = w.vendorId   || w['Vendor ID']   || w.VendorID   || '';
-    const vName = w.vendorName || w['Vendor Name'] || w.VendorName || '';
-    if (vId && vName && !vendorMap.has(vId)) {
-      vendorMap.set(vId, vName);
-    } else if (!vId && vName && !vendorMap.has(vName)) {
-      // vendorId nahi hai toh name se key banao
-      vendorMap.set('name_' + vName, vName);
-    }
-  });
-
-  siteVendors = [...vendorMap.entries()].map(([k, v]) => ({
-    vendorId:   k.startsWith('name_') ? '' : k,
-    vendorName: v
-  }));
-
-  const vSel = document.getElementById('exp-vendor-name');
-  vSel.innerHTML = '<option value="">— Select Vendor —</option>';
-
-  if (siteVendors.length) {
-    siteVendors.forEach(v => {
-      const opt = document.createElement('option');
-      opt.value              = v.vendorName;
-      opt.dataset.id         = v.vendorId;
-      opt.dataset.vendorId   = v.vendorId;
-      opt.textContent        = v.vendorId ? `${v.vendorName}  [${v.vendorId}]` : v.vendorName;
-      vSel.appendChild(opt);
-    });
-  } else {
-    vSel.innerHTML = '<option value="">No vendors found for this site</option>';
-  }
-
-  const woCount = siteWOs.length;
-  const vCount  = siteVendors.length;
-  showToast(`✅ Loaded ${woCount} work orders, ${vCount} vendors`, 'success');
+function getDemoSites() {
+  return [
+    { siteId:'SITE-2024-1001', name:'SITE A — SECTOR 62', status:'Active' },
+    { siteId:'SITE-2024-1002', name:'SITE B — NH8',        status:'Active' },
+    { siteId:'SITE-2024-1003', name:'SITE C — DWARKA',     status:'Planning' },
+  ];
 }
 
-function showLoadingInDropdown(id, msg) {
-  document.getElementById(id).innerHTML = `<option>${msg}</option>`;
-}
-function resetVendorDropdown() {
-  document.getElementById('exp-vendor-name').innerHTML = '<option value="">— Select Vendor (after site) —</option>';
-  document.getElementById('exp-vendor-id-display').textContent = '—';
-  document.getElementById('exp-vendor-id-hidden').value = '';
-}
-function resetWODropdown() {
-  document.getElementById('exp-work-order').innerHTML = '<option value="">— Select Work Order (after site) —</option>';
-  document.getElementById('exp-wo-id-display').textContent = '—';
-  document.getElementById('exp-wo-id-hidden').value = '';
-}
-
-// ── VENDOR SELECT ─────────────────────────────────────────────
-function onVendorSelect() {
-  const sel      = document.getElementById('exp-vendor-name');
-  const opt      = sel.options[sel.selectedIndex];
-  const vendorId = opt ? (opt.dataset.id || opt.dataset.vendorId || '') : '';
-  document.getElementById('exp-vendor-id-hidden').value        = vendorId;
-  document.getElementById('exp-vendor-id-display').textContent = vendorId || '—';
-  document.getElementById('exp-vendor-id-display').style.color = vendorId ? 'var(--green)' : '';
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  WORK ORDER SELECT
-//  ✅ FIX: Vendor name + ID WO se auto-fill hoga
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function onWOSelect() {
-  const sel  = document.getElementById('exp-work-order');
-  const opt  = sel.options[sel.selectedIndex];
-  const woId = opt ? (opt.dataset.id || opt.value || '') : '';
-
-  document.getElementById('exp-wo-id-hidden').value        = woId;
-  document.getElementById('exp-wo-id-display').textContent = woId || '—';
-  document.getElementById('exp-wo-id-display').style.color = woId ? 'var(--green)' : '';
-
-  // ✅ FIX: WO se vendor auto-fill karo
-  if (opt && opt.dataset.vendorId) {
-    const vSel   = document.getElementById('exp-vendor-name');
-    // vendorId se match karo
-    const matchOpt = [...vSel.options].find(o =>
-      (o.dataset.id || o.dataset.vendorId) === opt.dataset.vendorId
-    );
-    if (matchOpt) {
-      vSel.value = matchOpt.value;
-      document.getElementById('exp-vendor-id-hidden').value        = opt.dataset.vendorId;
-      document.getElementById('exp-vendor-id-display').textContent = opt.dataset.vendorId;
-      document.getElementById('exp-vendor-id-display').style.color = 'var(--green)';
-    } else if (opt.dataset.vendorName) {
-      // Vendor dropdown mein nahi mila toh naam se match karo
-      const nameOpt = [...vSel.options].find(o => o.value === opt.dataset.vendorName);
-      if (nameOpt) {
-        vSel.value = nameOpt.value;
-        document.getElementById('exp-vendor-id-hidden').value        = opt.dataset.vendorId;
-        document.getElementById('exp-vendor-id-display').textContent = opt.dataset.vendorId;
-        document.getElementById('exp-vendor-id-display').style.color = 'var(--green)';
-      }
-    }
-  } else if (opt && opt.dataset.vendorName && !opt.dataset.vendorId) {
-    // sirf vendor name hai, id nahi
-    const vSel    = document.getElementById('exp-vendor-name');
-    const nameOpt = [...vSel.options].find(o => o.value === opt.dataset.vendorName);
-    if (nameOpt) vSel.value = nameOpt.value;
-    document.getElementById('exp-vendor-id-hidden').value        = '';
-    document.getElementById('exp-vendor-id-display').textContent = '—';
-  }
-}
-
-// ── COST HEAD SELECT ──────────────────────────────────────────
-function onCostHeadSelect() {
-  const sel = document.getElementById('exp-cost-head');
-  const opt = sel.options[sel.selectedIndex];
-  if (!opt || !opt.dataset.id) {
-    document.getElementById('exp-costhead-id-display').textContent = '—';
-    document.getElementById('exp-costhead-id-hidden').value = '';
-    return;
-  }
-  document.getElementById('exp-costhead-id-display').textContent = opt.dataset.id;
-  document.getElementById('exp-costhead-id-hidden').value        = opt.dataset.id;
-  document.getElementById('exp-costhead-id-display').style.color = 'var(--green)';
-}
-
-// ── AMOUNT CALC ───────────────────────────────────────────────
-function recalcAmount() {
-  const qty  = parseFloat(document.getElementById('exp-qty').value)  || 0;
-  const rate = parseFloat(document.getElementById('exp-rate').value) || 0;
-  if (qty > 0 && rate > 0) {
-    document.getElementById('exp-amount').value = (qty * rate).toFixed(2);
-  }
-  recalcTotal();
-}
-function recalcTotal() {
-  const amount = parseFloat(document.getElementById('exp-amount').value) || 0;
-  const tax    = parseFloat(document.getElementById('exp-tax').value)    || 0;
-  document.getElementById('exp-total-display').textContent = fmt(amount + tax);
-}
-
-// ── LOAD EXPENSES ─────────────────────────────────────────────
+/* ══════════════════════════════
+   LOAD EXPENSES (parallel)
+══════════════════════════════ */
 async function loadExpenses() {
   document.getElementById('exp-count-badge').textContent = 'Loading…';
   document.getElementById('exp-tbody').innerHTML =
     `<tr><td colspan="27"><div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-text">Fetching from Google Sheets…</div></div></td></tr>`;
 
   const d = await api('getExpenses');
-
-  if (!d) {
-    document.getElementById('exp-tbody').innerHTML =
-      `<tr><td colspan="27"><div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">Could not connect to Google Sheets. Check API_URL and deployment.</div></div></td></tr>`;
-    document.getElementById('exp-count-badge').textContent = 'Error';
-    return;
-  }
-
-  allExpenses = d.expenses || [];
+  allExpenses = (d && Array.isArray(d.expenses)) ? d.expenses : [];
   updateSummary(d);
   renderExpenses(allExpenses);
 }
 
 function updateSummary(d) {
-  const total    = d.total        || allExpenses.length;
-  const amount   = d.totalAmount  || allExpenses.reduce((s,e)=>s+(e.totalAmount||0),0);
-  const pending  = (d.byStatus && d.byStatus.Pending)  || allExpenses.filter(e=>e.expenseStatus==='Pending').length;
-  const approved = (d.byStatus && d.byStatus.Approved) || allExpenses.filter(e=>e.expenseStatus==='Approved').length;
-  const rejected = (d.byStatus && d.byStatus.Rejected) || allExpenses.filter(e=>e.expenseStatus==='Rejected').length;
-  const posted   = (d.byStatus && d.byStatus.Posted)   || allExpenses.filter(e=>e.expenseStatus==='Posted').length;
+  const total    = allExpenses.length;
+  const amount   = allExpenses.reduce((s,e) => s + Number(e.totalAmount||0), 0);
+  const pending  = allExpenses.filter(e => e.expenseStatus === 'Pending').length;
+  const approved = allExpenses.filter(e => e.expenseStatus === 'Approved').length;
+  const rejected = allExpenses.filter(e => e.expenseStatus === 'Rejected').length;
+  const posted   = allExpenses.filter(e => e.expenseStatus === 'Posted').length;
 
   document.getElementById('sum-total').textContent    = total;
   document.getElementById('sum-amount').textContent   = amount >= 1e7 ? '₹'+(amount/1e7).toFixed(1)+' Cr' : '₹'+(amount/1e5).toFixed(1)+' L';
@@ -939,7 +767,7 @@ function updateSummary(d) {
   document.getElementById('qs-pending').textContent   = pending;
   document.getElementById('qs-approved').textContent  = approved;
   document.getElementById('qs-posted').textContent    = posted;
-  document.getElementById('qs-amount').textContent    = amount >= 1e7 ? '₹'+(amount/1e7).toFixed(1)+' Cr' : '₹'+(amount/1e5).toFixed(2)+' L';
+  document.getElementById('qs-amount').textContent    = amount >= 1e7 ? '₹'+(amount/1e7).toFixed(1)+' Cr' : '₹'+(amount/1e5).toFixed(1)+' L';
   document.getElementById('exp-nav-count').textContent= total;
 }
 
@@ -951,37 +779,37 @@ function renderExpenses(exps) {
   document.getElementById('exp-count-badge').textContent = exps.length + ' expenses';
   const tbody = document.getElementById('exp-tbody');
   if (!exps.length) {
-    tbody.innerHTML = `<tr><td colspan="27"><div class="empty-state"><div class="empty-icon">💸</div><div class="empty-text">No expenses found. Add your first expense below!</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="27"><div class="empty-state"><div class="empty-icon">💸</div><div class="empty-text">No expenses found. Click "+ Add Expense" to get started!</div></div></td></tr>`;
     return;
   }
   tbody.innerHTML = exps.map((e, i) => `
     <tr style="animation:fadeUp 0.3s ease ${i*0.04}s both;">
-      <td style="color:var(--text-muted);font-size:11px;">${e.serialNo || i+1}</td>
-      <td><span style="font-size:11px;background:var(--off-white);padding:2px 7px;border-radius:6px;font-weight:600;">${e.expenseId || '—'}</span></td>
-      <td style="color:var(--text-muted);font-size:11px;">${e.siteId || '—'}</td>
-      <td style="font-weight:700;min-width:140px;">${e.siteName || '—'}</td>
-      <td style="color:var(--text-muted);">${e.date || '—'}</td>
-      <td style="color:var(--text-muted);font-size:11px;">${e.costHeadId || '—'}</td>
-      <td><span class="tag ${typeColors[e.expenseType]||'blue'}">${e.costHeadName || '—'}</span></td>
-      <td><span class="tag ${typeColors[e.expenseType]||'blue'}">${e.expenseType || '—'}</span></td>
-      <td style="color:var(--text-muted);font-size:11px;">${e.vendorId || '—'}</td>
-      <td>${e.vendorName || '—'}</td>
-      <td style="color:var(--text-muted);font-size:11px;">${e.workOrderId || '—'}</td>
-      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${e.description || '—'}</td>
-      <td style="text-align:right;">${e.qty || '—'}</td>
-      <td>${e.unit || '—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${e.serialNo||i+1}</td>
+      <td><span style="font-size:11px;background:var(--off-white);padding:2px 7px;border-radius:6px;font-weight:600;">${e.expenseId||'—'}</span></td>
+      <td style="color:var(--text-muted);font-size:11px;">${e.siteId||'—'}</td>
+      <td style="font-weight:700;min-width:140px;">${e.siteName||'—'}</td>
+      <td style="color:var(--text-muted);">${e.date||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${e.costHeadId||'—'}</td>
+      <td><span class="tag ${typeColors[e.expenseType]||'blue'}">${e.costHeadName||'—'}</span></td>
+      <td><span class="tag ${typeColors[e.expenseType]||'blue'}">${e.expenseType||'—'}</span></td>
+      <td style="color:var(--text-muted);font-size:11px;">${e.vendorId||'—'}</td>
+      <td>${e.vendorName||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${e.workOrderId||'—'}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${e.description||'—'}</td>
+      <td style="text-align:right;">${e.qty||'—'}</td>
+      <td>${e.unit||'—'}</td>
       <td style="text-align:right;">${e.rate ? fmt(e.rate) : '—'}</td>
       <td style="font-weight:600;">${fmt(e.amount)}</td>
       <td style="color:var(--text-muted);">${fmt(e.taxAmount)}</td>
       <td style="font-weight:700;color:var(--green);">${fmt(e.totalAmount)}</td>
-      <td><span class="tag ${pmodeColors[e.paymentMode]||''}">${e.paymentMode || '—'}</span></td>
-      <td style="color:var(--text-muted);">${e.billNo || '—'}</td>
-      <td style="color:var(--text-muted);">${e.invoiceNo || '—'}</td>
-      <td><span class="tag ${statusColors[e.expenseStatus]||'blue'}">${e.expenseStatus || '—'}</span></td>
-      <td style="color:var(--text-muted);">${e.approvedBy || '—'}</td>
-      <td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${e.remarks || '—'}</td>
-      <td style="color:var(--text-muted);font-size:11px;">${e.createdAt || '—'}</td>
-      <td style="color:var(--text-muted);font-size:11px;">${e.createdBy || '—'}</td>
+      <td><span class="tag ${pmodeColors[e.paymentMode]||''}">${e.paymentMode||'—'}</span></td>
+      <td style="color:var(--text-muted);">${e.billNo||'—'}</td>
+      <td style="color:var(--text-muted);">${e.invoiceNo||'—'}</td>
+      <td><span class="tag ${statusColors[e.expenseStatus]||'blue'}">${e.expenseStatus||'—'}</span></td>
+      <td style="color:var(--text-muted);">${e.approvedBy||'—'}</td>
+      <td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${e.remarks||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${e.createdAt||'—'}</td>
+      <td style="color:var(--text-muted);font-size:11px;">${e.createdBy||'—'}</td>
       <td><button class="btn btn-ghost btn-sm" onclick="editExpense(${i})">✏️ Edit</button></td>
     </tr>`).join('');
 }
@@ -994,15 +822,179 @@ function applyFilters() {
     (!status || e.expenseStatus === status) &&
     (!type   || e.expenseType   === type) &&
     (
-      (e.expenseId    || '').toLowerCase().includes(q) ||
-      (e.siteName     || '').toLowerCase().includes(q) ||
-      (e.vendorName   || '').toLowerCase().includes(q) ||
-      (e.costHeadName || '').toLowerCase().includes(q) ||
-      (e.description  || '').toLowerCase().includes(q)
+      (e.expenseId||'').toLowerCase().includes(q) ||
+      (e.siteName||'').toLowerCase().includes(q) ||
+      (e.vendorName||'').toLowerCase().includes(q) ||
+      (e.costHeadName||'').toLowerCase().includes(q) ||
+      (e.description||'').toLowerCase().includes(q)
     )
   ));
 }
 
+/* ══════════════════════════════
+   MODAL CONTROLS
+══════════════════════════════ */
+function openModal() {
+  document.getElementById('exp-modal').classList.add('open');
+  document.body.classList.add('modal-open');
+  document.getElementById('exp-modal-body').scrollTop = 0;
+}
+function closeModal() {
+  document.getElementById('exp-modal').classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('exp-modal')) closeModal();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function openNewExpModal() {
+  clearExpForm();
+  openModal();
+}
+
+/* ══════════════════════════════
+   EDIT MODE LOCK/UNLOCK
+══════════════════════════════ */
+function setExpEditMode(isEdit) {
+  EXP_ALL_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.disabled = isEdit && !EXP_EDITABLE.includes(id);
+  });
+  document.getElementById('exp-edit-lock-banner').style.display = isEdit ? 'flex' : 'none';
+}
+
+/* ══════════════════════════════
+   SITE SELECT → load WOs + Vendors
+══════════════════════════════ */
+async function onExpSiteSelect() {
+  const sel  = document.getElementById('exp-site-name');
+  const opt  = sel.options[sel.selectedIndex];
+  const siteId = opt ? (opt.dataset.id || '') : '';
+
+  document.getElementById('exp-site-id-hidden').value         = siteId;
+  document.getElementById('exp-site-id-display').textContent   = siteId || 'Select a site first';
+  document.getElementById('exp-site-id-display').style.color   = siteId ? 'var(--green)' : '';
+
+  if (!siteId) { resetWODropdown(); resetVendorDropdown(); return; }
+
+  showLoadingInDropdown('exp-work-order',  'Loading work orders…');
+  showLoadingInDropdown('exp-vendor-name', 'Loading vendors…');
+
+  const woRes = await api('getExpenseWOBySite', { siteId });
+  siteWOs = (woRes && woRes.workOrders) ? woRes.workOrders : [];
+
+  // Build WO dropdown
+  const woSel = document.getElementById('exp-work-order');
+  woSel.innerHTML = '<option value="">— Select Work Order (optional) —</option>';
+  siteWOs.forEach(w => {
+    const woNo   = w.workOrderNo || w['Work Order No'] || w.workorderNo || '';
+    const woId   = w.workOrderId || w.workOrderID || '';
+    const vId    = w.vendorId    || w['Vendor ID']   || '';
+    const vName  = w.vendorName  || w['Vendor Name'] || '';
+    const wType  = w.workType    || w['Work Type']   || '';
+    const o = document.createElement('option');
+    o.value = woId; o.dataset.id = woId; o.dataset.woNo = woNo;
+    o.dataset.vendorId = vId; o.dataset.vendorName = vName; o.dataset.workType = wType;
+    o.textContent = `${woNo||woId}  |  ${wType}  |  ${vName||'No Vendor'}`;
+    woSel.appendChild(o);
+  });
+
+  // Build unique vendors from WO list
+  const vendorMap = new Map();
+  siteWOs.forEach(w => {
+    const vId   = w.vendorId   || w['Vendor ID']   || '';
+    const vName = w.vendorName || w['Vendor Name'] || '';
+    const key   = vId || ('name_' + vName);
+    if (vName && !vendorMap.has(key)) vendorMap.set(key, { vendorId: vId, vendorName: vName });
+  });
+  siteVendors = [...vendorMap.values()];
+
+  const vSel = document.getElementById('exp-vendor-name');
+  vSel.innerHTML = '<option value="">— Select Vendor —</option>';
+  siteVendors.forEach(v => {
+    const o = document.createElement('option');
+    o.value = v.vendorName; o.dataset.id = v.vendorId; o.dataset.vendorId = v.vendorId;
+    o.textContent = v.vendorId ? `${v.vendorName}  [${v.vendorId}]` : v.vendorName;
+    vSel.appendChild(o);
+  });
+
+  if (!siteWOs.length) woSel.innerHTML = '<option value="">No work orders for this site</option>';
+  if (!siteVendors.length) vSel.innerHTML = '<option value="">No vendors for this site</option>';
+}
+
+function showLoadingInDropdown(id, msg) { document.getElementById(id).innerHTML = `<option>${msg}</option>`; }
+function resetWODropdown() {
+  document.getElementById('exp-work-order').innerHTML = '<option value="">— Select Work Order (after site) —</option>';
+  document.getElementById('exp-wo-id-display').textContent = '—';
+  document.getElementById('exp-wo-id-hidden').value = '';
+}
+function resetVendorDropdown() {
+  document.getElementById('exp-vendor-name').innerHTML = '<option value="">— Select Vendor (after site) —</option>';
+  document.getElementById('exp-vendor-id-display').textContent = '—';
+  document.getElementById('exp-vendor-id-hidden').value = '';
+}
+
+/* ── VENDOR SELECT ── */
+function onVendorSelect() {
+  const sel = document.getElementById('exp-vendor-name');
+  const opt = sel.options[sel.selectedIndex];
+  const vId = opt ? (opt.dataset.id || opt.dataset.vendorId || '') : '';
+  document.getElementById('exp-vendor-id-hidden').value        = vId;
+  document.getElementById('exp-vendor-id-display').textContent = vId || '—';
+  document.getElementById('exp-vendor-id-display').style.color = vId ? 'var(--green)' : '';
+}
+
+/* ── WO SELECT → vendor auto-fill ── */
+function onWOSelect() {
+  const sel  = document.getElementById('exp-work-order');
+  const opt  = sel.options[sel.selectedIndex];
+  const woId = opt ? (opt.dataset.id || opt.value || '') : '';
+
+  document.getElementById('exp-wo-id-hidden').value        = woId;
+  document.getElementById('exp-wo-id-display').textContent = woId || '—';
+  document.getElementById('exp-wo-id-display').style.color = woId ? 'var(--green)' : '';
+
+  if (!opt) return;
+  const vId   = opt.dataset.vendorId   || '';
+  const vName = opt.dataset.vendorName || '';
+
+  const vSel = document.getElementById('exp-vendor-name');
+  let matched = [...vSel.options].find(o => (o.dataset.id||o.dataset.vendorId) === vId);
+  if (!matched && vName) matched = [...vSel.options].find(o => o.value === vName);
+  if (matched) {
+    vSel.value = matched.value;
+    document.getElementById('exp-vendor-id-hidden').value        = vId;
+    document.getElementById('exp-vendor-id-display').textContent = vId || '—';
+    document.getElementById('exp-vendor-id-display').style.color = vId ? 'var(--green)' : '';
+  }
+}
+
+/* ── COST HEAD SELECT ── */
+function onCostHeadSelect() {
+  const sel = document.getElementById('exp-cost-head');
+  const opt = sel.options[sel.selectedIndex];
+  const id  = opt ? (opt.dataset.id || '') : '';
+  document.getElementById('exp-costhead-id-display').textContent = id || '—';
+  document.getElementById('exp-costhead-id-hidden').value        = id;
+  document.getElementById('exp-costhead-id-display').style.color = id ? 'var(--green)' : '';
+}
+
+/* ── AMOUNT CALC ── */
+function recalcAmount() {
+  const qty  = parseFloat(document.getElementById('exp-qty').value)  || 0;
+  const rate = parseFloat(document.getElementById('exp-rate').value) || 0;
+  if (qty > 0 && rate > 0) document.getElementById('exp-amount').value = (qty * rate).toFixed(2);
+  recalcTotal();
+}
+function recalcTotal() {
+  const amount = parseFloat(document.getElementById('exp-amount').value) || 0;
+  const tax    = parseFloat(document.getElementById('exp-tax').value)    || 0;
+  document.getElementById('exp-total-display').textContent = fmt(amount + tax);
+}
+
+/* ── REFRESH EXP ID ── */
 function refreshExpId() {
   const yr  = new Date().getFullYear();
   const rnd = String(Math.floor(Math.random() * 90000) + 10000);
@@ -1010,33 +1002,9 @@ function refreshExpId() {
   document.getElementById('exp-id-display').style.color = 'var(--green)';
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  EDIT MODE LOCK
-//  ✅ FIX: qty, unit, rate lock se bahar hain
-//  Banner mein updated text
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function setExpEditMode(isEdit) {
-  EXP_ALL_FIELDS.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.disabled = isEdit && !EXP_EDITABLE.includes(id);
-  });
-  const existing = document.getElementById('exp-edit-lock-banner');
-  if (isEdit) {
-    if (!existing) {
-      const banner = document.createElement('div');
-      banner.id = 'exp-edit-lock-banner';
-      banner.innerHTML = `⚠️&nbsp; <strong>Edit Mode:</strong> Site, Date & Cost Head are locked.
-        You can update: <strong>Qty, Unit, Rate, Amount, Tax, Status, Approved By,
-        Payment Mode, Bill No, Invoice No, Description</strong> and <strong>Remarks</strong>.`;
-      document.querySelector('.form-body').insertBefore(banner, document.querySelector('.form-body').firstChild);
-    }
-  } else {
-    if (existing) existing.remove();
-  }
-}
-
-// ── SUBMIT ────────────────────────────────────────────────────
+/* ══════════════════════════════
+   SUBMIT
+══════════════════════════════ */
 async function submitExpense() {
   const siteName = document.getElementById('exp-site-name').value.trim();
   const siteId   = document.getElementById('exp-site-id-hidden').value.trim();
@@ -1062,72 +1030,68 @@ async function submitExpense() {
   const expenseType = headMatch ? headMatch.type : 'Miscellaneous';
 
   const data = {
-    siteId,
-    siteName,
-    date,
+    siteId, siteName, date,
     costHeadName:  costHead,
     costHeadId:    document.getElementById('exp-costhead-id-hidden').value || (headMatch ? headMatch.id : 'CH-099'),
     expenseType,
-    vendorId:      document.getElementById('exp-vendor-id-hidden').value   || '',
-    vendorName:    document.getElementById('exp-vendor-name').value         || '',
-    workOrderId:   document.getElementById('exp-wo-id-hidden').value        || '',
-    description:   document.getElementById('exp-description').value         || '',
-    qty:           parseFloat(document.getElementById('exp-qty').value)     || 1,
+    vendorId:      document.getElementById('exp-vendor-id-hidden').value  || '',
+    vendorName:    document.getElementById('exp-vendor-name').value        || '',
+    workOrderId:   document.getElementById('exp-wo-id-hidden').value       || '',
+    description:   document.getElementById('exp-description').value        || '',
+    qty:           parseFloat(document.getElementById('exp-qty').value)    || 1,
     unit:          document.getElementById('exp-unit').value,
-    rate:          parseFloat(document.getElementById('exp-rate').value)    || 0,
-    amount,
-    taxAmount:     tax,
-    totalAmount:   total,
+    rate:          parseFloat(document.getElementById('exp-rate').value)   || 0,
+    amount, taxAmount: tax, totalAmount: total,
     paymentMode:   document.getElementById('exp-payment-mode').value,
-    billNo:        document.getElementById('exp-bill-no').value             || '',
-    invoiceNo:     document.getElementById('exp-invoice-no').value          || '',
+    billNo:        document.getElementById('exp-bill-no').value            || '',
+    invoiceNo:     document.getElementById('exp-invoice-no').value         || '',
     expenseStatus: document.getElementById('exp-status').value,
-    approvedBy:    document.getElementById('exp-approved-by').value         || '',
-    remarks:       document.getElementById('exp-remarks').value             || '',
-    createdBy:     document.getElementById('exp-created-by').value          || 'Admin',
+    approvedBy:    document.getElementById('exp-approved-by').value        || '',
+    remarks:       document.getElementById('exp-remarks').value            || '',
+    createdBy:     document.getElementById('exp-created-by').value         || 'Admin',
   };
   if (isEdit) data.expenseId = expId;
 
-  const action = isEdit ? 'updateExpense' : 'addExpense';
-  const res    = await api(action, data);
+  const res = await api(isEdit ? 'updateExpense' : 'addExpense', data);
 
   document.getElementById('exp-submit-text').textContent = 'Save Expense';
   document.getElementById('exp-submit-icon').textContent = '💸';
 
   if (res && res.success) {
     showToast(isEdit ? '✅ Expense updated!' : '✅ Expense saved to Sheets!', 'success');
-    clearExpForm();
+    closeModal();
     loadExpenses();
   } else {
-    const errMsg = (res && res.error) ? res.error : 'Unknown error — check Apps Script logs';
+    const errMsg = (res && res.error) ? res.error : 'Check Apps Script logs';
     showToast('❌ Save failed: ' + errMsg, 'error');
-    console.error('Save failed response:', res);
   }
 }
 
-// ── CLEAR FORM ────────────────────────────────────────────────
+/* ══════════════════════════════
+   CLEAR FORM
+══════════════════════════════ */
 function clearExpForm() {
   ['exp-id','exp-site-id-hidden','exp-wo-id-hidden','exp-vendor-id-hidden',
    'exp-costhead-id-hidden','exp-qty','exp-rate','exp-amount','exp-tax',
    'exp-bill-no','exp-invoice-no','exp-description','exp-approved-by',
    'exp-remarks','exp-created-by']
-    .forEach(id => { const el = document.getElementById(id); if(el) el.value = id === 'exp-qty' ? '1' : ''; });
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = (id === 'exp-qty') ? '1' : ''; });
 
-  document.getElementById('exp-site-name').value     = '';
-  document.getElementById('exp-cost-head').value     = '';
-  document.getElementById('exp-vendor-name').value   = '';
-  document.getElementById('exp-work-order').value    = '';
-  document.getElementById('exp-unit').value          = 'LS';
-  document.getElementById('exp-payment-mode').value  = 'Cash';
-  document.getElementById('exp-status').value        = 'Pending';
-  document.getElementById('exp-date').value          = new Date().toISOString().split('T')[0];
-  document.getElementById('exp-total-display').textContent      = '₹0';
-  document.getElementById('exp-site-id-display').textContent    = 'Select a site first';
-  document.getElementById('exp-costhead-id-display').textContent= '—';
-  document.getElementById('exp-vendor-id-display').textContent  = '—';
-  document.getElementById('exp-wo-id-display').textContent      = '—';
-  document.getElementById('exp-form-title').textContent         = 'Add New Expense';
-  document.getElementById('exp-form-subtitle').textContent      = 'Select site → vendors & work orders auto-load from Work Orders sheet';
+  document.getElementById('exp-site-name').value    = '';
+  document.getElementById('exp-cost-head').value    = '';
+  document.getElementById('exp-vendor-name').value  = '';
+  document.getElementById('exp-work-order').value   = '';
+  document.getElementById('exp-unit').value         = 'LS';
+  document.getElementById('exp-payment-mode').value = 'Cash';
+  document.getElementById('exp-status').value       = 'Pending';
+  document.getElementById('exp-date').value         = new Date().toISOString().split('T')[0];
+  document.getElementById('exp-total-display').textContent       = '₹0';
+  document.getElementById('exp-site-id-display').textContent     = 'Select a site first';
+  document.getElementById('exp-costhead-id-display').textContent = '—';
+  document.getElementById('exp-vendor-id-display').textContent   = '—';
+  document.getElementById('exp-wo-id-display').textContent       = '—';
+  document.getElementById('exp-form-title').textContent          = 'Add New Expense';
+  document.getElementById('exp-form-subtitle').textContent       = 'Select site → vendors & work orders auto-load';
 
   ['exp-site-id-display','exp-costhead-id-display','exp-vendor-id-display','exp-wo-id-display']
     .forEach(id => { document.getElementById(id).style.color = ''; });
@@ -1136,15 +1100,14 @@ function clearExpForm() {
   setExpEditMode(false);
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  EDIT EXPENSE
-//  ✅ FIX: WO match ab workOrderId se, vendor WO ke data se
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/* ══════════════════════════════
+   EDIT EXPENSE → OPEN MODAL
+══════════════════════════════ */
 async function editExpense(idx) {
   const e = allExpenses[idx];
   if (!e) return;
 
-  // Expense ID
+  // Fill expense ID display
   document.getElementById('exp-id').value               = e.expenseId || '';
   document.getElementById('exp-id-display').textContent = e.expenseId || '—';
   document.getElementById('exp-id-display').style.color = 'var(--green)';
@@ -1152,47 +1115,40 @@ async function editExpense(idx) {
   // Site
   const siteSel = document.getElementById('exp-site-name');
   let siteOpt   = [...siteSel.options].find(o => o.dataset.id === e.siteId || o.value === e.siteName);
-  if (!siteOpt) {
-    const opt = document.createElement('option');
-    opt.value = e.siteName; opt.dataset.id = e.siteId; opt.textContent = e.siteName;
-    siteSel.appendChild(opt);
-    siteOpt = opt;
+  if (!siteOpt && e.siteName) {
+    const o = document.createElement('option');
+    o.value = e.siteName; o.dataset.id = e.siteId || ''; o.textContent = e.siteName;
+    siteSel.appendChild(o); siteOpt = o;
   }
-  siteSel.value = siteOpt.value;
-  document.getElementById('exp-site-id-hidden').value          = e.siteId || '';
-  document.getElementById('exp-site-id-display').textContent    = e.siteId || '—';
-  document.getElementById('exp-site-id-display').style.color    = 'var(--green)';
+  if (siteOpt) siteSel.value = siteOpt.value;
+  document.getElementById('exp-site-id-hidden').value         = e.siteId || '';
+  document.getElementById('exp-site-id-display').textContent   = e.siteId || '—';
+  document.getElementById('exp-site-id-display').style.color   = 'var(--green)';
 
-  // Site select trigger — vendors & WOs load karo
+  // Load WOs + Vendors for this site (needed to populate dropdowns)
   await onExpSiteSelect();
 
-  // Work Order — workOrderId se match karo (opt.value = workOrderId)
+  // Work Order
   const woSel = document.getElementById('exp-work-order');
   let woOpt   = [...woSel.options].find(o => o.value === e.workOrderId || o.dataset.id === e.workOrderId);
   if (!woOpt && e.workOrderId) {
-    const opt = document.createElement('option');
-    opt.value = e.workOrderId; opt.dataset.id = e.workOrderId; opt.textContent = e.workOrderId;
-    woSel.appendChild(opt);
-    woOpt = opt;
+    const o = document.createElement('option');
+    o.value = e.workOrderId; o.dataset.id = e.workOrderId; o.textContent = e.workOrderId;
+    woSel.appendChild(o); woOpt = o;
   }
   if (woOpt) woSel.value = woOpt.value;
   document.getElementById('exp-wo-id-hidden').value         = e.workOrderId || '';
   document.getElementById('exp-wo-id-display').textContent   = e.workOrderId || '—';
   if (e.workOrderId) document.getElementById('exp-wo-id-display').style.color = 'var(--green)';
 
-  // Vendor — vendorId se match karo
+  // Vendor
   const vSel = document.getElementById('exp-vendor-name');
-  let vOpt   = [...vSel.options].find(o =>
-    (o.dataset.id || o.dataset.vendorId) === e.vendorId
-  );
+  let vOpt   = [...vSel.options].find(o => (o.dataset.id||o.dataset.vendorId) === e.vendorId);
+  if (!vOpt && e.vendorName) vOpt = [...vSel.options].find(o => o.value === e.vendorName);
   if (!vOpt && e.vendorName) {
-    vOpt = [...vSel.options].find(o => o.value === e.vendorName);
-  }
-  if (!vOpt && e.vendorName) {
-    const opt = document.createElement('option');
-    opt.value = e.vendorName; opt.dataset.id = e.vendorId || ''; opt.textContent = e.vendorName;
-    vSel.appendChild(opt);
-    vOpt = opt;
+    const o = document.createElement('option');
+    o.value = e.vendorName; o.dataset.id = e.vendorId || ''; o.textContent = e.vendorName;
+    vSel.appendChild(o); vOpt = o;
   }
   if (vOpt) vSel.value = vOpt.value;
   document.getElementById('exp-vendor-id-hidden').value         = e.vendorId || '';
@@ -1209,17 +1165,14 @@ async function editExpense(idx) {
 
   // Date
   if (e.date && e.date !== '—') {
-    try {
-      const d = new Date(e.date);
-      if (!isNaN(d)) document.getElementById('exp-date').value = d.toISOString().split('T')[0];
-    } catch(x){}
+    try { const d = new Date(e.date); if (!isNaN(d)) document.getElementById('exp-date').value = d.toISOString().split('T')[0]; } catch(x){}
   }
 
   // Amounts
-  document.getElementById('exp-qty').value        = e.qty       || 1;
-  document.getElementById('exp-rate').value       = e.rate      || '';
-  document.getElementById('exp-amount').value     = e.amount    || '';
-  document.getElementById('exp-tax').value        = e.taxAmount || '';
+  document.getElementById('exp-qty').value    = e.qty       || 1;
+  document.getElementById('exp-rate').value   = e.rate      || '';
+  document.getElementById('exp-amount').value = e.amount    || '';
+  document.getElementById('exp-tax').value    = e.taxAmount || '';
   document.getElementById('exp-total-display').textContent = fmt(e.totalAmount);
 
   // Other fields
@@ -1233,30 +1186,29 @@ async function editExpense(idx) {
   document.getElementById('exp-remarks').value      = e.remarks       || '';
   document.getElementById('exp-created-by').value   = e.createdBy     || '';
 
-  document.getElementById('exp-form-title').textContent    = '✏️ Edit Expense — ' + e.expenseId;
-  document.getElementById('exp-form-subtitle').textContent = 'Site/Date/CostHead locked. Amount, Status & other fields editable.';
+  document.getElementById('exp-form-title').textContent    = '✏️ Edit Expense — ' + (e.expenseId || '');
+  document.getElementById('exp-form-subtitle').textContent = 'Site/Date/CostHead locked. Amount & Status fields editable.';
 
   setExpEditMode(true);
-  scrollToForm();
+  openModal();
   showToast('ℹ️ Edit mode — amount fields bhi editable hain', 'info');
 }
 
-function scrollToForm() {
-  document.getElementById('add-exp-form').scrollIntoView({ behavior:'smooth', block:'start' });
-}
-
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
 function showToast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  const spaceIdx = msg.indexOf(' ');
-  const icon = spaceIdx > -1 ? msg.slice(0, spaceIdx) : msg;
-  const text = spaceIdx > -1 ? msg.slice(spaceIdx + 1) : '';
-  document.getElementById('toast-icon').textContent = icon;
-  document.getElementById('toast-msg').textContent  = text;
+  const t   = document.getElementById('toast');
+  const idx = msg.indexOf(' ');
+  document.getElementById('toast-icon').textContent = idx > -1 ? msg.slice(0, idx) : msg;
+  document.getElementById('toast-msg').textContent  = idx > -1 ? msg.slice(idx+1) : '';
   t.className = `toast ${type} show`;
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-// ── INIT ──────────────────────────────────────────────────────
+/* ══════════════════════════════
+   INIT — parallel fast load
+══════════════════════════════ */
 document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
 initCostHeads();
 refreshExpId();
