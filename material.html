@@ -292,24 +292,41 @@
   .sc-bar-fill.low { background: var(--amber); }
   .sc-bar-fill.out { background: var(--red); }
 
-  /* ── MODAL (GENERIC) ── */
+  /* ══════════════════════════════════════════════
+     MODAL — CORE FIX: flex column so header stays
+     fixed and body scrolls independently
+  ══════════════════════════════════════════════ */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(26,24,20,0.5); z-index: 200;
     display: flex; align-items: center; justify-content: center; padding: 20px;
     opacity: 0; pointer-events: none; transition: opacity 0.2s;
   }
   .modal-overlay.show { opacity: 1; pointer-events: all; }
+
   .modal-box {
-    background: var(--white); border-radius: var(--radius-lg); width: 100%; max-width: 960px;
-    max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;
+    background: var(--white); border-radius: var(--radius-lg);
+    width: 100%; max-width: 960px;
+    /* Cap height so scroll kicks in before going off-screen */
+    max-height: 90vh;
+    /* Flex column: header fixed top, body scrolls */
+    display: flex; flex-direction: column; overflow: hidden;
     box-shadow: var(--shadow-lg); transform: translateY(20px); transition: transform 0.2s;
   }
   .modal-overlay.show .modal-box { transform: translateY(0); }
-  .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+
+  /* Header never scrolls — always visible */
+  .modal-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
   .modal-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 900; }
   .modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--off-white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
   .modal-close:hover { border-color: var(--red); color: var(--red); }
-  .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+
+  /* Ledger modal body scrolls */
+  .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; min-height: 0; }
+
   .modal-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
   .meta-pill { background: var(--off-white); border-radius: var(--radius); padding: 12px 14px; }
   .meta-pill-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
@@ -354,9 +371,26 @@
     background: var(--border) !important; border-color: var(--border) !important;
   }
 
-  /* ── FORM MODAL SIZING ── */
-  .modal-form .modal-box { max-width: 780px; }
-  .form-modal-body { padding: 28px; }
+  /* ══════════════════════════════════════════════
+     FORM MODAL — KEY FIX
+     modal-box = flex column (header + scroll body)
+     form-modal-body = flex:1 + overflow-y:auto
+     So: header is always visible, form content scrolls
+  ══════════════════════════════════════════════ */
+  .modal-form .modal-box {
+    max-width: 780px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .form-modal-body {
+    padding: 28px;
+    overflow-y: auto;   /* scroll when content overflows */
+    flex: 1;            /* take all remaining height after header */
+    min-height: 0;      /* required for flex children to shrink below content size */
+  }
 </style>
 </head>
 <body>
@@ -444,12 +478,8 @@
       <button class="tab-btn"        id="tab-stock"   onclick="switchTab('stock')">📊 Stock Summary</button>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════ -->
-    <!--  TAB 1: MATERIAL MASTER                               -->
-    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB 1: MATERIAL MASTER -->
     <div id="panel-master" class="tab-panel active">
-
-      <!-- Master Table -->
       <div class="table-card anim a3">
         <div class="table-header">
           <div style="display:flex;align-items:center;gap:10px;">
@@ -484,12 +514,8 @@
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════ -->
-    <!--  TAB 2: MATERIAL IN                                   -->
-    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB 2: MATERIAL IN -->
     <div id="panel-in" class="tab-panel">
-
-      <!-- IN Table -->
       <div class="table-card">
         <div class="table-header">
           <div style="display:flex;align-items:center;gap:10px;">
@@ -529,12 +555,8 @@
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════ -->
-    <!--  TAB 3: MATERIAL OUT                                  -->
-    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB 3: MATERIAL OUT -->
     <div id="panel-out" class="tab-panel">
-
-      <!-- OUT Table -->
       <div class="table-card">
         <div class="table-header">
           <div style="display:flex;align-items:center;gap:10px;">
@@ -573,11 +595,8 @@
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════ -->
-    <!--  TAB 4: STOCK SUMMARY                                 -->
-    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB 4: STOCK SUMMARY -->
     <div id="panel-stock" class="tab-panel">
-
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <span style="font-size:15px;font-weight:700;">Live Stock Summary</span>
@@ -599,7 +618,6 @@
         <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Loading stock summary…</div>
       </div>
 
-      <!-- Stock Summary Table -->
       <div class="table-card" style="margin-top:4px;">
         <div class="table-header">
           <span class="table-title">Stock Summary Table</span>
@@ -961,7 +979,6 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
 
-// ── Shared State ──────────────────────────────────────────────
 let allMaterials   = [];
 let allSites       = [];
 let allIN          = [];
@@ -1012,12 +1029,9 @@ function closeINModal() { document.getElementById('in-modal').classList.remove('
 function openOUTModal() { document.getElementById('out-modal').classList.add('show'); }
 function closeOUTModal() { document.getElementById('out-modal').classList.remove('show'); }
 
-// Close modal on overlay click
 ['master-modal','in-modal','out-modal'].forEach(id => {
   document.getElementById(id).addEventListener('click', function(e) {
-    if (e.target === this) {
-      this.classList.remove('show');
-    }
+    if (e.target === this) this.classList.remove('show');
   });
 });
 
@@ -1036,7 +1050,6 @@ function switchTab(name) {
 //  INIT DROPDOWNS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function initStaticDropdowns() {
-  // Categories
   const catFilter = document.getElementById('filter-master-cat');
   const catSel    = document.getElementById('mat-category');
   MAT_CATEGORIES.forEach(c => {
@@ -1044,8 +1057,6 @@ function initStaticDropdowns() {
       const o = document.createElement('option'); o.value = c; o.textContent = c; el.appendChild(o);
     });
   });
-
-  // Units
   ['mat-unit','in-unit','out-unit'].forEach(id => {
     const el = document.getElementById(id);
     el.innerHTML = '<option value="">— Unit —</option>';
@@ -1073,7 +1084,6 @@ async function loadSites() {
       sel.appendChild(o);
     });
   });
-  // Fix site selects that need "Select Site" placeholder
   ['in-site-name','out-site-name'].forEach(id => {
     const sel = document.getElementById(id);
     if (sel && sel.options[0]) sel.options[0].textContent = '— Select Site —';
@@ -1093,7 +1103,6 @@ async function loadMaterials() {
   document.getElementById('qs-total').textContent        = allMaterials.length;
   document.getElementById('mat-nav-count').textContent   = allMaterials.length;
 
-  // Populate material dropdowns for IN/OUT forms
   ['in-material','out-material'].forEach(id => {
     const sel = document.getElementById(id);
     sel.innerHTML = '<option value="">— Select Material —</option>';
@@ -1261,7 +1270,6 @@ async function loadStockSummary() {
 
   allStockSum = d.summary || [];
 
-  // Update sidebar stats
   document.getElementById('qs-low').textContent   = d.lowStock    || 0;
   document.getElementById('qs-out').textContent   = d.outOfStock  || 0;
   document.getElementById('qs-value').textContent = d.totalValue >= 1e7
@@ -1269,7 +1277,6 @@ async function loadStockSummary() {
   document.getElementById('sum-low-stock').textContent  = d.lowStock   || 0;
   document.getElementById('sum-out-stock').textContent  = d.outOfStock || 0;
 
-  // Low stock alert banner
   const alerts = allStockSum.filter(s => s.stockStatus !== 'OK');
   const banner = document.getElementById('alert-banner');
   if (alerts.length) {
@@ -1564,7 +1571,6 @@ function updateOUTStockDisplay() {
     document.getElementById('out-stock-display').style.color = 'var(--text-muted)';
     return;
   }
-  // Calculate from loaded data
   const inQty  = allIN.filter(r => r.materialId === matId && r.siteId === siteId).reduce((s,r)=>s+r.qtyIn,0);
   const outQty = allOUT.filter(r => r.materialId === matId && r.siteId === siteId).reduce((s,r)=>s+r.qtyOut,0);
   const stock  = inQty - outQty;
@@ -1665,7 +1671,6 @@ async function refreshAll() {
   showToast('✅ Data refreshed', 'success');
 }
 
-// ── Close ledger on overlay click ─────────────────────────────
 document.getElementById('ledger-modal').addEventListener('click', function(e) {
   if (e.target === this) closeLedger();
 });
@@ -1677,7 +1682,6 @@ document.getElementById('in-date').value  = new Date().toISOString().split('T')[
 document.getElementById('out-date').value = new Date().toISOString().split('T')[0];
 initStaticDropdowns();
 
-// Load everything in parallel
 Promise.all([
   loadSites(),
   loadMaterials(),
@@ -1687,7 +1691,6 @@ Promise.all([
   loadStockSummary();
 });
 
-// Animation keyframes
 const s = document.createElement('style');
 s.textContent = `@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }`;
 document.head.appendChild(s);

@@ -278,24 +278,12 @@
   .toast.error   { background: var(--red); color: white; }
   .toast.info    { background: var(--blue); color: white; }
 
-  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
   .anim { opacity:0; animation: fadeUp 0.4s ease forwards; }
   .a1{animation-delay:0.05s} .a2{animation-delay:0.1s} .a3{animation-delay:0.15s}
 
   /* Prevent body scroll when modal open */
   body.modal-open { overflow: hidden; }
-
-  /* Section visibility in edit mode */
-  body.edit-mode #section-basic { display: none; }
-  body.edit-mode #basic-fields { display: none; }
-  body.edit-mode #section-location { display: none; }
-  body.edit-mode #location-fields { display: none; }
-  body.edit-mode #section-budget { display: none; }
-  body.edit-mode #budget-fields { display: none; }
-  body.edit-mode #section-team { display: none; }
-  body.edit-mode #team-fields { display: none; }
-  body.edit-mode #section-wo { display: block !important; }
-  body.edit-mode #wo-fields { display: grid !important; }
 </style>
 </head>
 <body>
@@ -323,7 +311,7 @@
   <aside class="sidebar">
     <div class="sidebar-section">Main Modules</div>
     <a href="index.html"      class="nav-item"><span class="nav-item-icon">🏠</span> Home</a>
-    <a href="sites.html"      class="nav-item active"><span class="nav-item-icon">🏗</span> Sites<span class="nav-badge orange" id="exp-nav-count">0</span></a>
+    <a href="sites.html"      class="nav-item active"><span class="nav-item-icon">🏗</span> Sites<span class="nav-badge amber" id="exp-nav-count">0</span></a>
     <a href="workorder.html"  class="nav-item"><span class="nav-item-icon">📋</span> Work Orders</a>
     <a href="expense.html"    class="nav-item"><span class="nav-item-icon">💸</span> Expenses</a>
     <a href="material.html"   class="nav-item"><span class="nav-item-icon">📦</span> Material</a>
@@ -353,7 +341,7 @@
       </div>
       <div class="page-actions">
         <button class="btn btn-ghost" onclick="loadSites()">⟳ Refresh</button>
-        <button class="btn btn-primary" onclick="openAddModal()">+ Add New Site</button>
+        <button class="btn btn-primary" onclick="openModal(false)">+ Add New Site</button>
       </div>
     </div>
 
@@ -430,14 +418,14 @@
       <!-- hidden siteId for edit -->
       <input type="hidden" id="s-siteid"/>
 
-      <!-- Edit mode banner -->
+      <!-- Edit mode lock banner (injected by JS) -->
       <div id="edit-lock-banner" class="edit-lock-banner" style="display:none;">
-        ⚠️&nbsp; <span><strong>Edit Mode:</strong> Only <strong>Manager, WO Status, Progress, Dates, Status</strong> and <strong>Priority</strong> can be edited.</span>
+        ⚠️&nbsp; <span><strong>Edit Mode:</strong> Only <strong>Site Manager, WO Status, Progress %, Status</strong> and <strong>Priority</strong> can be changed. All other fields are locked.</span>
       </div>
 
       <!-- SECTION 1: Basic Info -->
-      <div id="section-basic" class="section-divider"><div class="sd-line"></div><div class="sd-label">📍 Basic Information</div><div class="sd-line"></div></div>
-      <div id="basic-fields" class="fields-grid cols3">
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📍 Basic Information</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols3">
         <div class="field">
           <label class="field-label">Site Name <span class="req">*</span></label>
           <input class="field-input" id="s-name" type="text" placeholder="e.g. Site A — Sector 62"/>
@@ -472,11 +460,20 @@
             <option>Other</option>
           </select>
         </div>
+        <div class="field">
+          <label class="field-label">Work Order Status</label>
+          <select class="field-select" id="s-wo-status">
+            <option>Not Started</option>
+            <option>In Progress</option>
+            <option>Completed</option>
+            <option>On Hold</option>
+          </select>
+        </div>
       </div>
 
       <!-- SECTION 2: Location -->
-      <div id="section-location" class="section-divider"><div class="sd-line"></div><div class="sd-label">📌 Location</div><div class="sd-line"></div></div>
-      <div id="location-fields" class="fields-grid cols3">
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📌 Location</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols3">
         <div class="field">
           <label class="field-label">Location / Address <span class="req">*</span></label>
           <input class="field-input" id="s-location" type="text" placeholder="Full address / area"/>
@@ -492,8 +489,8 @@
       </div>
 
       <!-- SECTION 3: Budget & Timeline -->
-      <div id="section-budget" class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Budget & Timeline</div><div class="sd-line"></div></div>
-      <div id="budget-fields" class="fields-grid cols4">
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Budget & Timeline</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols4">
         <div class="field">
           <label class="field-label">Budget (₹) <span class="req">*</span></label>
           <div class="input-wrap has-prefix">
@@ -543,8 +540,8 @@
       </div>
 
       <!-- SECTION 4: Team & Notes -->
-      <div id="section-team" class="section-divider"><div class="sd-line"></div><div class="sd-label">👷 Team & Notes</div><div class="sd-line"></div></div>
-      <div id="team-fields" class="fields-grid">
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">👷 Team & Notes</div><div class="sd-line"></div></div>
+      <div class="fields-grid">
         <div class="field">
           <label class="field-label">Site Manager / Incharge</label>
           <input class="field-input" id="s-manager" type="text" placeholder="Engineer / manager name"/>
@@ -556,20 +553,6 @@
         <div class="field full">
           <label class="field-label">Remarks / Description</label>
           <textarea class="field-textarea" id="s-remarks" placeholder="Additional notes about this site…"></textarea>
-        </div>
-      </div>
-
-      <!-- SECTION 5: WO Status (only in edit mode) -->
-      <div id="section-wo" class="section-divider" style="display:none;"><div class="sd-line"></div><div class="sd-label">⚙️ Work Order</div><div class="sd-line"></div></div>
-      <div id="wo-fields" class="fields-grid" style="display:none;">
-        <div class="field">
-          <label class="field-label">Work Order Status</label>
-          <select class="field-select" id="s-wo-status">
-            <option>Not Started</option>
-            <option>In Progress</option>
-            <option>Completed</option>
-            <option>On Hold</option>
-          </select>
         </div>
       </div>
 
@@ -599,7 +582,9 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
 let allSites = [];
 
+/* ── Fields that CAN be edited in edit mode ── */
 const EDITABLE_IN_EDIT = ['s-manager','s-wo-status','s-progress','s-status','s-priority','s-actual-start','s-actual-end'];
+
 const ALL_FORM_FIELDS = [
   's-name','s-client','s-client-contact','s-site-type',
   's-location','s-city','s-state','s-project-category',
@@ -608,6 +593,9 @@ const ALL_FORM_FIELDS = [
   's-manager','s-wo-status','s-progress','s-status','s-priority'
 ];
 
+/* ══════════════════════════════
+   API / DATA
+══════════════════════════════ */
 async function api(action, data = {}) {
   try {
     const params = new URLSearchParams({ action, ...data });
@@ -640,11 +628,21 @@ function getDemoSites() {
       actualStartDate:'20 Feb 2024', actualEndDate:'—', budget:8000000,
       siteManager:'SURESH VERMA', workOrderStatus:'In Progress', progress:28,
       status:'Active', priority:'Normal', remarks:'', createdAt:'15 Feb 2024', createdBy:'ADMIN'
+    },
+    {
+      serialNo:3, siteId:'SITE-2024-1003', name:'SITE C — DWARKA', clientName:'DMRC',
+      clientContact:'+91 98300 33333', siteType:'Infrastructure', location:'SECTOR 10, DWARKA',
+      city:'DELHI', state:'DELHI', projectCategory:'Road / Civil',
+      planStartDate:'01 Mar 2024', plannedEndDate:'31 Mar 2025',
+      actualStartDate:'—', actualEndDate:'—', budget:3500000,
+      siteManager:'ANJALI SHARMA', workOrderStatus:'Not Started', progress:0,
+      status:'Planning', priority:'Urgent', remarks:'GOVT. PROJECT, APPROVALS PENDING', createdAt:'01 Mar 2024', createdBy:'ADMIN'
     }
   ]};
 }
 
 const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
+
 const statusColors   = { Active:'green', Planning:'blue', 'On Hold':'amber', Completed:'green', Cancelled:'red' };
 const priorityColors = { Normal:'blue', Low:'', High:'orange', Urgent:'red' };
 const woStatusColors = { 'Not Started':'blue', 'In Progress':'orange', Completed:'green', 'On Hold':'amber' };
@@ -734,45 +732,44 @@ function updateStats(sites) {
     : '₹' + (totalBudget/1e5).toFixed(1) + ' L';
 }
 
-/* MODAL CONTROLS */
-function openAddModal() {
-  clearSiteForm();
-  document.body.classList.remove('edit-mode');
+/* ══════════════════════════════
+   MODAL CONTROLS
+══════════════════════════════ */
+function openModal(isEditMode) {
   document.getElementById('site-modal').classList.add('open');
   document.body.classList.add('modal-open');
+  // Scroll modal body to top
   document.getElementById('modal-body').scrollTop = 0;
 }
 
 function closeModal() {
   document.getElementById('site-modal').classList.remove('open');
   document.body.classList.remove('modal-open');
-  document.body.classList.remove('edit-mode');
 }
 
+/* Close modal when clicking on dark overlay (not the box itself) */
 function handleOverlayClick(e) {
   if (e.target === document.getElementById('site-modal')) closeModal();
 }
 
+/* ESC key closes modal */
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-/* EDIT MODE */
+/* ══════════════════════════════
+   EDIT MODE LOCK/UNLOCK
+══════════════════════════════ */
 function setEditMode(isEdit) {
-  if (isEdit) {
-    document.body.classList.add('edit-mode');
-  } else {
-    document.body.classList.remove('edit-mode');
-  }
-  document.getElementById('edit-lock-banner').style.display = isEdit ? 'flex' : 'none';
-  
-  // Also disable/enable fields programmatically
   ALL_FORM_FIELDS.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.disabled = isEdit && !EDITABLE_IN_EDIT.includes(id);
   });
+  document.getElementById('edit-lock-banner').style.display = isEdit ? 'flex' : 'none';
 }
 
-/* SUBMIT */
+/* ══════════════════════════════
+   SUBMIT
+══════════════════════════════ */
 async function submitSite() {
   const name     = document.getElementById('s-name').value.trim();
   const city     = document.getElementById('s-city').value.trim();
@@ -827,7 +824,9 @@ async function submitSite() {
   loadSites();
 }
 
-/* CLEAR FORM */
+/* ══════════════════════════════
+   CLEAR FORM
+══════════════════════════════ */
 function clearSiteForm() {
   ['s-siteid','s-name','s-client','s-client-contact','s-location','s-city','s-state',
    's-budget','s-plan-start','s-plan-end','s-actual-start','s-actual-end',
@@ -839,6 +838,8 @@ function clearSiteForm() {
   document.getElementById('s-wo-status').value = 'Not Started';
   document.getElementById('s-site-type').value = 'Residential';
   document.getElementById('s-project-category').value = 'New Construction';
+
+  // Reset plan-start to today
   document.getElementById('s-plan-start').value = new Date().toISOString().split('T')[0];
 
   document.getElementById('form-title').textContent    = 'Add New Site';
@@ -847,11 +848,14 @@ function clearSiteForm() {
   setEditMode(false);
 }
 
-/* EDIT SITE */
+/* ══════════════════════════════
+   EDIT SITE
+══════════════════════════════ */
 function editSite(idx) {
   const s = allSites[idx];
   if (!s) return;
 
+  // Populate all fields
   document.getElementById('s-siteid').value           = s.siteId || '';
   document.getElementById('s-name').value             = s.name || '';
   document.getElementById('s-client').value           = s.clientName || '';
@@ -865,9 +869,12 @@ function editSite(idx) {
   document.getElementById('s-remarks').value          = s.remarks || '';
   document.getElementById('s-created-by').value       = s.createdBy || '';
 
+  // Parse and set date fields
   const parseDate = (dateStr) => {
     if (!dateStr || dateStr === '—') return '';
+    // Try direct ISO format first
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    // Try to parse "DD Mon YYYY" or "D Mon YYYY"
     const d = new Date(dateStr);
     if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
     return '';
@@ -878,6 +885,7 @@ function editSite(idx) {
   document.getElementById('s-actual-start').value = parseDate(s.actualStartDate);
   document.getElementById('s-actual-end').value   = parseDate(s.actualEndDate);
 
+  // Set select dropdowns
   const selectMap = {
     's-site-type':        s.siteType,
     's-project-category': s.projectCategory,
@@ -891,23 +899,26 @@ function editSite(idx) {
     if (opt) el.value = opt.value;
   });
 
+  // Status select — match by value or text (emoji prefix stripped)
   const statusEl = document.getElementById('s-status');
   const statusOpt = [...statusEl.options].find(o => o.value === s.status || o.text.includes(s.status));
   if (statusOpt) statusEl.value = statusOpt.value;
 
+  // Update modal header
   document.getElementById('form-title').textContent    = '✏️ Edit Site — ' + (s.name || s.siteId);
-  document.getElementById('form-subtitle').textContent = 'Edit limited fields only';
+  document.getElementById('form-subtitle').textContent = 'Only Manager, WO Status, Progress, Status & Priority editable';
 
+  // Lock non-editable fields
   setEditMode(true);
-  
-  document.getElementById('site-modal').classList.add('open');
-  document.body.classList.add('modal-open');
-  document.getElementById('modal-body').scrollTop = 0;
-  
+
+  // Open modal
+  openModal(true);
   showToast('ℹ️ Edit mode — limited fields editable', 'info');
 }
 
-/* TOAST */
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
 function showToast(msg, type = 'success') {
   const t = document.getElementById('toast');
   const parts = msg.split(' ');
@@ -917,7 +928,10 @@ function showToast(msg, type = 'success') {
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-/* INIT */
+/* ══════════════════════════════
+   INIT
+══════════════════════════════ */
+document.getElementById('s-plan-start').value = new Date().toISOString().split('T')[0];
 loadSites();
 
 const s2 = document.createElement('style');
