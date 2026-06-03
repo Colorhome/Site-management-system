@@ -29,7 +29,7 @@
     --red-bg: #fef2f2;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
     --shadow: 0 4px 16px rgba(0,0,0,0.08);
-    --shadow-lg: 0 20px 60px rgba(0,0,0,0.10);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.15);
     --radius: 12px;
     --radius-lg: 20px;
   }
@@ -126,7 +126,6 @@
   .table-title { font-size: 15px; font-weight: 700; }
   .table-count { background: var(--blue-bg); color: var(--blue); border-radius: 100px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
 
-  /* Horizontal scrollable table */
   .table-scroll { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; min-width: 1400px; }
   thead th {
@@ -159,26 +158,64 @@
   .prog-fill.green  { background: var(--green); }
   .prog-fill.blue   { background: var(--blue); }
 
-  /* FORM CARD */
-  .form-card {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); overflow: hidden;
-    margin-bottom: 24px; box-shadow: var(--shadow-sm);
+  /* ══════════════════════════════════════════
+     MODAL OVERLAY
+  ══════════════════════════════════════════ */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(26, 24, 20, 0.55);
+    backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.22s ease;
   }
-  .form-card-header {
-    padding: 20px 28px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 12px; background: var(--off-white);
-  }
-  .card-header-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .card-header-icon.orange { background: var(--accent-bg); }
-  .card-header-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
-  .card-header-sub { font-size: 12px; color: var(--text-muted); }
-  .form-body { padding: 28px; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
 
-  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+  .modal-box {
+    background: var(--white); border-radius: var(--radius-lg);
+    width: 100%; max-width: 860px; max-height: 92vh;
+    display: flex; flex-direction: column;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(24px) scale(0.98);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+  }
+  .modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
+
+  .modal-head {
+    padding: 20px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--off-white); flex-shrink: 0;
+  }
+  .modal-head-left { display: flex; align-items: center; gap: 14px; }
+  .modal-head-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--accent-bg); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .modal-head-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+  .modal-head-sub { font-size: 12px; color: var(--text-muted); }
+  .modal-close {
+    width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: var(--white); cursor: pointer; font-size: 16px; color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .modal-close:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
+
+  .modal-body { overflow-y: auto; padding: 28px; flex: 1; }
+  .modal-body::-webkit-scrollbar { width: 5px; }
+  .modal-body::-webkit-scrollbar-track { background: transparent; }
+  .modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+  .modal-foot {
+    padding: 16px 28px; border-top: 1px solid var(--border); background: var(--off-white);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    flex-shrink: 0;
+  }
+  .footer-hint { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
+
+  /* FORM FIELDS */
+  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
   .fields-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
   .fields-grid.cols4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-  .fields-grid.cols1 { grid-template-columns: 1fr; }
   .field { display: flex; flex-direction: column; gap: 7px; }
   .field.full { grid-column: 1 / -1; }
   .field-label { font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.8px; text-transform: uppercase; }
@@ -190,60 +227,38 @@
     background: var(--off-white); border: 1.5px solid var(--border);
     border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 13px; color: var(--text); outline: none; transition: all 0.2s; appearance: none;
-    text-transform: uppercase;
   }
-  .field-input::placeholder { color: var(--text-light); text-transform: none; }
+  .field-input::placeholder { color: var(--text-light); }
   .field-input:focus, .field-select:focus, .field-textarea:focus {
     border-color: var(--accent); background: var(--white);
     box-shadow: 0 0 0 4px rgba(232,93,38,0.08);
   }
-  /* Date inputs and number inputs should NOT be uppercase */
-  input[type="date"], input[type="number"], input[type="tel"] {
-    text-transform: none !important;
-  }
-  .field-textarea { resize: vertical; min-height: 72px; text-transform: uppercase; }
+  input[type="date"], input[type="number"], input[type="tel"] { text-transform: none !important; }
+  .field-textarea { resize: vertical; min-height: 72px; }
   .field-select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
-    text-transform: none;
   }
   .input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; color: var(--text-muted); pointer-events: none; }
   .has-prefix .field-input { padding-left: 28px; }
 
-  .section-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 18px; }
+  .section-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0 16px; }
   .sd-line { flex: 1; height: 1px; background: var(--border); }
   .sd-label { font-size: 10px; font-weight: 700; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
 
-  .form-footer {
-    padding: 18px 28px; border-top: 1px solid var(--border); background: var(--off-white);
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  }
-  .footer-hint { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
-
-  /* LOCKED FIELD STYLES */
+  /* LOCKED FIELDS */
   .field-input:disabled, .field-select:disabled, .field-textarea:disabled {
-    opacity: 0.42;
-    cursor: not-allowed;
-    background: var(--border) !important;
-    border-color: var(--border) !important;
+    opacity: 0.42; cursor: not-allowed;
+    background: var(--border) !important; border-color: var(--border) !important;
     box-shadow: none !important;
   }
-  .field-locked-label { font-size: 9px; color: var(--text-light); font-weight: 600; letter-spacing: 0.5px; margin-top: 2px; }
 
   /* EDIT LOCK BANNER */
-  #edit-lock-banner {
-    background: var(--amber-bg);
-    border: 1.5px solid var(--amber);
-    color: #92400e;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    line-height: 1.5;
+  .edit-lock-banner {
+    background: var(--amber-bg); border: 1.5px solid rgba(217,119,6,0.4);
+    color: #92400e; padding: 11px 16px; border-radius: 10px;
+    font-size: 12px; font-weight: 600; margin-bottom: 18px;
+    display: flex; align-items: flex-start; gap: 10px; line-height: 1.6;
   }
 
   /* EMPTY */
@@ -265,7 +280,10 @@
 
   @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
   .anim { opacity:0; animation: fadeUp 0.4s ease forwards; }
-  .a1{animation-delay:0.05s} .a2{animation-delay:0.1s} .a3{animation-delay:0.15s} .a4{animation-delay:0.2s}
+  .a1{animation-delay:0.05s} .a2{animation-delay:0.1s} .a3{animation-delay:0.15s}
+
+  /* Prevent body scroll when modal open */
+  body.modal-open { overflow: hidden; }
 </style>
 </head>
 <body>
@@ -296,9 +314,9 @@
     <a href="sites.html"      class="nav-item active"><span class="nav-item-icon">🏗</span> Sites<span class="nav-badge amber" id="exp-nav-count">0</span></a>
     <a href="workorder.html"  class="nav-item"><span class="nav-item-icon">📋</span> Work Orders</a>
     <a href="expense.html"    class="nav-item"><span class="nav-item-icon">💸</span> Expenses</a>
-    <a href="material.html"    class="nav-item"><span class="nav-item-icon">📦</span> Material</a>
-    <a href="client.html" class="nav-item"><span class="nav-item-icon">👥</span> Client Receivables</a>
-    <a href="attendance.html"     class="nav-item"><span class="nav-item-icon">👷</span> Attendance</a>
+    <a href="material.html"   class="nav-item"><span class="nav-item-icon">📦</span> Material</a>
+    <a href="client.html"     class="nav-item"><span class="nav-item-icon">👥</span> Client Receivables</a>
+    <a href="attendance.html" class="nav-item"><span class="nav-item-icon">👷</span> Attendance</a>
     <a href="dashboard.html"  class="nav-item"><span class="nav-item-icon">📊</span> Dashboard</a>
 
     <div style="margin-top:auto;padding-top:20px;border-top:1px solid var(--border);">
@@ -323,7 +341,7 @@
       </div>
       <div class="page-actions">
         <button class="btn btn-ghost" onclick="loadSites()">⟳ Refresh</button>
-        <button class="btn btn-primary" onclick="scrollToForm()">+ Add New Site</button>
+        <button class="btn btn-primary" onclick="openModal(false)">+ Add New Site</button>
       </div>
     </div>
 
@@ -376,170 +394,185 @@
       </div>
     </div>
 
-    <!-- ADD / EDIT SITE FORM -->
-    <div id="add-site-form" class="form-card anim a3">
-      <div class="form-card-header">
-        <div class="card-header-icon orange">🏗</div>
-        <div>
-          <div class="card-header-title" id="form-title">Add New Site</div>
-          <div class="card-header-sub" id="form-subtitle">Fill all details to register a construction site</div>
-        </div>
-      </div>
-
-      <!-- Hidden edit field -->
-      <input type="hidden" id="s-siteid"/>
-
-      <div class="form-body">
-
-        <!-- Section 1: Basic Info -->
-        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📍 Basic Information</div><div class="sd-line"></div></div>
-        <div class="fields-grid cols3">
-          <div class="field">
-            <label class="field-label">Site Name <span class="req">*</span></label>
-            <input class="field-input" id="s-name" type="text" placeholder="e.g. Site A — Sector 62"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Client Name <span class="req">*</span></label>
-            <input class="field-input" id="s-client" type="text" placeholder="Company / person name"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Client Contact</label>
-            <input class="field-input" id="s-client-contact" type="tel" placeholder="+91 XXXXX XXXXX"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Site Type <span class="req">*</span></label>
-            <select class="field-select" id="s-site-type">
-              <option>Residential</option>
-              <option>Commercial</option>
-              <option>Industrial</option>
-              <option>Infrastructure</option>
-              <option>Mixed Use</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Project Category</label>
-            <select class="field-select" id="s-project-category">
-              <option>New Construction</option>
-              <option>Renovation / Retrofit</option>
-              <option>Expansion</option>
-              <option>Road / Civil</option>
-              <option>Interior</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Work Order Status</label>
-            <select class="field-select" id="s-wo-status">
-              <option>Not Started</option>
-              <option>In Progress</option>
-              <option>Completed</option>
-              <option>On Hold</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Section 2: Location -->
-        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📌 Location</div><div class="sd-line"></div></div>
-        <div class="fields-grid cols3">
-          <div class="field">
-            <label class="field-label">Location / Address <span class="req">*</span></label>
-            <input class="field-input" id="s-location" type="text" placeholder="Full address / area"/>
-          </div>
-          <div class="field">
-            <label class="field-label">City <span class="req">*</span></label>
-            <input class="field-input" id="s-city" type="text" placeholder="e.g. Noida"/>
-          </div>
-          <div class="field">
-            <label class="field-label">State</label>
-            <input class="field-input" id="s-state" type="text" placeholder="e.g. Uttar Pradesh"/>
-          </div>
-        </div>
-
-        <!-- Section 3: Budget & Timeline -->
-        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Budget & Timeline</div><div class="sd-line"></div></div>
-        <div class="fields-grid cols4">
-          <div class="field">
-            <label class="field-label">Budget (₹) <span class="req">*</span></label>
-            <div class="input-wrap has-prefix">
-              <span class="input-prefix">₹</span>
-              <input class="field-input" id="s-budget" type="number" placeholder="0"/>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">Plan Start Date</label>
-            <input class="field-input" id="s-plan-start" type="date"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Planned End Date</label>
-            <input class="field-input" id="s-plan-end" type="date"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Progress %</label>
-            <input class="field-input" id="s-progress" type="number" min="0" max="100" placeholder="0"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Actual Start Date</label>
-            <input class="field-input" id="s-actual-start" type="date"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Actual End Date</label>
-            <input class="field-input" id="s-actual-end" type="date"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Status <span class="req">*</span></label>
-            <select class="field-select" id="s-status">
-              <option value="Planning">🔵 Planning</option>
-              <option value="Active">🟢 Active</option>
-              <option value="On Hold">🟡 On Hold</option>
-              <option value="Completed">✅ Completed</option>
-              <option value="Cancelled">🔴 Cancelled</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">Priority</label>
-            <select class="field-select" id="s-priority">
-              <option>Normal</option>
-              <option>Low</option>
-              <option>High</option>
-              <option>Urgent</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Section 4: Team & Remarks -->
-        <div class="section-divider"><div class="sd-line"></div><div class="sd-label">👷 Team & Notes</div><div class="sd-line"></div></div>
-        <div class="fields-grid">
-          <div class="field">
-            <label class="field-label">Site Manager / Incharge</label>
-            <input class="field-input" id="s-manager" type="text" placeholder="Engineer / manager name"/>
-          </div>
-          <div class="field">
-            <label class="field-label">Created By</label>
-            <input class="field-input" id="s-created-by" type="text" placeholder="Your name"/>
-          </div>
-          <div class="field full">
-            <label class="field-label">Remarks / Description</label>
-            <textarea class="field-textarea" id="s-remarks" placeholder="Additional notes about this site…"></textarea>
-          </div>
-        </div>
-
-      </div>
-      <div class="form-footer">
-        <div class="footer-hint"><span>ℹ️</span> Fields marked <span style="color:var(--accent);font-weight:700;">*</span> are required.</div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn btn-ghost" onclick="clearSiteForm()">Clear</button>
-          <button class="btn btn-primary" onclick="submitSite()">
-            <span id="submit-icon">🏗</span>
-            <span id="submit-text">Save Site</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
   </main>
 </div>
 
+<!-- ══════════════════════════════════════════════
+     MODAL POPUP FORM
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="site-modal" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modal-box">
+
+    <div class="modal-head">
+      <div class="modal-head-left">
+        <div class="modal-head-icon">🏗</div>
+        <div>
+          <div class="modal-head-title" id="form-title">Add New Site</div>
+          <div class="modal-head-sub" id="form-subtitle">Fill all details to register a construction site</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()" title="Close">✕</button>
+    </div>
+
+    <div class="modal-body" id="modal-body">
+      <!-- hidden siteId for edit -->
+      <input type="hidden" id="s-siteid"/>
+
+      <!-- Edit mode lock banner (injected by JS) -->
+      <div id="edit-lock-banner" class="edit-lock-banner" style="display:none;">
+        ⚠️&nbsp; <span><strong>Edit Mode:</strong> Only <strong>Site Manager, WO Status, Progress %, Status</strong> and <strong>Priority</strong> can be changed. All other fields are locked.</span>
+      </div>
+
+      <!-- SECTION 1: Basic Info -->
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📍 Basic Information</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols3">
+        <div class="field">
+          <label class="field-label">Site Name <span class="req">*</span></label>
+          <input class="field-input" id="s-name" type="text" placeholder="e.g. Site A — Sector 62"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Client Name <span class="req">*</span></label>
+          <input class="field-input" id="s-client" type="text" placeholder="Company / person name"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Client Contact</label>
+          <input class="field-input" id="s-client-contact" type="tel" placeholder="+91 XXXXX XXXXX"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Site Type <span class="req">*</span></label>
+          <select class="field-select" id="s-site-type">
+            <option>Residential</option>
+            <option>Commercial</option>
+            <option>Industrial</option>
+            <option>Infrastructure</option>
+            <option>Mixed Use</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Project Category</label>
+          <select class="field-select" id="s-project-category">
+            <option>New Construction</option>
+            <option>Renovation / Retrofit</option>
+            <option>Expansion</option>
+            <option>Road / Civil</option>
+            <option>Interior</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Work Order Status</label>
+          <select class="field-select" id="s-wo-status">
+            <option>Not Started</option>
+            <option>In Progress</option>
+            <option>Completed</option>
+            <option>On Hold</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Location -->
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">📌 Location</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols3">
+        <div class="field">
+          <label class="field-label">Location / Address <span class="req">*</span></label>
+          <input class="field-input" id="s-location" type="text" placeholder="Full address / area"/>
+        </div>
+        <div class="field">
+          <label class="field-label">City <span class="req">*</span></label>
+          <input class="field-input" id="s-city" type="text" placeholder="e.g. Noida"/>
+        </div>
+        <div class="field">
+          <label class="field-label">State</label>
+          <input class="field-input" id="s-state" type="text" placeholder="e.g. Uttar Pradesh"/>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Budget & Timeline -->
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">💰 Budget & Timeline</div><div class="sd-line"></div></div>
+      <div class="fields-grid cols4">
+        <div class="field">
+          <label class="field-label">Budget (₹) <span class="req">*</span></label>
+          <div class="input-wrap has-prefix">
+            <span class="input-prefix">₹</span>
+            <input class="field-input" id="s-budget" type="number" placeholder="0"/>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Plan Start Date</label>
+          <input class="field-input" id="s-plan-start" type="date"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Planned End Date</label>
+          <input class="field-input" id="s-plan-end" type="date"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Progress %</label>
+          <input class="field-input" id="s-progress" type="number" min="0" max="100" placeholder="0"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Actual Start Date</label>
+          <input class="field-input" id="s-actual-start" type="date"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Actual End Date</label>
+          <input class="field-input" id="s-actual-end" type="date"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Status <span class="req">*</span></label>
+          <select class="field-select" id="s-status">
+            <option value="Planning">🔵 Planning</option>
+            <option value="Active">🟢 Active</option>
+            <option value="On Hold">🟡 On Hold</option>
+            <option value="Completed">✅ Completed</option>
+            <option value="Cancelled">🔴 Cancelled</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Priority</label>
+          <select class="field-select" id="s-priority">
+            <option>Normal</option>
+            <option>Low</option>
+            <option>High</option>
+            <option>Urgent</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SECTION 4: Team & Notes -->
+      <div class="section-divider"><div class="sd-line"></div><div class="sd-label">👷 Team & Notes</div><div class="sd-line"></div></div>
+      <div class="fields-grid">
+        <div class="field">
+          <label class="field-label">Site Manager / Incharge</label>
+          <input class="field-input" id="s-manager" type="text" placeholder="Engineer / manager name"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Created By</label>
+          <input class="field-input" id="s-created-by" type="text" placeholder="Your name"/>
+        </div>
+        <div class="field full">
+          <label class="field-label">Remarks / Description</label>
+          <textarea class="field-textarea" id="s-remarks" placeholder="Additional notes about this site…"></textarea>
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+
+    <div class="modal-foot">
+      <div class="footer-hint"><span>ℹ️</span> Fields marked <span style="color:var(--accent);font-weight:700;">*</span> are required.</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" onclick="clearSiteForm()">Clear</button>
+        <button class="btn btn-primary" onclick="submitSite()">
+          <span id="submit-icon">🏗</span>
+          <span id="submit-text">Save Site</span>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /modal-box -->
+</div><!-- /modal-overlay -->
+
+<!-- TOAST -->
 <div class="toast success" id="toast">
   <span id="toast-icon">✅</span>
   <span id="toast-msg">Saved!</span>
@@ -549,24 +582,31 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbxHJLqjecbkU6jgWOEmFjv3NMZXxTkGzUMefwp9CM-4hNfRRX-D21CHxxT_j2zaoLLx/exec';
 let allSites = [];
 
-// ── Fields that CAN be edited in edit mode ──────────────────
-const EDITABLE_IN_EDIT = ['s-manager', 's-wo-status', 's-progress', 's-status', 's-priority', 's-actual-start', 's-actual-end'];
+/* ── Fields that CAN be edited in edit mode ── */
+const EDITABLE_IN_EDIT = ['s-manager','s-wo-status','s-progress','s-status','s-priority','s-actual-start','s-actual-end'];
 
-// ── All form fields (to lock / unlock) ──────────────────────
 const ALL_FORM_FIELDS = [
-  's-name', 's-client', 's-client-contact', 's-site-type',
-  's-location', 's-city', 's-state', 's-project-category',
-  's-plan-start', 's-plan-end', 's-actual-start', 's-actual-end',
-  's-budget', 's-created-by', 's-remarks',
-  's-manager', 's-wo-status', 's-progress', 's-status', 's-priority'
+  's-name','s-client','s-client-contact','s-site-type',
+  's-location','s-city','s-state','s-project-category',
+  's-plan-start','s-plan-end','s-actual-start','s-actual-end',
+  's-budget','s-created-by','s-remarks',
+  's-manager','s-wo-status','s-progress','s-status','s-priority'
 ];
 
+/* ══════════════════════════════
+   API / DATA
+══════════════════════════════ */
 async function api(action, data = {}) {
   try {
     const params = new URLSearchParams({ action, ...data });
     const res = await fetch(`${API_URL}?${params}`);
-    return await res.json();
-  } catch(e) { return getDemoSites(); }
+    if (!res.ok) throw new Error('Network error');
+    const json = await res.json();
+    return json;
+  } catch(e) {
+    console.warn('API failed, using demo data:', e.message);
+    return getDemoSites();
+  }
 }
 
 function getDemoSites() {
@@ -597,42 +637,49 @@ function getDemoSites() {
       actualStartDate:'—', actualEndDate:'—', budget:3500000,
       siteManager:'ANJALI SHARMA', workOrderStatus:'Not Started', progress:0,
       status:'Planning', priority:'Urgent', remarks:'GOVT. PROJECT, APPROVALS PENDING', createdAt:'01 Mar 2024', createdBy:'ADMIN'
-    },
+    }
   ]};
 }
 
 const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
 
-const statusColors  = { Active:'green', Planning:'blue', 'On Hold':'amber', Completed:'green', Cancelled:'red' };
+const statusColors   = { Active:'green', Planning:'blue', 'On Hold':'amber', Completed:'green', Cancelled:'red' };
 const priorityColors = { Normal:'blue', Low:'', High:'orange', Urgent:'red' };
-const woStatusColors = { 'Not Started':'', 'In Progress':'orange', Completed:'green', 'On Hold':'amber' };
+const woStatusColors = { 'Not Started':'blue', 'In Progress':'orange', Completed:'green', 'On Hold':'amber' };
 
 async function loadSites() {
   document.getElementById('site-count-badge').textContent = 'Loading…';
-  const d = await api('getSites');
-  allSites = d.sites || [];
-  renderSites(allSites);
-  updateStats(allSites);
+  try {
+    const d = await api('getSites');
+    allSites = (d && Array.isArray(d.sites)) ? d.sites : [];
+    renderSites(allSites);
+    updateStats(allSites);
+  } catch(e) {
+    allSites = [];
+    renderSites([]);
+    showToast('⚠️ Could not load sites', 'error');
+  }
 }
 
 function renderSites(sites) {
   document.getElementById('site-count-badge').textContent = sites.length + ' sites';
-  document.getElementById('site-nav-count').textContent = sites.length;
+  const navBadge = document.getElementById('exp-nav-count');
+  if (navBadge) navBadge.textContent = sites.length;
 
   const tbody = document.getElementById('sites-tbody');
   if (!sites.length) {
-    tbody.innerHTML = `<tr><td colspan="24"><div class="empty-state"><div class="empty-icon">🏗</div><div class="empty-text">No sites yet. Add your first site below!</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="24"><div class="empty-state"><div class="empty-icon">🏗</div><div class="empty-text">No sites yet. Click "+ Add New Site" to get started!</div></div></td></tr>`;
     return;
   }
 
   tbody.innerHTML = sites.map((s, i) => {
-    const pct = Math.min(100, Number(s.progress || 0));
+    const pct = Math.min(100, Math.max(0, Number(s.progress || 0)));
     const barColor = pct >= 90 ? 'green' : pct >= 60 ? 'orange' : pct >= 30 ? 'blue' : 'red';
     return `
       <tr style="animation:fadeUp 0.3s ease ${i*0.04}s both;">
         <td style="color:var(--text-muted);font-size:11px;">${s.serialNo || i+1}</td>
         <td><span style="font-size:11px;background:var(--off-white);padding:2px 7px;border-radius:6px;font-weight:600;">${s.siteId || '—'}</span></td>
-        <td style="font-weight:700;min-width:160px;">${s.name}</td>
+        <td style="font-weight:700;min-width:160px;">${s.name || '—'}</td>
         <td>${s.clientName || '—'}</td>
         <td style="color:var(--text-muted);">${s.clientContact || '—'}</td>
         <td><span class="tag purple">${s.siteType || '—'}</span></td>
@@ -651,7 +698,7 @@ function renderSites(sites) {
           <div style="font-size:11px;font-weight:700;margin-bottom:3px;">${pct}%</div>
           <div class="prog-wrap"><div class="prog-fill ${barColor}" style="width:${pct}%"></div></div>
         </td>
-        <td><span class="tag ${statusColors[s.status] || 'blue'}">${s.status}</span></td>
+        <td><span class="tag ${statusColors[s.status] || 'blue'}">${s.status || '—'}</span></td>
         <td><span class="tag ${priorityColors[s.priority] || 'blue'}">${s.priority || 'Normal'}</span></td>
         <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted);">${s.remarks || '—'}</td>
         <td style="color:var(--text-muted);font-size:11px;">${s.createdAt || '—'}</td>
@@ -679,43 +726,50 @@ function updateStats(sites) {
   document.getElementById('qs-active').textContent   = sites.filter(s => s.status === 'Active').length;
   document.getElementById('qs-planning').textContent = sites.filter(s => s.status === 'Planning').length;
   document.getElementById('qs-hold').textContent     = sites.filter(s => s.status === 'On Hold').length;
-  const totalBudget = sites.reduce((s, x) => s + Number(x.budget||0), 0);
-  document.getElementById('qs-budget').textContent   = totalBudget >= 1e7
+  const totalBudget = sites.reduce((sum, x) => sum + Number(x.budget||0), 0);
+  document.getElementById('qs-budget').textContent = totalBudget >= 1e7
     ? '₹' + (totalBudget/1e7).toFixed(1) + ' Cr'
     : '₹' + (totalBudget/1e5).toFixed(1) + ' L';
 }
 
-// ── SET EDIT MODE ─────────────────────────────────────────────
-// isEdit=true  → lock all fields EXCEPT EDITABLE_IN_EDIT
-// isEdit=false → unlock all fields
+/* ══════════════════════════════
+   MODAL CONTROLS
+══════════════════════════════ */
+function openModal(isEditMode) {
+  document.getElementById('site-modal').classList.add('open');
+  document.body.classList.add('modal-open');
+  // Scroll modal body to top
+  document.getElementById('modal-body').scrollTop = 0;
+}
+
+function closeModal() {
+  document.getElementById('site-modal').classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+
+/* Close modal when clicking on dark overlay (not the box itself) */
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('site-modal')) closeModal();
+}
+
+/* ESC key closes modal */
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ══════════════════════════════
+   EDIT MODE LOCK/UNLOCK
+══════════════════════════════ */
 function setEditMode(isEdit) {
   ALL_FORM_FIELDS.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
-    const shouldLock = isEdit && !EDITABLE_IN_EDIT.includes(id);
-    el.disabled = shouldLock;
+    el.disabled = isEdit && !EDITABLE_IN_EDIT.includes(id);
   });
-
-  // Show / hide lock banner
-  const existingBanner = document.getElementById('edit-lock-banner');
-  if (isEdit) {
-    if (!existingBanner) {
-      const banner = document.createElement('div');
-      banner.id = 'edit-lock-banner';
-      banner.innerHTML = `
-        ⚠️&nbsp; <strong>Edit Mode:</strong> Only
-        <strong>Site Manager, WO Status, Progress %, Status</strong> and
-        <strong>Priority</strong> can be changed. All other fields are locked.
-      `;
-      const formBody = document.querySelector('.form-body');
-      formBody.insertBefore(banner, formBody.firstChild);
-    }
-  } else {
-    if (existingBanner) existingBanner.remove();
-  }
+  document.getElementById('edit-lock-banner').style.display = isEdit ? 'flex' : 'none';
 }
 
-// ── SUBMIT SITE ───────────────────────────────────────────────
+/* ══════════════════════════════
+   SUBMIT
+══════════════════════════════ */
 async function submitSite() {
   const name     = document.getElementById('s-name').value.trim();
   const city     = document.getElementById('s-city').value.trim();
@@ -733,29 +787,28 @@ async function submitSite() {
   document.getElementById('submit-text').textContent = 'Saving…';
   document.getElementById('submit-icon').textContent = '⏳';
 
-  // ── All text values sent as UPPERCASE ──
   const uc = v => (v || '').toString().trim().toUpperCase();
 
   const data = {
     action:          isEdit ? 'updateSite' : 'addSite',
     siteName:        uc(name),
     clientName:      uc(client),
-    clientContact:   document.getElementById('s-client-contact').value.trim(),   // phone — keep as-is
+    clientContact:   document.getElementById('s-client-contact').value.trim(),
     siteType:        uc(document.getElementById('s-site-type').value),
     location:        uc(location),
     city:            uc(city),
     state:           uc(document.getElementById('s-state').value),
     projectCategory: uc(document.getElementById('s-project-category').value),
-    planStartDate:   document.getElementById('s-plan-start').value,              // date — keep as-is
+    planStartDate:   document.getElementById('s-plan-start').value,
     plannedEndDate:  document.getElementById('s-plan-end').value,
     actualStartDate: document.getElementById('s-actual-start').value,
     actualEndDate:   document.getElementById('s-actual-end').value,
     budget:          budget,
     siteManager:     uc(document.getElementById('s-manager').value),
-    workOrderStatus: document.getElementById('s-wo-status').value,               // dropdown value — keep as-is
+    workOrderStatus: document.getElementById('s-wo-status').value,
     progress:        document.getElementById('s-progress').value || 0,
-    status:          document.getElementById('s-status').value,                  // dropdown value — keep as-is
-    priority:        document.getElementById('s-priority').value,                // dropdown value — keep as-is
+    status:          document.getElementById('s-status').value,
+    priority:        document.getElementById('s-priority').value,
     remarks:         uc(document.getElementById('s-remarks').value),
     createdBy:       uc(document.getElementById('s-created-by').value) || 'ADMIN',
   };
@@ -765,12 +818,15 @@ async function submitSite() {
 
   document.getElementById('submit-text').textContent = 'Save Site';
   document.getElementById('submit-icon').textContent = '🏗';
-  showToast(isEdit ? '✅ Site updated!' : '✅ Site saved to Google Sheets!', 'success');
-  clearSiteForm();
+
+  showToast(isEdit ? '✅ Site updated!' : '✅ Site saved to Sheets!', 'success');
+  closeModal();
   loadSites();
 }
 
-// ── CLEAR FORM ────────────────────────────────────────────────
+/* ══════════════════════════════
+   CLEAR FORM
+══════════════════════════════ */
 function clearSiteForm() {
   ['s-siteid','s-name','s-client','s-client-contact','s-location','s-city','s-state',
    's-budget','s-plan-start','s-plan-end','s-actual-start','s-actual-end',
@@ -780,18 +836,26 @@ function clearSiteForm() {
   document.getElementById('s-status').value    = 'Planning';
   document.getElementById('s-priority').value  = 'Normal';
   document.getElementById('s-wo-status').value = 'Not Started';
+  document.getElementById('s-site-type').value = 'Residential';
+  document.getElementById('s-project-category').value = 'New Construction';
+
+  // Reset plan-start to today
+  document.getElementById('s-plan-start').value = new Date().toISOString().split('T')[0];
+
   document.getElementById('form-title').textContent    = 'Add New Site';
   document.getElementById('form-subtitle').textContent = 'Fill all details to register a construction site';
 
-  // Unlock all fields
   setEditMode(false);
 }
 
-// ── EDIT SITE ─────────────────────────────────────────────────
+/* ══════════════════════════════
+   EDIT SITE
+══════════════════════════════ */
 function editSite(idx) {
   const s = allSites[idx];
   if (!s) return;
 
+  // Populate all fields
   document.getElementById('s-siteid').value           = s.siteId || '';
   document.getElementById('s-name').value             = s.name || '';
   document.getElementById('s-client').value           = s.clientName || '';
@@ -805,38 +869,56 @@ function editSite(idx) {
   document.getElementById('s-remarks').value          = s.remarks || '';
   document.getElementById('s-created-by').value       = s.createdBy || '';
 
-  // Selects
-  ['s-site-type','s-project-category','s-wo-status','s-status','s-priority'].forEach(id => {
+  // Parse and set date fields
+  const parseDate = (dateStr) => {
+    if (!dateStr || dateStr === '—') return '';
+    // Try direct ISO format first
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    // Try to parse "DD Mon YYYY" or "D Mon YYYY"
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+    return '';
+  };
+
+  document.getElementById('s-plan-start').value   = parseDate(s.planStartDate);
+  document.getElementById('s-plan-end').value     = parseDate(s.plannedEndDate);
+  document.getElementById('s-actual-start').value = parseDate(s.actualStartDate);
+  document.getElementById('s-actual-end').value   = parseDate(s.actualEndDate);
+
+  // Set select dropdowns
+  const selectMap = {
+    's-site-type':        s.siteType,
+    's-project-category': s.projectCategory,
+    's-wo-status':        s.workOrderStatus,
+    's-priority':         s.priority,
+  };
+  Object.entries(selectMap).forEach(([id, val]) => {
+    if (!val) return;
     const el = document.getElementById(id);
-    const keyMap = {
-      's-site-type':        'siteType',
-      's-project-category': 'projectCategory',
-      's-wo-status':        'workOrderStatus',
-      's-status':           'status',
-      's-priority':         'priority'
-    };
-    if (el && s[keyMap[id]]) {
-      const opt = [...el.options].find(o => o.value === s[keyMap[id]] || o.text.includes(s[keyMap[id]]));
-      if (opt) el.value = opt.value;
-    }
+    const opt = [...el.options].find(o => o.value === val || o.text.replace(/^[^\w]+/, '').includes(val));
+    if (opt) el.value = opt.value;
   });
 
-  document.getElementById('form-title').textContent    = '✏️ Edit Site — ' + s.name;
-  document.getElementById('form-subtitle').textContent = 'Only Site Manager, WO Status, Progress %, Status & Priority can be updated';
+  // Status select — match by value or text (emoji prefix stripped)
+  const statusEl = document.getElementById('s-status');
+  const statusOpt = [...statusEl.options].find(o => o.value === s.status || o.text.includes(s.status));
+  if (statusOpt) statusEl.value = statusOpt.value;
 
-  // Lock fields — only 5 editable
+  // Update modal header
+  document.getElementById('form-title').textContent    = '✏️ Edit Site — ' + (s.name || s.siteId);
+  document.getElementById('form-subtitle').textContent = 'Only Manager, WO Status, Progress, Status & Priority editable';
+
+  // Lock non-editable fields
   setEditMode(true);
 
-  scrollToForm();
-  showToast('ℹ️ Edit mode — 5 fields only editable', 'info');
+  // Open modal
+  openModal(true);
+  showToast('ℹ️ Edit mode — limited fields editable', 'info');
 }
 
-// ── SCROLL TO FORM ────────────────────────────────────────────
-function scrollToForm() {
-  document.getElementById('add-site-form').scrollIntoView({ behavior:'smooth', block:'start' });
-}
-
-// ── TOAST ─────────────────────────────────────────────────────
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
 function showToast(msg, type = 'success') {
   const t = document.getElementById('toast');
   const parts = msg.split(' ');
@@ -846,7 +928,9 @@ function showToast(msg, type = 'success') {
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-// ── INIT ──────────────────────────────────────────────────────
+/* ══════════════════════════════
+   INIT
+══════════════════════════════ */
 document.getElementById('s-plan-start').value = new Date().toISOString().split('T')[0];
 loadSites();
 
